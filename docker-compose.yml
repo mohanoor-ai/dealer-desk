@@ -1,0 +1,33 @@
+name: dealer-desk
+services:
+  database:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: dealer
+      POSTGRES_DB: dealer
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Run start.ps1 or start.sh to create local configuration}
+    volumes:
+      - dealer_database:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dealer -d dealer"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+  app:
+    build: .
+    ports:
+      - "127.0.0.1:${DEALER_PORT:-8090}:8090"
+    environment:
+      DATABASE_URL: postgresql+psycopg://dealer:${POSTGRES_PASSWORD}@database:5432/dealer
+      COOKIE_SECURE: "false"
+      DEALER_TIMEZONE: Europe/London
+    depends_on:
+      database:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8090/health', timeout=3)"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+volumes:
+  dealer_database:
