@@ -12,3 +12,8 @@ This file is intended to be public with the reviewed application source. Hosted 
 | J06 | Browser journey, roles, recovery and hosted CI/CD evidence | Planned |
 | J07 | Current rubric operations/alert/responder evidence; safe extensions | Planned |
 | J08 | Release archive, offline companion, public/private inventory and final submission | Planned |
+| UX01 | Separate overview, stock, enquiries, follow-ups and linkable vehicle-detail pages; browser Back works | Implemented; see verification.md for passed checks and pending browser/PostgreSQL checks |
+| UX02 | Licensed stock illustrations with visible credits; no illustration represented as the actual stock vehicle | Implemented; see verification.md for passed checks and pending browser/PostgreSQL checks |
+| UX03 | Staff can upload multiple JPEG/PNG/WebP photos, browse a gallery and choose a cover; viewers cannot upload | Implemented; see verification.md for passed checks and pending browser/PostgreSQL checks |
+| UX04 | Photos survive restart on SQLite/PostgreSQL; size/type/dimension limits, EXIF stripping and conflict checks verified | Implemented; see verification.md for passed checks and pending browser/PostgreSQL checks |
+

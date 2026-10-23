@@ -1,6 +1,6 @@
 from datetime import datetime, date, timezone
-from sqlalchemy import Boolean, CheckConstraint, Date, DateTime, ForeignKey, Integer, JSON, String
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy import Boolean, CheckConstraint, Date, DateTime, ForeignKey, Integer, JSON, String, LargeBinary
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, deferred
 
 def now():
     return datetime.now(timezone.utc)
@@ -23,6 +23,7 @@ class Vehicle(Record, Base):
     approved_facts: Mapped[list] = mapped_column(JSON, default=list, nullable=False)
     status: Mapped[str] = mapped_column(String(12), default='available', nullable=False)
     archived: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    photos: Mapped[list['VehiclePhoto']] = relationship(lazy='selectin', order_by='VehiclePhoto.id')
     __table_args__ = (CheckConstraint('price_pence >= 0 AND price_pence <= 100000000'),CheckConstraint('year >= 1900 AND year <= 2100'),CheckConstraint("status IN ('available','reserved','sold')"),CheckConstraint('revision >= 1'))
 
 class Enquiry(Record, Base):
@@ -66,3 +67,20 @@ class LoginSession(Base):
     token_hash: Mapped[str] = mapped_column(String(64), primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id'), nullable=False, index=True)
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+class VehiclePhoto(Base):
+    __tablename__ = 'vehicle_photos'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    vehicle_id: Mapped[int] = mapped_column(ForeignKey('vehicles_v2.id'), nullable=False, index=True)
+    caption: Mapped[str] = mapped_column(String(160), nullable=False)
+    credit: Mapped[str] = mapped_column(String(200), default='', nullable=False)
+    source_url: Mapped[str] = mapped_column(String(1000), default='', nullable=False)
+    license: Mapped[str] = mapped_column(String(100), default='', nullable=False)
+    license_url: Mapped[str] = mapped_column(String(1000), default='', nullable=False)
+    illustrative: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    is_cover: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    width: Mapped[int] = mapped_column(Integer, nullable=False)
+    height: Mapped[int] = mapped_column(Integer, nullable=False)
+    content: Mapped[bytes] = deferred(mapped_column(LargeBinary, nullable=False))
+    thumbnail: Mapped[bytes] = deferred(mapped_column(LargeBinary, nullable=False))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now, nullable=False)

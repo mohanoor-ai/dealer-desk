@@ -15,6 +15,8 @@ The assessed demo uses fictional vehicles and customers. Real customer operation
 5. An optional assistant drafts a listing from approved vehicle fields; staff review before accepting. It never publishes.
 
 ## Vehicle data
+Current UX extension: separate hash-addressed overview, stock, enquiries, follow-up and vehicle-detail screens. A vehicle detail shows its photos, saved details and linked enquiries. Licensed reference photos are visibly labelled as stock illustrations and preserve credit/license/source. Staff may upload JPEG, PNG or WebP files (2 MiB each, at most 12 photos per vehicle) and select a cover. The server verifies image decoding, caps pixel dimensions, strips metadata, stores optimized JPEGs and thumbnails in the database, and records changes using the vehicle revision. Viewer accounts remain read-only. No remote URL fetch is exposed to users. Photos persist with the database; future large-scale object storage is outside this slice.
+
 ID; make; model; year; integer price_pence; status (available/reserved/sold); approved descriptive facts; archived flag; created/updated timestamps; revision number.
 Input length/range limits appear in the contract. No registration number, external vehicle history or real customer data is required.
 

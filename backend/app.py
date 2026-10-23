@@ -18,7 +18,8 @@ from sqlalchemy import select, update, func
 from sqlalchemy.exc import SQLAlchemyError
 from backend import auth, schemas as s
 from backend.database import build_engine, session_factory
-from backend.models import User, LoginSession, Vehicle, Enquiry, Task, AuditEvent, now
+from backend.models import User, LoginSession, Vehicle, Enquiry, Task, AuditEvent, VehiclePhoto, now
+from backend.photos import prepare_photo, MAX_PHOTOS
 from backend.contract import describe_api
 
 logger = logging.getLogger('dealer')
@@ -28,7 +29,17 @@ def dealer_today():
     return datetime.now(ZoneInfo(os.environ.get('DEALER_TIMEZONE', 'Europe/London'))).date()
 
 def record_dict(record):
-    return {column.key: getattr(record, column.key) for column in record.__table__.columns}
+    result = {column.key: getattr(record, column.key) for column in record.__table__.columns}
+    if isinstance(record, Vehicle):
+        result['photo_count'] = len(record.photos)
+        cover = next((photo for photo in record.photos if photo.is_cover), None)
+        result['cover_photo_id'] = cover.id if cover else (record.photos[0].id if record.photos else None)
+        chosen = cover or (record.photos[0] if record.photos else None)
+        result['cover_photo'] = photo_dict(chosen) if chosen else None
+    return result
+
+def photo_dict(photo):
+    return {field: getattr(photo, field) for field in s.PhotoOutput.model_fields}
 
 def find(db, model, record_id):
     record = db.get(model, record_id)
@@ -79,7 +90,7 @@ def create_app(database_url=None):
         yield
         engine.dispose()
 
-    app = FastAPI(title='Dealer Desk API', version='0.3.0', lifespan=lifespan)
+    app = FastAPI(title='Dealer Desk API', version='0.4.0', lifespan=lifespan)
     app.state.engine = engine
     app.state.sessions = factory
     # Local milestone guard only. Distributed public deployment requires a shared limiter.
@@ -115,6 +126,15 @@ def create_app(database_url=None):
     @app.middleware('http')
     async def request_boundary(request: Request, call_next):
         request.state.request_id = uuid4().hex
+        # Reject oversized bodies before JSON/base64 parsing, including chunked uploads.
+        if request.method in ('POST', 'PUT', 'PATCH'):
+            body = bytearray()
+            async for chunk in request.stream():
+                body.extend(chunk)
+                if len(body) > 3_000_000:
+                    return JSONResponse({'error': {'code':'too_large','message':'Request is too large. Each photo must be 2 MB or smaller.',
+                        'request_id':request.state.request_id}},status_code=413)
+            request._body = bytes(body)
         if request.method in ('POST', 'PUT', 'PATCH', 'DELETE'):
             # HTML cross-origin forms cannot set this header. No CORS middleware permits preflight.
             if request.headers.get('x-requested-with') != 'DealerDesk' or request.headers.get('sec-fetch-site') == 'cross-site':
@@ -315,6 +335,64 @@ def create_app(database_url=None):
     @app.get('/api/audit')
     def audit_history(offset: int = Query(0, ge=0), limit: int = Query(50, ge=1, le=100), user=Depends(manager), db=Depends(database)):
         return page(db, AuditEvent, [], offset, limit)
+
+    @app.get('/api/vehicles/{vehicle_id}/photos', response_model=list[s.PhotoOutput])
+    def photos(vehicle_id: int, user=Depends(signed_in), db=Depends(database)):
+        find(db, Vehicle, vehicle_id)
+        return [photo_dict(photo) for photo in db.scalars(select(VehiclePhoto).where(
+            VehiclePhoto.vehicle_id == vehicle_id).order_by(VehiclePhoto.id))]
+
+    @app.get('/api/photos/{photo_id}/image')
+    def image(photo_id: int, thumbnail: bool = False, user=Depends(signed_in), db=Depends(database)):
+        photo = find(db, VehiclePhoto, photo_id)
+        return Response(photo.thumbnail if thumbnail else photo.content, media_type='image/jpeg',
+                        headers={'Content-Disposition':'inline; filename="vehicle-photo.jpg"'})
+
+    @app.post('/api/vehicles/{vehicle_id}/photos', status_code=201, response_model=s.PhotoSaved)
+    def add_photo(vehicle_id: int, body: s.PhotoCreate, user=Depends(can_write), db=Depends(database)):
+        vehicle = find(db, Vehicle, vehicle_id)
+        if vehicle.archived:
+            raise HTTPException(409, 'Restore the vehicle before adding photos.')
+        try:
+            content, thumbnail, width, height = prepare_photo(body.data_url)
+        except ValueError as error:
+            raise HTTPException(422, str(error))
+        # Lock the vehicle with the same revision boundary used by normal edits.
+        result = db.execute(update(Vehicle).where(Vehicle.id == vehicle_id, Vehicle.revision == body.revision)
+            .values(revision=body.revision+1, updated_at=now()).execution_options(synchronize_session=False))
+        if result.rowcount != 1:
+            raise HTTPException(409, 'This vehicle changed. Refresh before uploading again.')
+        count = db.scalar(select(func.count()).select_from(VehiclePhoto).where(VehiclePhoto.vehicle_id == vehicle_id))
+        if count >= MAX_PHOTOS:
+            raise HTTPException(409, 'This vehicle already has 12 photos.')
+        photo = VehiclePhoto(vehicle_id=vehicle_id, caption=body.caption, credit=body.credit,
+            source_url=body.source_url, license=body.license, license_url=body.license_url,
+            illustrative=body.illustrative, is_cover=count == 0, width=width, height=height,
+            content=content, thumbnail=thumbnail)
+        db.add(photo)
+        db.flush()
+        db.expire(vehicle)
+        audit(db,'vehicle',vehicle,'photo_added',user)
+        db.commit()
+        return {'photo':photo_dict(photo),'vehicle_revision':body.revision+1}
+
+    @app.patch('/api/vehicles/{vehicle_id}/photos/{photo_id}/cover', response_model=s.PhotoSaved)
+    def choose_cover(vehicle_id: int, photo_id: int, body: s.CoverSelection, user=Depends(can_write), db=Depends(database)):
+        find(db, Vehicle, vehicle_id)
+        photo = find(db, VehiclePhoto, photo_id)
+        if photo.vehicle_id != vehicle_id:
+            raise HTTPException(404, 'Photo not found for this vehicle.')
+        result = db.execute(update(Vehicle).where(Vehicle.id==vehicle_id, Vehicle.revision==body.revision)
+            .values(revision=body.revision+1,updated_at=now()).execution_options(synchronize_session=False))
+        if result.rowcount != 1:
+            raise HTTPException(409, 'This vehicle changed. Refresh before choosing a cover.')
+        db.execute(update(VehiclePhoto).where(VehiclePhoto.vehicle_id==vehicle_id).values(is_cover=False))
+        photo.is_cover = True
+        db.flush()
+        db.expire_all()
+        audit(db,'vehicle',find(db,Vehicle,vehicle_id),'photo_cover_changed',user)
+        db.commit()
+        return {'photo':photo_dict(find(db,VehiclePhoto,photo_id)),'vehicle_revision':body.revision+1}
 
     built_frontend = ROOT / 'frontend' / 'dist'
     if built_frontend.exists():

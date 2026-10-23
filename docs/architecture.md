@@ -14,4 +14,6 @@ Viewer reads; sales reads and changes stock, enquiries and tasks; manager also m
 Each edit uses an atomic SQL update matching ID and revision. A successful change and its audit event commit together. Conflicts return 409. Audit records contain actor ID and action metadata, not customer messages.
 
 ## Current boundary
+Photo extension decision: store bounded optimized images and thumbnails as database binary fields for portability between SQLite and PostgreSQL and to avoid Vercel filesystem persistence assumptions. Image processing uses Pillow with restricted decoders and explicit limits. At this educational scale (12 images/car, 200 KB optimized output cap each), this is a focused choice; larger businesses should migrate the media repository to object storage. The public demo still needs its overall quota/abuse review before publication.
+
 This milestone proves the persistent journey, authentication and conflict boundary. Public abuse controls, full recovery, cloud setup, comprehensive observability and browser evidence remain separate tasks. Do not deploy this intermediate milestone as a real dealership system.

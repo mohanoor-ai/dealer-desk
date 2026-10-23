@@ -1,0 +1,123 @@
+[
+  {
+    "make": "Ford",
+    "file": "ford-reference.jpg",
+    "credit": "Vauxford",
+    "source_url": "https://commons.wikimedia.org/wiki/File:2020_Ford_Puma_Titanium_EcoBoost_Hybrid_1.0_Front.jpg",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "caption": "Ford Puma (crossover) reference photo; trim, engine and year may differ",
+    "original_filename": "2020_Ford_Puma_Titanium_EcoBoost_Hybrid_1.0_Front.jpg",
+    "illustrative": true
+  },
+  {
+    "make": "Jaecoo",
+    "file": "jaecoo-reference.jpg",
+    "credit": "© M 93",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Jaecoo_J7_1.6T_4WD_%E2%80%93_f_21032025.jpg",
+    "license": "CC BY-SA 3.0 de",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0/de/deed.en",
+    "caption": "Jaecoo J7 reference photo; trim, engine and year may differ",
+    "original_filename": "Jaecoo_J7_1.6T_4WD_–_f_21032025.jpg",
+    "illustrative": true
+  },
+  {
+    "make": "Kia",
+    "file": "kia-reference.jpg",
+    "credit": "LuvsMG481",
+    "source_url": "https://commons.wikimedia.org/wiki/File:2025_Kia_Sportage_S_front_only.jpg",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "caption": "Kia Sportage reference photo; trim, engine and year may differ",
+    "original_filename": "2025_Kia_Sportage_S_front_only.jpg",
+    "illustrative": true
+  },
+  {
+    "make": "Nissan",
+    "file": "nissan-reference.jpg",
+    "credit": "Alexander-93",
+    "source_url": "https://commons.wikimedia.org/wiki/File:2024_Nissan_Qashqai_e-Power_IMG_2187.jpg",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "caption": "Nissan Qashqai reference photo; trim, engine and year may differ",
+    "original_filename": "2024_Nissan_Qashqai_e-Power_IMG_2187.jpg",
+    "illustrative": true
+  },
+  {
+    "make": "Vauxhall",
+    "file": "vauxhall-reference.jpg",
+    "credit": "Alexander Migl",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Opel_Corsa-e_at_IAA_2019_IMG_0738.jpg",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "caption": "Opel Corsa-e reference; UK badge, engine and year may differ",
+    "original_filename": "Opel_Corsa-e_at_IAA_2019_IMG_0738.jpg",
+    "illustrative": true
+  },
+  {
+    "make": "Volkswagen",
+    "file": "volkswagen-reference.jpg",
+    "credit": "Vauxford",
+    "source_url": "https://commons.wikimedia.org/wiki/File:2020_Volkswagen_Golf_Style_1.5_Front.jpg",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "caption": "Volkswagen Golf Mk8 reference photo; trim, engine and year may differ",
+    "original_filename": "2020_Volkswagen_Golf_Style_1.5_Front.jpg",
+    "illustrative": true
+  },
+  {
+    "make": "MG",
+    "file": "mg-reference.jpg",
+    "credit": "© M 93",
+    "source_url": "https://commons.wikimedia.org/wiki/File:MG_HS_Hybrid%2B_Luxury_(II)_%E2%80%93_f_12032026.jpg",
+    "license": "CC BY-SA 3.0 de",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0/de/deed.en",
+    "caption": "MG HS reference photo; trim, engine and year may differ",
+    "original_filename": "MG_HS_Hybrid+_Luxury_(II)_–_f_12032026.jpg",
+    "illustrative": true
+  },
+  {
+    "make": "MINI",
+    "file": "mini-reference.jpg",
+    "credit": "Alexander-93",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Mini_Hatch_(J01)_Ditzingen_Mobil_IMG_9772_(cropped).jpg",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "caption": "Mini Hatch reference photo; trim, engine and year may differ",
+    "original_filename": "Mini_Hatch_(J01)_Ditzingen_Mobil_IMG_9772_(cropped).jpg",
+    "illustrative": true
+  },
+  {
+    "make": "Tesla",
+    "file": "tesla-reference.jpg",
+    "credit": "Alexander-93",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Tesla_Model_3_(2023)_Autofr%C3%BChling_Ulm_IMG_9282.jpg",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "caption": "Tesla Model 3 reference photo; trim, engine and year may differ",
+    "original_filename": "Tesla_Model_3_(2023)_Autofrühling_Ulm_IMG_9282.jpg",
+    "illustrative": true
+  },
+  {
+    "make": "Volvo",
+    "file": "volvo-reference.jpg",
+    "credit": "Elise240SX",
+    "source_url": "https://commons.wikimedia.org/wiki/File:2019_Volvo_XC40_T5_Momentum_in_Bright_Silver_Metallic,_front_left,_2025-09-22.jpg",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "caption": "Volvo XC40 reference photo; trim, engine and year may differ",
+    "original_filename": "2019_Volvo_XC40_T5_Momentum_in_Bright_Silver_Metallic,_front_left,_2025-09-22.jpg",
+    "illustrative": true
+  },
+  {
+    "make": "Ford",
+    "file": "ford-rear-reference.jpg",
+    "credit": "Vauxford",
+    "source_url": "https://commons.wikimedia.org/wiki/File:2020_Ford_Puma_Titanium_EcoBoost_Hybrid_1.0_Rear.jpg",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "caption": "Ford Puma rear reference photo; trim, engine and year may differ",
+    "original_filename": "2020 Ford Puma Titanium EcoBoost Hybrid 1.0 Rear.jpg",
+    "illustrative": true
+  }
+]

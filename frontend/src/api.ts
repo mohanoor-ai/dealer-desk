@@ -31,3 +31,18 @@ export function poundsToPence(value:string):number {
   if(!Number.isSafeInteger(pence)||pence>100000000)throw Error('Price is too large.');return pence;
 }
 export function money(value:number){return new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP'}).format(value/100);}
+
+export function photoUrl(id:number, thumbnail=false) {
+  return `/api/photos/${id}/image${thumbnail?'?thumbnail=true':''}`;
+}
+
+export function readPhoto(file:File):Promise<string> {
+  if(file.size>2*1024*1024)return Promise.reject(new Error(`${file.name}: choose an image of 2 MB or smaller.`));
+  if(!['image/jpeg','image/png','image/webp'].includes(file.type))return Promise.reject(new Error(`${file.name}: use JPEG, PNG or WebP.`));
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>resolve(String(reader.result));
+    reader.onerror=()=>reject(new Error(`Could not read ${file.name}.`));
+    reader.readAsDataURL(file);
+  });
+}

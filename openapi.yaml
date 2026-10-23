@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: Dealer Desk API
-  version: 0.3.0
+  version: 0.4.0
 paths:
   /health:
     get:
@@ -1334,8 +1334,307 @@ paths:
                 $ref: '#/components/schemas/ApiError'
       security:
       - sessionCookie: []
+  /api/vehicles/{vehicle_id}/photos:
+    get:
+      summary: Photos
+      operationId: photos_api_vehicles__vehicle_id__photos_get
+      parameters:
+      - name: vehicle_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Vehicle Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PhotoOutput'
+                title: Response Photos Api Vehicles  Vehicle Id  Photos Get
+        '422':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '401':
+          description: Sign-in required or invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: Permission or same-origin check failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Record not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '409':
+          description: Stale revision or workflow conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '503':
+          description: Storage unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      security:
+      - sessionCookie: []
+    post:
+      summary: Add Photo
+      operationId: add_photo_api_vehicles__vehicle_id__photos_post
+      parameters:
+      - name: vehicle_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Vehicle Id
+      - name: X-Requested-With
+        in: header
+        required: true
+        schema:
+          type: string
+          const: DealerDesk
+        description: Same-origin mutation guard; cross-site requests are rejected.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PhotoCreate'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PhotoSaved'
+        '422':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '401':
+          description: Sign-in required or invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: Permission or same-origin check failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Record not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '409':
+          description: Stale revision or workflow conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '503':
+          description: Storage unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      security:
+      - sessionCookie: []
+  /api/photos/{photo_id}/image:
+    get:
+      summary: Image
+      operationId: image_api_photos__photo_id__image_get
+      parameters:
+      - name: photo_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Photo Id
+      - name: thumbnail
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+          title: Thumbnail
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '401':
+          description: Sign-in required or invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: Permission or same-origin check failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Record not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '409':
+          description: Stale revision or workflow conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '503':
+          description: Storage unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      security:
+      - sessionCookie: []
+  /api/vehicles/{vehicle_id}/photos/{photo_id}/cover:
+    patch:
+      summary: Choose Cover
+      operationId: choose_cover_api_vehicles__vehicle_id__photos__photo_id__cover_patch
+      parameters:
+      - name: vehicle_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Vehicle Id
+      - name: photo_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Photo Id
+      - name: X-Requested-With
+        in: header
+        required: true
+        schema:
+          type: string
+          const: DealerDesk
+        description: Same-origin mutation guard; cross-site requests are rejected.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CoverSelection'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PhotoSaved'
+        '422':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '401':
+          description: Sign-in required or invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: Permission or same-origin check failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Record not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '409':
+          description: Stale revision or workflow conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '503':
+          description: Storage unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      security:
+      - sessionCookie: []
 components:
   schemas:
+    CoverSelection:
+      properties:
+        revision:
+          type: integer
+          minimum: 1.0
+          title: Revision
+      additionalProperties: false
+      type: object
+      required:
+      - revision
+      title: CoverSelection
     Dashboard:
       properties:
         available:
@@ -1556,6 +1855,124 @@ components:
       - offset
       - limit
       title: Page[VehicleOutput]
+    PhotoCreate:
+      properties:
+        revision:
+          type: integer
+          minimum: 1.0
+          title: Revision
+        data_url:
+          type: string
+          maxLength: 2800000
+          minLength: 1
+          title: Data Url
+        caption:
+          type: string
+          maxLength: 160
+          minLength: 1
+          title: Caption
+        rights_confirmed:
+          type: boolean
+          const: true
+          title: Rights Confirmed
+        illustrative:
+          type: boolean
+          title: Illustrative
+          default: false
+        credit:
+          type: string
+          maxLength: 200
+          title: Credit
+          default: ''
+        source_url:
+          type: string
+          maxLength: 1000
+          title: Source Url
+          default: ''
+        license:
+          type: string
+          maxLength: 100
+          title: License
+          default: ''
+        license_url:
+          type: string
+          maxLength: 1000
+          title: License Url
+          default: ''
+      additionalProperties: false
+      type: object
+      required:
+      - revision
+      - data_url
+      - caption
+      - rights_confirmed
+      title: PhotoCreate
+    PhotoOutput:
+      properties:
+        id:
+          type: integer
+          title: Id
+        vehicle_id:
+          type: integer
+          title: Vehicle Id
+        caption:
+          type: string
+          title: Caption
+        credit:
+          type: string
+          title: Credit
+        source_url:
+          type: string
+          title: Source Url
+        license:
+          type: string
+          title: License
+        license_url:
+          type: string
+          title: License Url
+        illustrative:
+          type: boolean
+          title: Illustrative
+        is_cover:
+          type: boolean
+          title: Is Cover
+        width:
+          type: integer
+          title: Width
+        height:
+          type: integer
+          title: Height
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+      type: object
+      required:
+      - id
+      - vehicle_id
+      - caption
+      - credit
+      - source_url
+      - license
+      - license_url
+      - illustrative
+      - is_cover
+      - width
+      - height
+      - created_at
+      title: PhotoOutput
+    PhotoSaved:
+      properties:
+        photo:
+          $ref: '#/components/schemas/PhotoOutput'
+        vehicle_revision:
+          type: integer
+          title: Vehicle Revision
+      type: object
+      required:
+      - photo
+      - vehicle_revision
+      title: PhotoSaved
     TaskCreate:
       properties:
         enquiry_id:
@@ -1850,6 +2267,19 @@ components:
         archived:
           type: boolean
           title: Archived
+        cover_photo_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Cover Photo Id
+        photo_count:
+          type: integer
+          title: Photo Count
+          default: 0
+        cover_photo:
+          anyOf:
+          - $ref: '#/components/schemas/PhotoOutput'
+          - type: 'null'
       additionalProperties: false
       type: object
       required:

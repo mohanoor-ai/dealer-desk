@@ -1,6 +1,6 @@
 from datetime import date, datetime
 from typing import Annotated, Literal, Generic, TypeVar
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator, field_validator
 
 Name = Annotated[str, Field(min_length=1, max_length=60)]
 Revision = Annotated[int, Field(strict=True, ge=1)]
@@ -59,6 +59,20 @@ class TaskEdit(Edit):
     note: Annotated[str, Field(max_length=300)] | None = None
     completed: Annotated[bool, Field(strict=True)] | None = None
 
+class PhotoOutput(BaseModel):
+    id: int
+    vehicle_id: int
+    caption: str
+    credit: str
+    source_url: str
+    license: str
+    license_url: str
+    illustrative: bool
+    is_cover: bool
+    width: int
+    height: int
+    created_at: datetime
+
 class RecordOutput(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int
@@ -69,6 +83,9 @@ class RecordOutput(BaseModel):
 class VehicleOutput(RecordOutput, VehicleCreate):
     status: Status
     archived: bool
+    cover_photo_id: int | None = None
+    photo_count: int = 0
+    cover_photo: PhotoOutput | None = None
 
 class EnquiryOutput(RecordOutput, EnquiryCreate):
     status: Literal['new', 'contacted', 'closed']
@@ -96,3 +113,31 @@ class Dashboard(BaseModel):
     open_enquiries: int
     open_tasks: int
     overdue_tasks: int
+
+class PhotoCreate(Input):
+    revision: Revision
+    data_url: str = Field(min_length=1, max_length=2800000)
+    caption: str = Field(min_length=1, max_length=160)
+    rights_confirmed: Literal[True]
+    illustrative: bool = False
+    credit: str = Field(default='', max_length=200)
+    source_url: str = Field(default='', max_length=1000)
+    license: str = Field(default='', max_length=100)
+    license_url: str = Field(default='', max_length=1000)
+
+    @field_validator('source_url', 'license_url')
+    @classmethod
+    def safe_link(cls, value):
+        from urllib.parse import urlsplit
+        if value:
+            parts = urlsplit(value)
+            if parts.scheme != 'https' or not parts.hostname or parts.username or parts.password:
+                raise ValueError('Use a public HTTPS source link.')
+        return value
+
+class CoverSelection(Input):
+    revision: Revision
+
+class PhotoSaved(BaseModel):
+    photo: PhotoOutput
+    vehicle_revision: int

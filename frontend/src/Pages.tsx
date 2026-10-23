@@ -1,0 +1,86 @@
+import {useState} from 'react';
+import type {Snapshot,Vehicle} from './types';
+import {money,photoUrl} from './api';
+import {vehicleName} from './navigation';
+import PhotoGallery,{PhotoCredit} from './PhotoGallery';
+import {EnquiryForm,FollowUpForm} from './WorkForms';
+import type {Change} from './WorkForms';
+
+export function Heading({eyebrow,title,description,children}:{eyebrow:string;title:string;description:string;children?:React.ReactNode}) {
+  return <div className="page-heading"><div><p className="eyebrow">{eyebrow}</p><h1>{title}</h1><p>{description}</p></div>{children}</div>;
+}
+
+export function Metrics({snapshot}:{snapshot:Snapshot}) {
+  const unsold=snapshot.vehicles.filter(vehicle=>vehicle.status!=='sold');
+  const enquiries=snapshot.enquiries.filter(enquiry=>enquiry.status!=='closed');
+  const tasks=snapshot.tasks.filter(task=>!task.completed&&enquiries.some(enquiry=>enquiry.id===task.enquiry_id));
+  return <section className="metrics" aria-label="Business overview">
+    <article><span className="metric-icon">◇</span><small>Active stock</small><strong>{snapshot.vehicles.length}</strong><span>vehicles in your inventory</span></article>
+    <article><span className="metric-icon">£</span><small>Unsold stock value</small><strong>{money(unsold.reduce((sum,vehicle)=>sum+vehicle.price_pence,0))}</strong><span>available and reserved</span></article>
+    <article><span className="metric-icon">↗</span><small>Open enquiries</small><strong>{enquiries.length}</strong><span>conversations to progress</span></article>
+    <article><span className="metric-icon">◷</span><small>Open follow-ups</small><strong>{tasks.length}</strong><span>next actions to complete</span></article>
+  </section>;
+}
+
+function VehicleImage({vehicle}:{vehicle:Vehicle}) {
+  return vehicle.cover_photo_id?<img className="card-image" src={photoUrl(vehicle.cover_photo_id,true)} alt={vehicle.cover_photo?.caption||vehicleName(vehicle.make,vehicle.model)} loading="lazy"/>:
+    <div className="card-image no-photo"><span aria-hidden="true">▧</span><span>No photos yet</span></div>;
+}
+
+export function StockPage({snapshot,loading,canWrite,onAdd}:{snapshot:Snapshot;loading:boolean;canWrite:boolean;onAdd:()=>void}) {
+  const [query,setQuery]=useState(''),[status,setStatus]=useState('all'),[make,setMake]=useState('all'),[sort,setSort]=useState('recent');
+  const makes=[...new Set(snapshot.vehicles.map(vehicle=>vehicle.make))].sort();
+  const visible=snapshot.vehicles.filter(vehicle=>vehicleName(vehicle.make,vehicle.model).toLowerCase().includes(query.toLowerCase())&&
+    (status==='all'||vehicle.status===status)&&(make==='all'||vehicle.make===make));
+  if(sort==='price-up')visible.sort((a,b)=>a.price_pence-b.price_pence);
+  if(sort==='price-down')visible.sort((a,b)=>b.price_pence-a.price_pence);
+  if(sort==='name')visible.sort((a,b)=>vehicleName(a.make,a.model).localeCompare(vehicleName(b.make,b.model)));
+  return <>
+    <Heading eyebrow="YOUR INVENTORY" title="Find the next right vehicle." description="A clear, visual view of your stock. Open a vehicle to see every detail.">{canWrite&&<button onClick={onAdd}>＋ Add vehicle</button>}</Heading>
+    <section className="stock-toolbar" aria-label="Stock filters">
+      <label className="search-label">Search stock<input value={query} onChange={event=>setQuery(event.target.value)} placeholder="Search make or model…"/></label>
+      <label>Make<select value={make} onChange={event=>setMake(event.target.value)}><option value="all">All makes</option>{makes.map(make=><option key={make}>{make}</option>)}</select></label>
+      <label>Stock status<select value={status} onChange={event=>setStatus(event.target.value)}><option value="all">All statuses</option>{['available','reserved','sold'].map(state=><option key={state}>{state}</option>)}</select></label>
+      <label>Sort by<select value={sort} onChange={event=>setSort(event.target.value)}><option value="recent">Recently added</option><option value="price-up">Price: low to high</option><option value="price-down">Price: high to low</option><option value="name">Make and model</option></select></label>
+    </section>
+    <div className="results-line"><p><strong>{visible.length}</strong> {visible.length===1?'vehicle':'vehicles'}{query||make!=='all'||status!=='all'?' matching your filters':' in stock'}</p><span>Sample records are clearly labelled.</span></div>
+    {loading&&!snapshot.vehicles.length?<div role="status" className="empty">Loading your stock…</div>:!visible.length?<div className="empty"><h2>{snapshot.vehicles.length?'No matching vehicles':'Your stock starts here'}</h2><p>{snapshot.vehicles.length?'Try another make, model or status.':'Add your first vehicle to start managing stock.'}</p>{snapshot.vehicles.length>0&&<button className="secondary" onClick={()=>{setQuery('');setMake('all');setStatus('all');}}>Clear filters</button>}</div>:
+      <div className="vehicle-grid">{visible.map(vehicle=><article className="vehicle-card" key={vehicle.id}>
+        <a className="vehicle-photo-link" href={`#/vehicles/${vehicle.id}`} aria-label={`View ${vehicleName(vehicle.make,vehicle.model)}`}><VehicleImage vehicle={vehicle}/><span className={`badge ${vehicle.status}`}>{vehicle.status}</span><span className="photo-count">▧ {vehicle.photo_count||0}</span>{vehicle.cover_photo?.illustrative&&<span className="card-illustration">Stock illustration</span>}</a>
+        <div className="vehicle-card-body"><div className="vehicle-reference"><span>{vehicle.year}</span><span>STOCK #{String(vehicle.id).padStart(3,'0')}</span></div><h2><a href={`#/vehicles/${vehicle.id}`}>{vehicleName(vehicle.make,vehicle.model)}</a></h2><div className="card-price"><strong>{money(vehicle.price_pence)}</strong>{vehicle.model.includes('(sample)')&&<span>Sample stock · reference price</span>}</div><a className="view-link" href={`#/vehicles/${vehicle.id}`}>View vehicle <span aria-hidden="true">↗</span></a>{vehicle.cover_photo&&<PhotoCredit photo={vehicle.cover_photo}/>}</div>
+      </article>)}</div>}
+  </>;
+}
+
+export function OverviewPage({snapshot,onAdd,canWrite}:{snapshot:Snapshot;onAdd:()=>void;canWrite:boolean}) {
+  const open=snapshot.tasks.filter(task=>!task.completed&&snapshot.enquiries.some(enquiry=>enquiry.id===task.enquiry_id&&enquiry.status!=='closed'));
+  return <><Heading eyebrow="WORKSPACE / OVERVIEW" title="A clear view of today." description="Keep stock moving and every conversation on track.">{canWrite&&<button onClick={onAdd}>＋ Add vehicle</button>}</Heading><Metrics snapshot={snapshot}/>
+    <div className="overview-grid"><section className="panel"><div className="section-heading"><h2>Recently added stock</h2><a href="#/stock">View all stock →</a></div>{snapshot.vehicles.slice(0,4).map(vehicle=><a className="recent-vehicle" key={vehicle.id} href={`#/vehicles/${vehicle.id}`}><VehicleImage vehicle={vehicle}/><span><strong>{vehicleName(vehicle.make,vehicle.model)}</strong><small>{vehicle.year} · {vehicle.status}</small></span><strong>{money(vehicle.price_pence)}</strong></a>)}{!snapshot.vehicles.length&&<div className="empty">No vehicles yet.</div>}</section>
+    <section className="panel"><div className="section-heading"><h2>Next actions</h2><a href="#/follow-ups">View follow-ups →</a></div>{open.slice(0,4).map(task=><div key={task.id} className="queue-item"><span className="badge reserved">{task.due_date}</span><p><strong>{task.note||'Customer follow-up'}</strong></p><small>Enquiry #{task.enquiry_id}</small></div>)}{!open.length&&<div className="empty"><h3>You're up to date</h3><p>No open follow-ups. New actions will appear here.</p></div>}<div className="quick-links"><a href="#/enquiries">Manage enquiries ↗</a><a href="#/stock">Browse vehicle stock ↗</a></div></section></div></>;
+}
+
+export function VehiclePage({vehicle,snapshot,canWrite,saving,change,refresh,onEdit,onEnquire}:{vehicle:Vehicle;snapshot:Snapshot;canWrite:boolean;saving:boolean;change:Change;refresh:()=>Promise<void>;onEdit:()=>void;onEnquire:()=>void}) {
+  const enquiries=snapshot.enquiries.filter(enquiry=>enquiry.vehicle_id===vehicle.id);
+  const sample=vehicle.model.includes('(sample)');
+  return <><div className="breadcrumbs"><a href="#/stock">← Back to stock</a><span>/</span><span>Stock #{String(vehicle.id).padStart(3,'0')}</span></div>
+    <div className="detail-heading"><div><div className="detail-badges"><span className={`badge ${vehicle.status}`}>{vehicle.status}</span>{sample&&<span className="badge sample">Sample stock</span>}</div><h1>{vehicleName(vehicle.make,vehicle.model)}</h1><p>{vehicle.year} · Stock #{String(vehicle.id).padStart(3,'0')}</p></div>{canWrite&&<button className="secondary" onClick={onEdit}>Edit vehicle</button>}</div>
+    <div className="vehicle-detail-grid"><PhotoGallery key={vehicle.id} vehicle={vehicle} canWrite={canWrite} refresh={refresh}/>
+      <aside><section className="panel price-panel"><p className="eyebrow">{sample?'REFERENCE STARTING PRICE':'ASKING PRICE'}</p><strong className="detail-price">{money(vehicle.price_pence)}</strong><p>{sample?'Illustrative stock record. Confirm the exact specification and price before any real transaction.':'Saved stock price. Review details before sharing with a customer.'}</p>{canWrite?<button onClick={onEnquire}>＋ Record enquiry</button>:<span className="badge">Read-only access</span>}<a className="secondary button-link" href="#/follow-ups">View follow-ups</a><div className="spec-list"><div><span>Make</span><strong>{vehicle.make}</strong></div><div><span>{sample?'Illustrative year':'Year'}</span><strong>{vehicle.year}</strong></div><div><span>Status</span><strong>{vehicle.status}</strong></div><div><span>Photos</span><strong>{vehicle.photo_count||0}</strong></div></div>{canWrite&&<label>Update stock status<select value={vehicle.status} disabled={saving} onChange={event=>change(`/api/vehicles/${vehicle.id}`,'PATCH',{status:event.target.value,revision:vehicle.revision})}>{['available','reserved','sold'].map(status=><option key={status}>{status}</option>)}</select></label>}</section>
+        <section className="detail-help"><strong>A useful photo set</strong><p>Start with a clear exterior shot, then add the cabin, dashboard, boot and any important details.</p></section></aside>
+    </div>
+    <div className="overview-grid"><section className="panel"><h2>Vehicle notes</h2>{vehicle.approved_facts.length?<ul className="facts-list">{vehicle.approved_facts.map((fact,index)=><li key={index}>{fact}</li>)}</ul>:<p className="muted">No additional facts have been recorded.</p>}<p className="muted">Last updated {new Date(vehicle.updated_at).toLocaleString('en-GB')} · revision {vehicle.revision}</p></section>
+    <section className="panel"><div className="section-heading"><h2>Linked enquiries <span className="count-pill">{enquiries.length}</span></h2><a href="#/enquiries">View queue →</a></div>{enquiries.map(enquiry=><div className="queue-item" key={enquiry.id}><span className={`badge ${enquiry.status}`}>{enquiry.status}</span><p><strong>{enquiry.customer}</strong></p><p>{enquiry.message}</p></div>)}{!enquiries.length&&<div className="empty"><h3>No enquiries for this vehicle</h3><p>The next conversation starts here.</p></div>}</section></div>
+  </>;
+}
+
+export function EnquiriesPage({snapshot,canWrite,saving,change,preferredVehicle}:{snapshot:Snapshot;canWrite:boolean;saving:boolean;change:Change;preferredVehicle:number}) {
+  const [filter,setFilter]=useState('all');
+  const visible=snapshot.enquiries.filter(enquiry=>filter==='all'||enquiry.status===filter);
+  return <><Heading eyebrow="CONVERSATIONS" title="Every enquiry, a clear next step." description="Keep the vehicle, customer and conversation connected."/><div className="work-grid"><section className="panel"><div className="section-heading"><h2>Enquiry queue</h2><label className="inline-label">Filter enquiries<select value={filter} onChange={event=>setFilter(event.target.value)}><option value="all">All enquiries</option>{['new','contacted','closed'].map(status=><option key={status}>{status}</option>)}</select></label></div>{visible.map(enquiry=>{const vehicle=snapshot.vehicles.find(vehicle=>vehicle.id===enquiry.vehicle_id);return <article className="enquiry-card" key={enquiry.id}><div className="section-heading"><h3>{enquiry.customer}</h3><span className={`badge ${enquiry.status}`}>{enquiry.status}</span></div><a href={`#/vehicles/${enquiry.vehicle_id}`}>{vehicle?vehicleName(vehicle.make,vehicle.model):`Stock #${enquiry.vehicle_id}`}</a><p>{enquiry.message}</p><label>Enquiry status<select aria-label={`Status for enquiry ${enquiry.id}`} value={enquiry.status} disabled={saving||!canWrite} onChange={event=>change(`/api/enquiries/${enquiry.id}`,'PATCH',{status:event.target.value,revision:enquiry.revision})}>{['new','contacted','closed'].map(status=><option key={status}>{status}</option>)}</select></label></article>;})}{!visible.length&&<div className="empty"><h3>No enquiries here yet</h3><p>Record a conversation and link it to a vehicle.</p></div>}</section>{canWrite&&<section className="panel sticky-form"><p className="eyebrow">NEW CONVERSATION</p><h2>Record enquiry</h2><EnquiryForm snapshot={snapshot} change={change} saving={saving} preferredVehicle={preferredVehicle}/></section>}</div></>;
+}
+
+export function FollowUpsPage({snapshot,canWrite,saving,change}:{snapshot:Snapshot;canWrite:boolean;saving:boolean;change:Change}) {
+  const [filter,setFilter]=useState('open');
+  const visible=snapshot.tasks.filter(task=>filter==='all'||(filter==='open'?!task.completed:task.completed)).sort((a,b)=>a.due_date.localeCompare(b.due_date));
+  return <><Heading eyebrow="NEXT ACTIONS" title="Stay one step ahead." description="A simple list of the promises you need to keep."/><div className="work-grid"><section className="panel"><div className="section-heading"><h2>Follow-up tasks</h2><label className="inline-label">Filter tasks<select value={filter} onChange={event=>setFilter(event.target.value)}><option value="open">Open tasks</option><option value="completed">Completed tasks</option><option value="all">All tasks</option></select></label></div>{visible.map(task=>{const enquiry=snapshot.enquiries.find(enquiry=>enquiry.id===task.enquiry_id);return <article className="task-card" key={task.id}><div className="task-date"><strong>{new Date(task.due_date+'T12:00:00').getDate()}</strong><span>{new Date(task.due_date+'T12:00:00').toLocaleDateString('en-GB',{month:'short'})}</span></div><div><span className={`badge ${task.completed?'completed':'reserved'}`}>{task.completed?'Completed':'Open'}{enquiry?.status==='closed'?' · enquiry closed':''}</span><h3>{task.note||'Customer follow-up'}</h3><p>{enquiry?.customer||`Enquiry #${task.enquiry_id}`} · due {task.due_date}</p>{enquiry&&<a href={`#/vehicles/${enquiry.vehicle_id}`}>View linked vehicle →</a>}</div>{canWrite&&<button className="secondary" disabled={saving} onClick={()=>change(`/api/tasks/${task.id}`,'PATCH',{completed:!task.completed,revision:task.revision})}>{task.completed?'Reopen task':'Complete task'}</button>}</article>;})}{!visible.length&&<div className="empty"><h3>{filter==='open'?'No open follow-ups':'No matching follow-ups'}</h3><p>Schedule a next action from an open enquiry.</p></div>}</section>{canWrite&&<section className="panel sticky-form"><p className="eyebrow">MAKE A PLAN</p><h2>Schedule follow-up</h2><FollowUpForm snapshot={snapshot} change={change} saving={saving}/></section>}</div></>;
+}
