@@ -37,7 +37,7 @@ Local development defaults to SQLite at data/dealer-v2.sqlite3. Set DATABASE_URL
 - Atomic revision checks reject conflicting edits; every material mutation records actor, record ID and revision in the audit table.
 - Validated API inputs, centralized browser client and helpful empty/error states.
 
-The API also supports archive/restore and manager audit queries; dedicated interface controls for these remain to be completed. Import/export, backup/restore, cloud deployment, hosted CI/CD, full operations evidence and optional AI are not completed in this milestone.
+The API also supports archive/restore and manager audit queries; dedicated interface controls for these remain to be completed. Import/export, backup/restore, a public customer showroom, CI-gated delivery, full operations evidence and optional AI are not completed in this milestone. A protected Vercel development deployment is now verified below.
 
 ## Tests
 `uv run python -m pytest tests` runs authentication and real SQLite integration tests. From frontend: `npm test` and `npm run build`. Current evidence and limitations are in docs/verification.md. These tests do not substitute for a PostgreSQL/browser/container check.
@@ -49,8 +49,8 @@ localhost / 127.0.0.1 means this computer. The Compose port binding deliberately
 
 ## Deployment direction
 
-The prepared Vercel build and protected development deployment procedure are documented in [docs/deployment-vercel.md](docs/deployment-vercel.md). The source/history review is in [docs/release-audit.md](docs/release-audit.md). Hosted deployment is not yet verified. Cloudflare R2 photo storage remains planned; current images persist in the database.
-Target: Vercel hosting with external PostgreSQL, subject to the completed free-tier and security review. Set COOKIE_SECURE=true for HTTPS. Vercel Hobby permits personal non-commercial use; a real business deployment needs suitable terms. No public deployment is claimed here.
+The prepared Vercel build and protected development deployment procedure are documented in [docs/deployment-vercel.md](docs/deployment-vercel.md). The source/history review is in [docs/release-audit.md](docs/release-audit.md). Protected development hosting on Vercel with Neon is verified: https://dealer-desk-dev.vercel.app/ (owner Vercel login required, followed by a separately provisioned staff login). Cloudflare R2 photo storage remains planned; current images persist in the database.
+Target: Vercel hosting with external PostgreSQL, subject to the completed free-tier and security review. Set COOKIE_SECURE=true for HTTPS. Vercel Hobby permits personal non-commercial use; a real business deployment needs suitable terms. This deployment is private to authorised Vercel users; no publicly accessible customer showroom is claimed.
 
 ## Learning and course evidence
 Read docs/architecture.md for technology choices, docs/tasks.md for acceptance criteria and docs/verification.md for actual results. The original contract design is retained as docs/prior-api-design.yaml; openapi.yaml describes the current implementation. An in-app LLM is optional and is not required by the inspected current final rubric.
@@ -62,4 +62,4 @@ Acceptance criteria and remaining work: https://github.com/mohanoor-ai/dealer-de
 
 Hosted checks: https://github.com/mohanoor-ai/dealer-desk/actions
 
-The first hosted CI run passed for cd525a9. Application hosting/CD remain pending; see docs/verification.md for exact evidence.
+The first hosted CI run passed for cd525a9. Protected development hosting is verified. CI-gated CD and public release remain pending; see docs/verification.md for exact evidence.
