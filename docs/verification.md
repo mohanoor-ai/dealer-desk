@@ -88,3 +88,6 @@ Redeployment verification: pushing the documentation commit cfead5af2503ded29a0c
 
 ## Owner account setup — 24 October 2026
 The owner reported creating the manager password through the prepared setup process. This is owner-reported account setup, not independent verification of a successful hosted manager login. Do not record any password, password hash, connection string or account database in this repository. Manager sign-in confirmation remains pending; the earlier hosted sales-account journey was independently verified and its temporary identity was disabled afterward.
+
+## Browser demo implementation — 24 October 2026
+Owner has confirmed manager login works (user-reported; no password collected). Frontend: npm test passed 9 tests, including no network writes, customer mutation denial, reset isolation, expiry without fallback, bounded records, disabled photo upload, and rendered customer enquiry/end flow. npm run build passed TypeScript and Vite. jsdom reports its unimplemented scrollTo during navigation; assertions pass. No database schema or backend auth changes. Hosted demo verification and public access approval remain pending; do not describe this as live multi-user integration.

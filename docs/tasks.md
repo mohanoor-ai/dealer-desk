@@ -18,3 +18,6 @@ Public tracker: https://github.com/mohanoor-ai/dealer-desk/issues. Issues 1–4 
 | UX02 | Licensed stock illustrations with visible credits; no illustration represented as the actual stock vehicle | Implemented; see verification.md for passed checks and pending browser/PostgreSQL checks |
 | UX03 | Staff can upload multiple JPEG/PNG/WebP photos, browse a gallery and choose a cover; viewers cannot upload | Implemented; see verification.md for passed checks and pending browser/PostgreSQL checks |
 | UX04 | Photos survive restart on SQLite/PostgreSQL; size/type/dimension limits, EXIF stripping and conflict checks verified | Implemented; see verification.md for passed checks and pending browser/PostgreSQL checks |
+
+## Temporary browser demo — 24 October
+Acceptance: customer and dealer entry links; no registration or network business requests while demo is active; fictional per-tab data only; expire after 30 minutes; refresh/end/reset discard data; customer cannot change stock; bounded records and text; uploads disabled in this first sandbox; staff login unchanged. This is a browser simulation, not a shared live database integration. Public Vercel protection stays enabled.

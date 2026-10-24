@@ -3,12 +3,14 @@ import type {FormEvent} from 'react';
 import type {Photo,Vehicle} from './types';
 import {photoUrl,readPhoto,request} from './api';
 import {vehicleName} from './navigation';
+import {demoActive} from './demo';
 
 export function PhotoCredit({photo}:{photo:Photo}) {
   return <span className="photo-credit">{photo.credit&&<>Photo: {photo.credit} · </>}{photo.source_url&&<><a href={photo.source_url} target="_blank" rel="noreferrer">Source</a> · </>}{photo.license_url?<a href={photo.license_url} target="_blank" rel="noreferrer">{photo.license}</a>:photo.license}{photo.credit&&' · Optimized and resized'}</span>;
 }
 
 export default function PhotoGallery({vehicle,canWrite,refresh}:{vehicle:Vehicle;canWrite:boolean;refresh:()=>Promise<void>}) {
+  canWrite=canWrite&&!demoActive();
   const [photos,setPhotos]=useState<Photo[]>([]);
   const [selected,setSelected]=useState(0);
   const [loading,setLoading]=useState(true);

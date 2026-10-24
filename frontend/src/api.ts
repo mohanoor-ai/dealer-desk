@@ -1,9 +1,11 @@
 import type {Vehicle, Enquiry, Task, Snapshot, Page} from './types';
+import {demoActive,demoRequest} from './demo';
 export class ApiError extends Error {
   constructor(public status:number, message:string) {super(message);}
 }
 // This is the only place that calls fetch. Do not automatically retry writes.
 export async function request<T>(path:string, method='GET', data?:unknown):Promise<T> {
+  if(demoActive())return demoRequest(path,method,data) as T;
   const controller = new AbortController();
   const timeout=setTimeout(()=>controller.abort(),10000);
   try {
