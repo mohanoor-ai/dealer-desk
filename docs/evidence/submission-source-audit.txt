@@ -1,0 +1,2 @@
+Checked 108 source files and 16 reachable commits.
+0 findings. This limited scan does not prove absence of secrets.

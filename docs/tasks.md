@@ -6,7 +6,7 @@ Public tracker: https://github.com/mohanoor-ai/dealer-desk/issues. Issues 1–4 
 |---|---|---|
 | DEP01 | Vercel entrypoint and frontend build; no migrations at import/build; hosted startup rejects SQLite/missing TLS, secure cookies and bounded connections | Local checks and protected Vercel/Neon hosted journey verified; production release remains pending |
 | DEP02 | Tracked-source/history release audit, exclusion rules and deployment runbook; report blockers without claiming publication | Reviewed source published to new repository; private runtime files excluded |
-| J01 | Operator creates individual user; valid login works; invalid login and viewer writes fail; logout revokes session | API and temporary hosted sales login verified; owner reports manager password created, hosted manager login confirmation pending |
+| J01 | Operator creates individual user; valid login works; invalid login and viewer writes fail; logout revokes session | API and temporary hosted sales login verified; owner confirmed manager login works; later Overview capture used the staff session |
 | J02 | Vehicle → enquiry → follow-up persists after app restart; completion updates dashboard | Verified on SQLite and PostgreSQL; browser reload verified |
 | J03 | Stale edit returns 409 and does not overwrite; audit contains actor, ID and revision | Verified, including two simultaneous API edits |
 | J04 | UI uses real API; usable loading/error/empty states; no product screen course jargon | Browser journey and basic responsive check passed; full accessibility review pending |
@@ -35,3 +35,6 @@ Acceptance: plain project description, confirmed public GitHub handle as author,
 
 ## Confirmed author credit
 Acceptance: use the owner-confirmed spelling Mohammed Sheikh-Noor in README, project overview, article index and private drafts; preserve GitHub URLs.
+
+## Submission evidence completion — 25 October
+Acceptance: recheck official current rubric and form; add modular team/process/testing/security and AI-use docs describing actual collaboration without invented handoffs; provide one fail-fast backend/frontend verification command; run checks and retain sanitized real output; reconcile stale status claims; keep protected hosting and private content separate; prepare exact revision and form fields. Operations and release capabilities must remain labelled incomplete unless actually demonstrated.

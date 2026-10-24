@@ -77,7 +77,7 @@ Local development defaults to SQLite at data/dealer-v2.sqlite3. Set DATABASE_URL
 The API also supports archive/restore and manager audit queries; dedicated interface controls for these remain to be completed. Import/export, backup/restore, a public customer showroom, CI-gated delivery, full operations evidence and optional AI are not completed in this milestone. A protected Vercel development deployment is now verified below.
 
 ## Tests
-`uv run python -m pytest tests` runs authentication and real SQLite integration tests. From frontend: `npm test` and `npm run build`. Current evidence and limitations are in docs/verification.md. These tests do not substitute for a PostgreSQL/browser/container check.
+After `uv sync --frozen` and `npm ci --prefix frontend`, run `uv run python -m scripts.verify` for backend tests, frontend tests, the production build and the limited source/history audit. The command stops if any check fails. Individual commands and database/browser/container boundaries are in [testing instructions](docs/testing.md). Actual results and limitations are in [verification](docs/verification.md).
 
 ## Access and privacy
 This personal project is under development. Use sample records until the public-release checks are complete. No fixed user or password ships with the app. Keep .env, database files, backups and exports private. The private learning companion is a sibling deliverable and must not be added to this public source folder.
@@ -91,6 +91,10 @@ Target: Vercel hosting with external PostgreSQL, subject to the completed free-t
 
 ## Engineering documentation and verification
 Read docs/architecture.md for technology choices, docs/tasks.md for acceptance criteria and docs/verification.md for actual results. The original contract design is retained as docs/prior-api-design.yaml; openapi.yaml describes the current implementation. An in-app LLM is optional and is not required by the inspected current final rubric.
+
+The [assessment evidence index](docs/assessment-evidence.md) maps the current implementation to all twelve official criteria, with explicit limitations and reviewer instructions.
+
+Development responsibilities and review boundaries are described in [team](docs/team.md) and [process](docs/process.md). [AI use](docs/ai-use.md) records actual assistance and corrections; [security](docs/security.md) describes tool/data permissions and remaining risks. These documents do not claim independent reviews that did not happen.
 
 Current and planned release/incident diagrams are in [docs/diagrams.md](docs/diagrams.md). Release promotion, collected telemetry and alert-driven repair are labelled planned until implemented and verified. Private learning notes are kept outside this repository.
 

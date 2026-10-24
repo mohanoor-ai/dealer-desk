@@ -31,21 +31,23 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
       - run: python -m pip install uv
       - run: uv sync --frozen
-      - run: uv run python -m scripts.audit_release
-      - run: uv run python -m pytest tests
+      - run: npm ci
+        working-directory: frontend
+      - name: Core verification
+        shell: bash
+        run: |
+          set -o pipefail
+          uv run python -m scripts.verify 2>&1 | tee core-verification.txt
       - name: PostgreSQL integration regression
         run: uv run python -m pytest tests/test_auth.py tests/test_journey.py tests/test_photos.py
         env:
           TEST_DATABASE_URL: postgresql+psycopg://dealer@127.0.0.1:5432/dealer_test
-      - run: npm ci
-        working-directory: frontend
-      - run: npm test
-        working-directory: frontend
-      - run: npm run build
-        working-directory: frontend
       - run: docker build -t dealer-desk:ci .
       - name: Preserve verification output
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: implemented-api
-          path: openapi.yaml
+          path: |
+            openapi.yaml
+            core-verification.txt

@@ -7,3 +7,5 @@ Before a task: record acceptance criteria in docs/tasks.md. Then implement, insp
 Current tests: python -m pytest tests; frontend: npm test and npm run build.
 
 For README images, diagrams and evidence, follow docs/documentation-rules.md. Keep current and planned architecture distinct; never use a simulated demo as proof of live persistence.
+
+Modular context: docs/team.md defines responsibilities; docs/process.md defines change and release boundaries; docs/testing.md defines verification; docs/security.md defines data/tool permissions and known limits; docs/ai-use.md records actual AI assistance. Run the core suite with `uv run python -m scripts.verify` after dependency setup. Do not claim that one assistant's different responsibilities are independent reviewers.

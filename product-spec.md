@@ -66,8 +66,8 @@ Before adding dependencies verify official compatibility and lock versions.
 
 ## Non-goals
 Marketplace publishing, payment processing, HPI/valuation, real customers, multi-tenant SaaS, autonomous production fixes, unrestricted tools, model training or RAG.
-Cloud selection remains open: tutor-aligned AWS deployment or another suitable container host. No paid provisioning until authorised.
+Selected personal development hosting: Vercel and Neon PostgreSQL, protected by Vercel authorization and staff authentication. Photos currently persist in the database; R2 remains planned. No paid provisioning until authorised.
 
 ## Definition of done
 Demonstrated acceptance checks; public deployment evidence; successful hosted CI/CD; source-to-module map; actual reviewed AI-use journal; extension demo; security/operations artifacts; truthful README and exact evaluation commit.
-The 2026 rubric remains draft. Video transcripts are not yet verified. This plan is not a grade guarantee.
+The current official project rubric was rechecked on 25 October 2026: https://github.com/DataTalksClub/ai-dev-tools-zoomcamp/blob/main/project/README.md. It has 12 criteria worth 24 points and requires three peer reviews. Course source review is recorded separately in the private companion; it is not evidence of implementation or learner mastery. This target specification is not a grade guarantee. Actual implemented status is in docs/tasks.md and docs/verification.md.
