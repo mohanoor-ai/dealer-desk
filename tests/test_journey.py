@@ -24,7 +24,7 @@ def test_complete_journey_survives_new_app(signed_client, app):
     assert client.patch(f"/api/tasks/{task['id']}", json={'revision':1,'completed':True}).status_code == 200
     assert client.get('/api/dashboard').json()['open_tasks'] == 0
     # A new engine/app proves data does not live in the old process's Python objects.
-    restarted = create_app(str(app.state.engine.url))
+    restarted = create_app(app.state.engine.url.render_as_string(hide_password=False))
     with TestClient(restarted, headers={'X-Requested-With':'DealerDesk'}) as second:
         sign_in(second)
         assert second.get('/api/vehicles').json()['items'][0]['price_pence'] == 1250050

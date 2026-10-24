@@ -1,0 +1,16 @@
+.git
+.venv
+.pytest_cache
+**/__pycache__
+**/node_modules
+data
+backups
+C%3A
+.env
+.env.*
+*.sqlite*
+*.db
+*.log
+tests
+docs
+sample-assets

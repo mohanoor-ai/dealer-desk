@@ -1,6 +1,6 @@
 # Dealer Desk
 
-A working educational application for one dealership: vehicle stock, enquiries and follow-up tasks in a shared persistent workspace. Each staff member signs in individually. Viewers can read; sales staff can update workflows; managers can inspect the audit history.
+An application for one dealership: vehicle stock, enquiries and follow-up tasks in a shared persistent workspace. Each staff member signs in individually. Viewers can read; sales staff can update workflows; managers can inspect the audit history.
 
 ## Start with Docker
 Install Docker Desktop on Windows (Linux containers) or Docker Engine with Compose on Linux. First setup downloads container images and dependencies and therefore needs internet.
@@ -43,11 +43,13 @@ The API also supports archive/restore and manager audit queries; dedicated inter
 `uv run python -m pytest tests` runs authentication and real SQLite integration tests. From frontend: `npm test` and `npm run build`. Current evidence and limitations are in docs/verification.md. These tests do not substitute for a PostgreSQL/browser/container check.
 
 ## Access and privacy
-This is an educational demonstration. Use fictional records only. No fixed user or password ships with the app. Keep .env, database files, backups and exports private. The private learning companion is a sibling deliverable and must not be added to this public source folder.
+This personal project is under development. Use sample records until the public-release checks are complete. No fixed user or password ships with the app. Keep .env, database files, backups and exports private. The private learning companion is a sibling deliverable and must not be added to this public source folder.
 
 localhost / 127.0.0.1 means this computer. The Compose port binding deliberately limits access to this computer; LAN access needs deliberate binding/firewall changes and HTTPS/authentication review. A public cloud URL is different: anyone can reach the login screen.
 
 ## Deployment direction
+
+The prepared Vercel build and protected development deployment procedure are documented in [docs/deployment-vercel.md](docs/deployment-vercel.md). The source/history review is in [docs/release-audit.md](docs/release-audit.md). Hosted deployment is not yet verified. Cloudflare R2 photo storage remains planned; current images persist in the database.
 Target: Vercel hosting with external PostgreSQL, subject to the completed free-tier and security review. Set COOKIE_SECURE=true for HTTPS. Vercel Hobby permits personal non-commercial use; a real business deployment needs suitable terms. No public deployment is claimed here.
 
 ## Learning and course evidence

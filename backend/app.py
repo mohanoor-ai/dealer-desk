@@ -21,6 +21,7 @@ from backend.database import build_engine, session_factory
 from backend.models import User, LoginSession, Vehicle, Enquiry, Task, AuditEvent, VehiclePhoto, now
 from backend.photos import prepare_photo, MAX_PHOTOS
 from backend.contract import describe_api
+from backend.config import secure_cookies
 
 logger = logging.getLogger('dealer')
 ROOT = Path(__file__).resolve().parents[1]
@@ -204,7 +205,7 @@ def create_app(database_url=None):
             raise HTTPException(401, 'Username or password is incorrect.')
         token = auth.issue_session(db, user)
         response.set_cookie(auth.COOKIE, token, httponly=True, samesite='strict', max_age=8 * 3600,
-                            secure=os.environ.get('COOKIE_SECURE', 'false').lower() == 'true', path='/')
+                            secure=secure_cookies(), path='/')
         return {'id': user.id, 'username': user.username, 'role': user.role}
 
     @app.get('/api/auth/me', response_model=s.UserOutput)

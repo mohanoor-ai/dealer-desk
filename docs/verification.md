@@ -43,3 +43,18 @@ Implemented separate overview, stock, vehicle detail, add-vehicle, enquiry and f
 Resumed after computer shutdown: 19 backend tests passed (one existing Starlette/httpx deprecation warning), 4 frontend tests passed, TypeScript and Vite production build passed. OpenAPI regenerated and locked runtime requirements exported. Backend tests cover image persistence through a new app/engine on SQLite, upload validation, rights confirmation, metadata stripping, quota, conflict handling, cover selection and role boundaries.
 
 The local preview restarted successfully on 127.0.0.1:8097 using the existing private SQLite fixture. Earlier visual inspection showed the ten reference images on the stock cards and the Ford detail page. The browser's URL policy rejected access after restart, so no new interactive upload or responsive verification is claimed. PostgreSQL photo persistence and a new Docker build remain pending; earlier PostgreSQL evidence predates this photo extension. No public deployment is claimed.
+
+## Release preparation — 24 October 2026
+Vercel FastAPI entrypoint, explicit frontend build, Python version, static-response headers and upload exclusions added. Hosted database configuration now requires PostgreSQL/TLS, normalizes the psycopg driver and uses NullPool with a connection timeout. Hosted login cookies are always Secure. No migrations occur at build/import; the runbook describes a serialized separate migration stage. Product-facing educational copy was replaced with neutral dealership wording.
+
+Checks actually run:
+- Full backend suite on SQLite: 26 passed, one existing Starlette/httpx deprecation warning.
+- Real PostgreSQL 16 regression: 18 auth, journey and photo tests passed. Disposable loopback-only dealer_test instance; unique per-test schemas, migrated and cleaned by the fixture. Photo and core journey data survived new application/engine instances.
+- Frontend: 4 tests passed; TypeScript/Vite build passed. Exact python -m scripts.build_vercel command completed successfully, installing locked dependencies and generating public assets.
+- npm audit initially found vulnerable transitive undici 8.11.2 under jsdom. Updated compatibly to the patched release recorded in package-lock.json; npm audit then reported zero known vulnerabilities. This is an npm dependency check, not a full security certification.
+- Source/history scanner checked 90 source files and two reachable commits, with zero remaining findings under its limited rules. The initial Compose finding was the literal ${POSTGRES_PASSWORD} reference, reviewed and handled with an exact exception. No credential value is printed by the scanner. Git diff whitespace check passed.
+- CI now includes a PostgreSQL service/regression step and source/history check. No hosted workflow execution is claimed.
+
+Vercel project connection, a hosted build, Neon migration, R2 storage, shared rate limiting, demo isolation, hosted telemetry and public-release checks remain pending. The prepared development deployment must stay protected by Vercel Authentication. No repository was published and no hosting resource was provisioned during this step.
+
+Current Docker image dealer-desk:release-prep-20261024 built successfully after the photo/runtime/dependency changes. This verifies the build only; current-image Compose startup/container replacement and hosted deployment remain separate checks.

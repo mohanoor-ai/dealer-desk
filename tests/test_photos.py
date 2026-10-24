@@ -37,7 +37,7 @@ def test_photo_persists_and_metadata_is_removed(signed_client, app):
         assert not decoded.getexif()
     summary=client.get(f"/api/vehicles/{stock['id']}").json()
     assert summary['photo_count']==1 and summary['cover_photo']['id']==photo['id']
-    restarted=create_app(str(app.state.engine.url))
+    restarted=create_app(app.state.engine.url.render_as_string(hide_password=False))
     with TestClient(restarted,headers={'X-Requested-With':'DealerDesk'}) as second:
         sign_in(second)
         assert second.get(f"/api/photos/{photo['id']}/image").content==read.content

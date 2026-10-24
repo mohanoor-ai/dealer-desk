@@ -11,3 +11,6 @@ backups/
 *.db
 *.log
 frontend/dist/
+public/
+.vercel/
+C%3A/
