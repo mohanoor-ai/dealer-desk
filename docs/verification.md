@@ -58,3 +58,10 @@ Checks actually run:
 Vercel project connection, a hosted build, Neon migration, R2 storage, shared rate limiting, demo isolation, hosted telemetry and public-release checks remain pending. The prepared development deployment must stay protected by Vercel Authentication. No repository was published and no hosting resource was provisioned during this step.
 
 Current Docker image dealer-desk:release-prep-20261024 built successfully after the photo/runtime/dependency changes. This verifies the build only; current-image Compose startup/container replacement and hosted deployment remain separate checks.
+
+## Hosted source and CI — 24 October 2026
+Published the reviewed application source and three local commits to the new public repository https://github.com/mohanoor-ai/dealer-desk. The existing dealer-stock-enquiry-tracker repository was not modified. Remote main was verified at cd525a979ceeccdbab0d5c20c06d945cefd3eb20.
+
+First hosted GitHub Actions run passed: https://github.com/mohanoor-ai/dealer-desk/actions/runs/40097931885 (job 120883987554). Confirmed successful locked installs, source/history audit, backend SQLite tests, PostgreSQL regression, frontend tests/build, Docker build and API artifact upload. This is CI evidence for commit cd525a9; it is not CD or a deployed application URL.
+
+Public acceptance-criteria tracker: issues/1 (Vercel/Neon development deployment), issues/2 (R2), issues/3 (showroom/demo linkage), issues/4 (delivery and operations evidence). The assistant created these from the agreed plan and is using issue 1 for the next deployment work. No closed issue or completed hosting claim is implied.

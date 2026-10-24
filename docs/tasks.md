@@ -1,6 +1,6 @@
 # Task tracker
 
-This file is intended to be public with the reviewed application source. Hosted tracker publication is pending.
+Public tracker: https://github.com/mohanoor-ai/dealer-desk/issues. Issues 1–4 contain the current deployment, R2, showroom/demo and operational acceptance criteria. This table records the detailed local history; docs/verification.md records actual evidence.
 
 | ID | Acceptance criteria | State |
 |---|---|---|

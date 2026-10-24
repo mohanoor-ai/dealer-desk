@@ -54,3 +54,12 @@ Target: Vercel hosting with external PostgreSQL, subject to the completed free-t
 
 ## Learning and course evidence
 Read docs/architecture.md for technology choices, docs/tasks.md for acceptance criteria and docs/verification.md for actual results. The original contract design is retained as docs/prior-api-design.yaml; openapi.yaml describes the current implementation. An in-app LLM is optional and is not required by the inspected current final rubric.
+
+## Public project tracking
+Source: https://github.com/mohanoor-ai/dealer-desk
+
+Acceptance criteria and remaining work: https://github.com/mohanoor-ai/dealer-desk/issues
+
+Hosted checks: https://github.com/mohanoor-ai/dealer-desk/actions
+
+The first hosted CI run passed for cd525a9. Application hosting/CD remain pending; see docs/verification.md for exact evidence.
