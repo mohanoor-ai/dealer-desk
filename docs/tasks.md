@@ -29,3 +29,6 @@ Cache recovery acceptance: an old cached HTML document requesting a removed hash
 
 ## Front-page screenshots and diagrams — 24 October
 Acceptance: README uses an actual staff Overview screenshot containing fictional data, dated and linked to its tested commit; no credentials/customer records or fabricated UI. Add editable Mermaid diagrams for current architecture and vehicle/enquiry/follow-up flow. Release/incident diagrams must be explicitly planned until implemented. Rename vague learning/course heading to engineering documentation. Private companion homepage gets a simple course-to-project map and module navigation; keep it out of app/public source. Retain source/verification notes and verify rendered pages and links.
+
+## Project identity and article index — 24 October
+Acceptance: plain project description, confirmed public GitHub handle as author, protected deployment link with accurate access instructions, repository About description/website, bottom README article index with status, three evidence-based drafts kept private pending owner review, and a private submission draft with outstanding requirements. No invented full name or personal reflection; no product/course UI changes.

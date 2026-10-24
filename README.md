@@ -1,6 +1,12 @@
 # Dealer Desk
 
-An application for one dealership: vehicle stock, enquiries and follow-up tasks in a shared persistent workspace. Each staff member signs in individually. Viewers can read; sales staff can update workflows; managers can inspect the audit history.
+By [mohanoor-ai](https://github.com/mohanoor-ai).
+
+Dealer Desk is a web application for a single car dealership to manage vehicle stock, customer enquiries and follow-up tasks in one place. Staff sign in with role-based permissions, and records are saved in a shared database. The application uses React, TypeScript, FastAPI and PostgreSQL, with a development deployment on Vercel and Neon. Viewers can read; sales staff can update workflows; managers can inspect the audit history.
+
+[Open the app](https://dealer-desk-dev.vercel.app/) · [Source code](https://github.com/mohanoor-ai/dealer-desk) · [Project overview](docs/project-overview.md)
+
+The hosted development app currently requires Vercel authorization and an individually provisioned staff account. It is not yet an unrestricted public demo. Reviewers can also run it locally using the instructions below.
 
 The aim is to keep vehicle availability, customer conversations and the next action together, instead of tracking them in separate lists.
 
@@ -96,3 +102,7 @@ Acceptance criteria and remaining work: https://github.com/mohanoor-ai/dealer-de
 Hosted checks: https://github.com/mohanoor-ai/dealer-desk/actions
 
 The first hosted CI run passed for cd525a9. Protected development hosting is verified. CI-gated CD and public release remain pending; see docs/verification.md for exact evidence.
+
+## Learning in public
+
+Three articles are being prepared: scope and architecture; browser/API/database persistence; and testing and deployment. Drafts remain private until reviewed. Published article links will be collected in the [article index](docs/articles/README.md). These articles explain implementation decisions; assessment evidence remains in the verification record.
