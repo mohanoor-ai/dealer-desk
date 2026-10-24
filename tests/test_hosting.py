@@ -77,6 +77,11 @@ def test_frontend_documents_are_not_cached(tmp_path, monkeypatch):
         assets.mkdir()
         (assets / 'index-present123.js').write_text('console.log("present")')
         assert browser.get('/assets/index-present123.js').text == 'console.log("present")'
+        (assets / 'index-present123.css').write_text('body{color:black}')
+        stylesheet = browser.get('/assets/index-present123.css')
+        assert stylesheet.status_code == 200
+        assert stylesheet.headers['content-type'].startswith('text/css')
+        assert browser.get('/assets/index-missing123.css').status_code == 404
     config = json.loads((Path(__file__).resolve().parents[1] / 'vercel.json').read_text())
     for path in ('/', '/index.html'):
         rule = next(item for item in config['headers'] if item['source'] == path)

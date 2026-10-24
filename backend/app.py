@@ -404,12 +404,15 @@ def create_app(database_url=None):
     def frontend_script(filename: str):
         # A browser may retain an older HTML document after a deploy removes its
         # hashed bundle. Recover only that narrow case, never redirect APIs.
-        if not re.fullmatch(r'index-[A-Za-z0-9_-]{6,40}\.js', filename):
+        if not re.fullmatch(r'index-[A-Za-z0-9_-]{6,40}\.(js|css)', filename):
             raise HTTPException(404, 'Asset not found.')
         for directory in (ROOT / 'public' / 'assets', built_frontend / 'assets'):
             asset = directory / filename
             if asset.is_file():
-                return FileResponse(asset, media_type='application/javascript')
+                media_type = 'text/css' if filename.endswith('.css') else 'application/javascript'
+                return FileResponse(asset, media_type=media_type)
+        if filename.endswith('.css'):
+            raise HTTPException(404, 'Asset not found.')
         release = os.environ.get('VERCEL_GIT_COMMIT_SHA', 'current')
         script = ('const url=new URL(window.location.href);'
                   f'const release={json.dumps(release)};'
