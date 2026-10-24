@@ -4,14 +4,14 @@ Public tracker: https://github.com/mohanoor-ai/dealer-desk/issues. Issues 1–4 
 
 | ID | Acceptance criteria | State |
 |---|---|---|
-| DEP01 | Vercel entrypoint and frontend build; no migrations at import/build; hosted startup rejects SQLite/missing TLS, secure cookies and bounded connections | Prepared; local tests/build pass, hosted verification pending |
-| DEP02 | Tracked-source/history release audit, exclusion rules and deployment runbook; report blockers without claiming publication | Local audit complete; owner publication review pending |
-| J01 | Operator creates individual user; valid login works; invalid login and viewer writes fail; logout revokes session | Verified by API tests; full interactive bootstrap still pending |
+| DEP01 | Vercel entrypoint and frontend build; no migrations at import/build; hosted startup rejects SQLite/missing TLS, secure cookies and bounded connections | Local checks and protected Vercel/Neon hosted journey verified; production release remains pending |
+| DEP02 | Tracked-source/history release audit, exclusion rules and deployment runbook; report blockers without claiming publication | Reviewed source published to new repository; private runtime files excluded |
+| J01 | Operator creates individual user; valid login works; invalid login and viewer writes fail; logout revokes session | API and temporary hosted sales login verified; owner reports manager password created, hosted manager login confirmation pending |
 | J02 | Vehicle → enquiry → follow-up persists after app restart; completion updates dashboard | Verified on SQLite and PostgreSQL; browser reload verified |
 | J03 | Stale edit returns 409 and does not overwrite; audit contains actor, ID and revision | Verified, including two simultaneous API edits |
 | J04 | UI uses real API; usable loading/error/empty states; no product screen course jargon | Browser journey and basic responsive check passed; full accessibility review pending |
 | J05 | Schema migrates on SQLite and PostgreSQL; clean Compose start and restart preserves data | Startup migrations, readiness and application-container replacement passed; clean interactive setup pending |
-| J06 | Browser journey, roles, recovery and hosted CI/CD evidence | Planned |
+| J06 | Browser journey, roles, recovery and hosted CI/CD evidence | Hosted journey and CI verified; CI-gated CD, rollback and recovery pending |
 | J07 | Current rubric operations/alert/responder evidence; safe extensions | Planned |
 | J08 | Release archive, offline companion, public/private inventory and final submission | Planned |
 | UX01 | Separate overview, stock, enquiries, follow-ups and linkable vehicle-detail pages; browser Back works | Implemented; see verification.md for passed checks and pending browser/PostgreSQL checks |

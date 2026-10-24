@@ -1,9 +1,9 @@
 # Vercel development deployment runbook
 
-Status: configuration prepared locally; hosted compatibility and publication remain unverified. This is a private development deployment until release blockers are resolved.
+Status: protected Vercel development deployment and Neon migrations verified on 24 October 2026. Hosted address: https://dealer-desk-dev.vercel.app/. Project-specific All Deployments authentication is enabled. Public release remains blocked by the items below; see verification.md for actual results and commits.
 
 ## Build and runtime
-Root directory is the application repository, not frontend/. Select the FastAPI framework. app.py exports the existing ASGI app. vercel.json builds the React/Vite frontend using python -m scripts.build_vercel. Only generated public/ assets are served by the CDN. Existing hash routes need no wildcard rewrite that could capture /api. Python is pinned to 3.12; Node 24 is the frontend target. A platform build/import is still required to validate the selected runtime combination.
+Root directory is the application repository, not frontend/. Select the FastAPI framework. app.py exports the existing ASGI app. vercel.json builds the React/Vite frontend using python -m scripts.build_vercel. Only generated public/ assets are served by the CDN. Existing hash routes need no wildcard rewrite that could capture /api. Python is pinned to 3.12; Node 24 is the frontend target. The platform build/import and hosted journey have passed for the recorded deployment.
 
 Local check: uv run python -m scripts.build_vercel. Then start.py can serve frontend/dist locally. .vercelignore excludes runtime databases, private environment files, tests, docs and bundled reference originals. Credits needed by the rendered UI remain in database metadata. Generated frontend files contain no server secrets.
 
@@ -25,13 +25,17 @@ Keep migration credentials separate from runtime credentials. Create the first s
 ## Release blockers
 - Process-local login throttling must become shared and atomic before public access.
 - Add global upload/demo quotas, isolated resettable demo data and public/staff response boundaries.
-- Verify hosted DB privileges, migrations, secure cookies, upload processing, cold start and proxy/host behaviour.
+- Migrations and hosted upload processing passed. Complete the least-privilege runtime/migration-role split and broader cold-start/proxy/host review; keep credentials private.
 - Current frontend polling must pause when hidden and reduce idle usage.
-- Complete PostgreSQL photo persistence/container refresh and backup/restore tests.
+- PostgreSQL photo persistence and hosted redeployment checks passed. Complete current-image Compose replacement and backup/restore checks.
 - R2 implementation is planned; current photos still live in database binary fields. No R2 credentials, bucket or migration exists yet.
-- Hosted CI/CD, telemetry, impact alert, responder and rollback evidence remain pending.
+- Hosted CI and automatic Vercel Git deployment work. CI-gated delivery/manual promotion, telemetry, impact alert, responder and rollback evidence remain pending.
 
 ## Account step after local preparation
 The owner connects the reviewed public repository or authorizes a scoped Vercel CLI connection, selects the existing personal Vercel account and development Neon project, and enters database secrets directly into hosting settings. No paid subscription is needed for this personal project within quotas. Confirm public/private inventory before source publication. Keep this first deployment protected; public release is a separate gate after the blockers above are resolved.
 
 Official configuration reference checked 24 October 2026: https://vercel.com/docs/frameworks/backend/fastapi
+
+
+## Staff account setup
+Run the operator command against the intended database: uv run python -m scripts.create_user manager --role manager. It prompts privately for the password and stores a salted hash in Neon. Creating the account changes database records, so it does not require a code push or redeployment. The owner reported creating the manager password on 24 October 2026; successful hosted manager sign-in still needs confirmation. The convenience launcher and local database connection file remain outside this repository. Never commit account rows, password hashes or secrets.
