@@ -66,6 +66,17 @@ def test_frontend_documents_are_not_cached(tmp_path, monkeypatch):
             response = browser.get(path)
             assert response.status_code == 200
             assert response.headers['cache-control'] == 'no-store'
+        recovery = browser.get('/assets/index-old123.js')
+        assert recovery.status_code == 200
+        assert recovery.headers['content-type'].startswith('application/javascript')
+        assert recovery.headers['cache-control'] == 'no-store'
+        assert 'url.searchParams.get("release")===release' in recovery.text
+        assert 'window.location.replace(url.href)' in recovery.text
+        assert browser.get('/assets/unrelated.js').status_code == 404
+        assets = frontend / 'assets'
+        assets.mkdir()
+        (assets / 'index-present123.js').write_text('console.log("present")')
+        assert browser.get('/assets/index-present123.js').text == 'console.log("present")'
     config = json.loads((Path(__file__).resolve().parents[1] / 'vercel.json').read_text())
     for path in ('/', '/index.html'):
         rule = next(item for item in config['headers'] if item['source'] == path)

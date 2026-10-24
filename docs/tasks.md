@@ -24,3 +24,5 @@ Acceptance: customer and dealer entry links; no registration or network business
 
 ## Hosted demo verification fixes — 24 October
 Acceptance: prevent cached HTML referencing removed bundles by marking root/index documents no-store; test rendered HTML headers. Verify deployed customer enquiry, dealer stock/edit workflow and reset. Customer vehicle links must show the selected vehicle rather than repeat the catalogue. Preserve Vercel protection and staff permissions.
+
+Cache recovery acceptance: an old cached HTML document requesting a removed hashed JavaScript bundle receives a bounded recovery script that loads the current release once. Existing assets remain served normally; unknown non-bundle paths stay 404; a missing asset on the same release must not loop. Test this before deployment.

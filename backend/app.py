@@ -1,6 +1,8 @@
 """Real database routes for one dealership. Run migrations before starting."""
 import logging
+import json
 import os
+import re
 import time
 from collections import defaultdict, deque
 from contextlib import asynccontextmanager
@@ -12,7 +14,7 @@ from zoneinfo import ZoneInfo
 
 from fastapi import FastAPI, Depends, HTTPException, Query, Request, Response
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import select, update, func
 from sqlalchemy.exc import SQLAlchemyError
@@ -397,6 +399,25 @@ def create_app(database_url=None):
         return {'photo':photo_dict(find(db,VehiclePhoto,photo_id)),'vehicle_revision':body.revision+1}
 
     built_frontend = ROOT / 'frontend' / 'dist'
+
+    @app.get('/assets/{filename}', include_in_schema=False)
+    def frontend_script(filename: str):
+        # A browser may retain an older HTML document after a deploy removes its
+        # hashed bundle. Recover only that narrow case, never redirect APIs.
+        if not re.fullmatch(r'index-[A-Za-z0-9_-]{6,40}\.js', filename):
+            raise HTTPException(404, 'Asset not found.')
+        for directory in (ROOT / 'public' / 'assets', built_frontend / 'assets'):
+            asset = directory / filename
+            if asset.is_file():
+                return FileResponse(asset, media_type='application/javascript')
+        release = os.environ.get('VERCEL_GIT_COMMIT_SHA', 'current')
+        script = ('const url=new URL(window.location.href);'
+                  f'const release={json.dumps(release)};'
+                  'if(url.searchParams.get("release")===release){'
+                  'document.body.textContent="The app could not load. Please try again later.";'
+                  '}else{url.searchParams.set("release",release);window.location.replace(url.href);}')
+        return Response(script, media_type='application/javascript', headers={'Cache-Control': 'no-store'})
+
     if built_frontend.exists():
         app.mount('/', StaticFiles(directory=built_frontend, html=True), name='frontend')
     app.openapi = lambda: describe_api(app)
