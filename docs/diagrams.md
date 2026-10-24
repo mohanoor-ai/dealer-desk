@@ -50,7 +50,7 @@ The API tests cover permissions and competing edits. A repeatable two-browser st
 ## Current: delivery has two independent paths
 
 ```mermaid
-flowchart LR
+flowchart TB
     Commit[Push to main] --> CI[GitHub Actions: tests and build]
     Commit --> Deploy[Vercel Git deployment]
     CI --> Result[Pass or fail recorded]
@@ -62,7 +62,7 @@ The deployment does not currently wait for the GitHub result. A successful CI ru
 ## Planned: gated release, promotion and rollback
 
 ```mermaid
-flowchart LR
+flowchart TB
     Change[Reviewed source change] --> Checks[Required tests and build]
     Checks --> Pass{Checks pass?}
     Pass -->|No| Stop[Stop; retain working release]

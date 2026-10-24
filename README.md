@@ -11,14 +11,11 @@ Actual protected [Vercel deployment](https://dealer-desk-dev.vercel.app/#/overvi
 ## Current architecture
 
 ```mermaid
-flowchart LR
+flowchart TB
     Staff[Staff browser] --> Gate[Vercel Authentication]
     Gate --> UI[React and TypeScript frontend]
     UI <-->|Same-origin API and staff session cookie| API[FastAPI: validation and role checks]
     API -->|SQLAlchemy over TLS| DB[(Neon PostgreSQL)]
-    DB --- Records[Stock, enquiries, follow-ups and audit]
-    DB --- Access[Users and session hashes]
-    DB --- Photos[Optimized photos and thumbnails]
 ```
 
 This shows the protected development deployment. The backend enforces permissions. Local development can use SQLite or Compose with PostgreSQL. Photos currently live in the database; R2 is planned. Temporary demos use isolated browser memory and do not write to this database. [Architecture and diagram status](docs/diagrams.md).
@@ -26,7 +23,7 @@ This shows the protected development deployment. The backend enforces permission
 ## Main staff journey
 
 ```mermaid
-flowchart LR
+flowchart TB
     V[Save a vehicle] --> E[Record a linked enquiry]
     E --> F[Schedule a follow-up]
     F --> C[Complete the follow-up]
