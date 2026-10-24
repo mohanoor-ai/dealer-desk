@@ -32,3 +32,6 @@ Acceptance: README uses an actual staff Overview screenshot containing fictional
 
 ## Project identity and article index — 24 October
 Acceptance: plain project description, confirmed public GitHub handle as author, protected deployment link with accurate access instructions, repository About description/website, bottom README article index with status, three evidence-based drafts kept private pending owner review, and a private submission draft with outstanding requirements. No invented full name or personal reflection; no product/course UI changes.
+
+## Confirmed author credit
+Acceptance: use the owner-confirmed spelling Mohammed Sheikh-Noor in README, project overview, article index and private drafts; preserve GitHub URLs.

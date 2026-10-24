@@ -1,6 +1,6 @@
 # Dealer Desk — project overview
 
-Author: [mohanoor-ai](https://github.com/mohanoor-ai). Full submission name awaits confirmation.
+Author: [Mohammed Sheikh-Noor](https://github.com/mohanoor-ai).
 
 Dealer Desk helps staff at one dealership keep vehicle availability, enquiries and the next follow-up action together. It replaces disconnected stock and task lists with a shared persistent workspace.
 

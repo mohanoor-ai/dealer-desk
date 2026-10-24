@@ -1,6 +1,6 @@
 # Learning in public
 
-Project: [Dealer Desk](https://github.com/mohanoor-ai/dealer-desk). Author: [mohanoor-ai](https://github.com/mohanoor-ai).
+Project: [Dealer Desk](https://github.com/mohanoor-ai/dealer-desk). Author: [Mohammed Sheikh-Noor](https://github.com/mohanoor-ai).
 
 No articles have been published in this series yet. The following drafts are being prepared privately for owner review:
 

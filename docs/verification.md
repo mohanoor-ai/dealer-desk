@@ -106,3 +106,6 @@ Published README image loaded successfully on GitHub, and both Mermaid diagrams 
 
 ## Project description and article preparation — 24 October
 Added a plain project description, GitHub handle attribution, protected app access wording, project overview and bottom README Learning in public index. Three article drafts and a submission draft are private sibling deliverables; no full name, personal reflection or publication was invented. Repository About description and website were saved through GitHub. Documentation-only change; no application tests repeated. git diff --check passed. Final rendered README and About verification recorded separately.
+
+## Confirmed author credit
+Owner supplied Mohammed Sheikh-Noor. Updated README, project overview and article index; private submission/article drafts match. GitHub URLs preserved. git diff --check passed; no runtime change or app test rerun.

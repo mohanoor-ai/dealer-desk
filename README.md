@@ -1,6 +1,6 @@
 # Dealer Desk
 
-By [mohanoor-ai](https://github.com/mohanoor-ai).
+By [Mohammed Sheikh-Noor](https://github.com/mohanoor-ai).
 
 Dealer Desk is a web application for a single car dealership to manage vehicle stock, customer enquiries and follow-up tasks in one place. Staff sign in with role-based permissions, and records are saved in a shared database. The application uses React, TypeScript, FastAPI and PostgreSQL, with a development deployment on Vercel and Neon. Viewers can read; sales staff can update workflows; managers can inspect the audit history.
 
