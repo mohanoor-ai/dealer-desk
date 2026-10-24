@@ -2,6 +2,40 @@
 
 An application for one dealership: vehicle stock, enquiries and follow-up tasks in a shared persistent workspace. Each staff member signs in individually. Viewers can read; sales staff can update workflows; managers can inspect the audit history.
 
+The aim is to keep vehicle availability, customer conversations and the next action together, instead of tracking them in separate lists.
+
+![Dealer Desk staff Overview showing stock, enquiry and follow-up totals, recent stock and next actions. All records are fictional.](docs/media/dealer-overview.png)
+
+Actual protected [Vercel deployment](https://dealer-desk-dev.vercel.app/#/overview), captured 24 October 2026 from application commit [b01d342](https://github.com/mohanoor-ai/dealer-desk/commit/b01d3427787b6abb70eae16ba8656ce104a2457b). The saved test workspace contains one sample vehicle, one open enquiry and no open follow-ups. Figures and empty states are unaltered. [Capture details and photo credit](docs/media/README.md).
+
+## Current architecture
+
+```mermaid
+flowchart LR
+    Staff[Staff browser] --> Gate[Vercel Authentication]
+    Gate --> UI[React and TypeScript frontend]
+    UI <-->|Same-origin API and staff session cookie| API[FastAPI: validation and role checks]
+    API -->|SQLAlchemy over TLS| DB[(Neon PostgreSQL)]
+    DB --- Records[Stock, enquiries, follow-ups and audit]
+    DB --- Access[Users and session hashes]
+    DB --- Photos[Optimized photos and thumbnails]
+```
+
+This shows the protected development deployment. The backend enforces permissions. Local development can use SQLite or Compose with PostgreSQL. Photos currently live in the database; R2 is planned. Temporary demos use isolated browser memory and do not write to this database. [Architecture and diagram status](docs/diagrams.md).
+
+## Main staff journey
+
+```mermaid
+flowchart LR
+    V[Save a vehicle] --> E[Record a linked enquiry]
+    E --> F[Schedule a follow-up]
+    F --> C[Complete the follow-up]
+    C --> O[Refresh the Overview]
+    O --> P[Reload or restart: saved records remain]
+```
+
+The real staff API/database journey has retained verification evidence. Browser-memory demos illustrate interaction only. [Verification record](docs/verification.md).
+
 ## Start with Docker
 Install Docker Desktop on Windows (Linux containers) or Docker Engine with Compose on Linux. First setup downloads container images and dependencies and therefore needs internet.
 
@@ -52,8 +86,10 @@ localhost / 127.0.0.1 means this computer. The Compose port binding deliberately
 The prepared Vercel build and protected development deployment procedure are documented in [docs/deployment-vercel.md](docs/deployment-vercel.md). The source/history review is in [docs/release-audit.md](docs/release-audit.md). Protected development hosting on Vercel with Neon is verified: https://dealer-desk-dev.vercel.app/ (owner Vercel login required, followed by a separately provisioned staff login). Cloudflare R2 photo storage remains planned; current images persist in the database.
 Target: Vercel hosting with external PostgreSQL, subject to the completed free-tier and security review. Set COOKIE_SECURE=true for HTTPS. Vercel Hobby permits personal non-commercial use; a real business deployment needs suitable terms. This deployment is private to authorised Vercel users; no publicly accessible customer showroom is claimed.
 
-## Learning and course evidence
+## Engineering documentation and verification
 Read docs/architecture.md for technology choices, docs/tasks.md for acceptance criteria and docs/verification.md for actual results. The original contract design is retained as docs/prior-api-design.yaml; openapi.yaml describes the current implementation. An in-app LLM is optional and is not required by the inspected current final rubric.
+
+Current and planned release/incident diagrams are in [docs/diagrams.md](docs/diagrams.md). Release promotion, collected telemetry and alert-driven repair are labelled planned until implemented and verified. Private learning notes are kept outside this repository.
 
 ## Public project tracking
 Source: https://github.com/mohanoor-ai/dealer-desk
