@@ -44,6 +44,10 @@ test('customer demo starts without login and ends back at staff sign-in',async()
   fireEvent.click(await screen.findByRole('button',{name:'Customer demo'}));
   expect(await screen.findByRole('heading',{name:'Try a vehicle enquiry'})).toBeInTheDocument();
   expect((await screen.findAllByText(/Ford Puma/)).length).toBeGreaterThan(0);
+  fireEvent.click(screen.getByRole('link',{name:'View Nissan Qashqai'}));
+  expect(await screen.findByRole('heading',{name:'Nissan Qashqai',level:1})).toBeInTheDocument();
+  expect(screen.getByLabelText('Vehicle')).toHaveValue('2');
+  expect(screen.queryByRole('link',{name:'Follow-ups'})).not.toBeInTheDocument();
   expect(screen.queryByRole('button',{name:'Save vehicle'})).not.toBeInTheDocument();
   fireEvent.change(screen.getByLabelText('Customer name'),{target:{value:'Fictional buyer'}});
   fireEvent.change(screen.getByLabelText('Message'),{target:{value:'Sample test drive'}});

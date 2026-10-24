@@ -1,4 +1,7 @@
 import pytest
+import json
+from pathlib import Path
+from fastapi.testclient import TestClient
 from sqlalchemy.pool import NullPool
 from backend.config import database_url, secure_cookies
 from backend.database import build_engine
@@ -49,3 +52,21 @@ def test_hosted_login_sets_secure_cookie(client, monkeypatch):
         'username': 'manager', 'password': 'fictional-test-password'})
     assert response.status_code == 200
     assert '; Secure' in response.headers['set-cookie']
+
+
+def test_frontend_documents_are_not_cached(tmp_path, monkeypatch):
+    from backend import app as app_module
+    frontend = tmp_path / 'frontend' / 'dist'
+    frontend.mkdir(parents=True)
+    (frontend / 'index.html').write_text('<html><body>Demo</body></html>')
+    monkeypatch.setattr(app_module, 'ROOT', tmp_path)
+    application = app_module.create_app('sqlite:///:memory:')
+    with TestClient(application) as browser:
+        for path in ('/', '/index.html'):
+            response = browser.get(path)
+            assert response.status_code == 200
+            assert response.headers['cache-control'] == 'no-store'
+    config = json.loads((Path(__file__).resolve().parents[1] / 'vercel.json').read_text())
+    for path in ('/', '/index.html'):
+        rule = next(item for item in config['headers'] if item['source'] == path)
+        assert {'key': 'Cache-Control', 'value': 'no-store'} in rule['headers']

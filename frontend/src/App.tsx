@@ -4,7 +4,8 @@ import type {Snapshot,Vehicle} from './types';
 import {ApiError,loadSnapshot,request,poundsToPence} from './api';
 import {useRoute} from './navigation';
 import {StockPage,OverviewPage,VehiclePage,EnquiriesPage,FollowUpsPage,Heading} from './Pages';
-import {VehicleForm,EnquiryForm} from './WorkForms';
+import {VehicleForm} from './WorkForms';
+import CustomerDemo from './CustomerDemo';
 import {startDemo,endDemo,type DemoRole} from './demo';
 import './style.css';
 import './pages.css';
@@ -102,7 +103,7 @@ export default function App(){
     <a className="skip" href="#main">Skip to content</a>
     {!checking&&<div className="demo-links" aria-label="Try Dealer Desk"><button className="secondary" onClick={()=>openDemo('customer')}>Customer demo</button><button className="secondary" onClick={()=>openDemo('dealer')}>Dealer demo</button>{demo&&<button className="secondary" onClick={closeDemo}>Staff sign-in</button>}</div>}
     <header><a className="brand" href="#/overview"><span className="brand-mark" aria-hidden="true">D</span><span>Dealer Desk<small>YOUR NEXT MOVE, IN VIEW</small></span></a>
-      {user&&<><nav aria-label="Main navigation">{navigation.map(([page,label,icon])=><a key={page} href={`#/${page}`} className={(route.page===page||(page==='stock'&&['vehicle','new'].includes(route.page)))?'active':''} aria-current={(route.page===page||(page==='stock'&&route.page==='vehicle'))?'page':undefined}><span aria-hidden="true">{icon}</span>{label}</a>)}</nav><div className="account"><span className="avatar">{user.username[0].toUpperCase()}</span><span>{user.username}<small>{user.role}</small></span><button className="secondary" onClick={logout}>Sign out</button></div></>}
+      {user&&<><nav aria-label="Main navigation">{navigation.filter(([page])=>demo!=='customer'||page==='stock').map(([page,label,icon])=><a key={page} href={`#/${page}`} className={(route.page===page||(page==='stock'&&['vehicle','new'].includes(route.page)))?'active':''} aria-current={(route.page===page||(page==='stock'&&route.page==='vehicle'))?'page':undefined}><span aria-hidden="true">{icon}</span>{label}</a>)}</nav><div className="account"><span className="avatar">{user.username[0].toUpperCase()}</span><span>{user.username}<small>{user.role}</small></span><button className="secondary" onClick={logout}>Sign out</button></div></>}
     </header>
     <main id="main">
       {demo&&<section className="banner" aria-label="Temporary demo"><strong>{demo==='dealer'?'Dealer':'Customer'} demo</strong> · Ends at {new Date(demoExpiry).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}. Fictional sample data stays in this tab’s memory. Refreshing, closing or ending clears it. Use fictional details only. Photo uploads require a staff account. <button className="secondary" onClick={()=>openDemo(demo)}>Reset demo</button> <button className="secondary" onClick={closeDemo}>End demo</button></section>}
@@ -111,7 +112,7 @@ export default function App(){
       {checking?<p role="status">Checking your session…</p>:!user?
         <section className="login"><div><p className="eyebrow">A CLEARER WORKING DAY</p><h1>Know your stock.<br/>Keep your promises.</h1><p>Stock, enquiries and the next follow-up.<br/>Together in one place.</p><div className="login-note">Your dealership workspace.</div></div><form className="panel login-form" onSubmit={login}><h2>Welcome back</h2><p>Sign in with your individual account.</p><label>Username<input name="username" autoComplete="username" required maxLength={80}/></label><label>Password<input name="password" type="password" autoComplete="current-password" required maxLength={128}/></label><button disabled={saving}>{saving?'Signing in…':'Sign in'}</button><small>Ask your dealership administrator for an account.</small></form></section>:
         <><div role="status" className={`global-notice ${notice?'has-notice':''}`}>{notice}</div>{user.role==='viewer'&&!demo&&<p className="banner">You have read-only access. Contact a manager to request changes.</p>}
-          {demo==='customer'?<><StockPage snapshot={snapshot} loading={loading} canWrite={false} onAdd={onAdd}/><section className="panel"><h2>Try a vehicle enquiry</h2><p>This demonstrates the form only. No enquiry is sent to the dealership.</p><EnquiryForm snapshot={snapshot} change={change} saving={saving} preferredVehicle={route.id||0}/></section></>:<>
+          {demo==='customer'?<CustomerDemo snapshot={snapshot} vehicle={route.page==='vehicle'?vehicle:undefined} loading={loading} saving={saving} change={change}/>:<>
           {route.page==='stock'&&<StockPage snapshot={snapshot} loading={loading} canWrite={canWrite} onAdd={onAdd}/>}
           {route.page==='overview'&&<OverviewPage snapshot={snapshot} canWrite={canWrite} onAdd={onAdd}/>}
           {route.page==='enquiries'&&<EnquiriesPage snapshot={snapshot} canWrite={canWrite} saving={saving} change={change} preferredVehicle={preferredVehicle}/>}

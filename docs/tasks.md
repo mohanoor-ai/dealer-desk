@@ -21,3 +21,6 @@ Public tracker: https://github.com/mohanoor-ai/dealer-desk/issues. Issues 1–4 
 
 ## Temporary browser demo — 24 October
 Acceptance: customer and dealer entry links; no registration or network business requests while demo is active; fictional per-tab data only; expire after 30 minutes; refresh/end/reset discard data; customer cannot change stock; bounded records and text; uploads disabled in this first sandbox; staff login unchanged. This is a browser simulation, not a shared live database integration. Public Vercel protection stays enabled.
+
+## Hosted demo verification fixes — 24 October
+Acceptance: prevent cached HTML referencing removed bundles by marking root/index documents no-store; test rendered HTML headers. Verify deployed customer enquiry, dealer stock/edit workflow and reset. Customer vehicle links must show the selected vehicle rather than repeat the catalogue. Preserve Vercel protection and staff permissions.

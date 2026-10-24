@@ -147,7 +147,8 @@ def create_app(database_url=None):
         response.headers['X-Content-Type-Options'] = 'nosniff'
         response.headers['Referrer-Policy'] = 'same-origin'
         response.headers['X-Frame-Options'] = 'DENY'
-        if request.url.path.startswith('/api/'):
+        if (request.url.path.startswith('/api/')
+                or response.headers.get('content-type', '').startswith('text/html')):
             response.headers['Cache-Control'] = 'no-store'
         # Route template avoids logging record IDs, query strings, submitted fields or secrets.
         route = request.scope.get('route')
