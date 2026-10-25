@@ -53,7 +53,7 @@ The implemented scope is one dealership with a read-only customer catalogue and 
 | Delivery | Successful exact-revision CI before deployment; explicit production promotion and verified compatible recovery |
 | Operations | Collected/correlated request signals, a user-impact alert and a bounded response with recovery checks |
 
-Tasks move from acceptance criteria through implementation, verification and release. Mohammed Sheikh-Noor defines scope and reviews behaviour; the coding assistant implements changes, runs checks and records results. Engineering and verification were performed within one assistant workflow. Project instructions reference modular specification, architecture, process, testing and security documents.
+Tasks move from acceptance criteria through implementation, verification and release. Mohammed Sheikh-Noor defines scope and reviews behaviour. Agent responsibilities, execution steps and verification limits are recorded in the linked specification, team, process, testing and security documents.
 
 Supporting specifications and records:
 

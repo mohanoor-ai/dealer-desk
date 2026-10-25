@@ -1,6 +1,6 @@
-# AI-assisted development record
+# Development workflow record
 
-This project was built with a coding assistant under Mohammed Sheikh-Noor's direction. This is a factual summary of the available project records, not a reconstructed transcript or a claim of independent manual authorship.
+Project author: Mohammed Sheikh-Noor. This record describes the development tools, context, decisions and verification retained in the repository. It does not reconstruct missing transcripts or claim independent review.
 
 The owner asked for a single-dealership application with stock, enquiries, follow-ups, vehicle pages and multiple images, followed by free-tier hosting and assessment-focused evidence. Later instructions required temporary demos, private learning notes outside the product, plain writing and genuine screenshots. The confirmed author name is Mohammed Sheikh-Noor.
 

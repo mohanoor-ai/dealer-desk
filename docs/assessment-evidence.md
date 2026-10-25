@@ -1,6 +1,6 @@
 # Assessment criteria and reproduction guide
 
-Reviewed 25 October 2026 against the [official project rubric](https://github.com/DataTalksClub/ai-dev-tools-zoomcamp/blob/526d9c12506c159e7a8f3cef30e5de1eeaec287b/project/README.md#criteria), the latest change to that file at review time. There are twelve criteria and 24 available points. The maxima below describe the rubric, not awarded marks. Mohammed Sheikh-Noor is the project author; implementation and checks used AI assistance.
+Reviewed 25 October 2026 against the [official project rubric](https://github.com/DataTalksClub/ai-dev-tools-zoomcamp/blob/526d9c12506c159e7a8f3cef30e5de1eeaec287b/project/README.md#criteria), the latest change to that file at review time. There are twelve criteria and 24 available points. The maxima below describe the rubric, not awarded marks. Mohammed Sheikh-Noor is the project author.
 
 ## Criterion map
 

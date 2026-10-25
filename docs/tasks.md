@@ -86,3 +86,6 @@ Owner acceptance: remove the homepage FROM THE PROJECT/Building Dealer Desk arti
 
 ## Seed demos from current public listings — 25 October
 Acceptance: fetch the public catalogue before a new customer/staff demo, copy only public vehicle fields and credited illustrative photos into per-tab memory, and remove the outdated hard-coded three-car seed. Reset restores the starting catalogue snapshot; ending and starting again refreshes it. Failure/empty catalogue must show an error without starting a stale demo. Keep demo mutations/enquiries/tasks/photo metadata in memory, no staff database reads/writes, and no network fallback for demo operations. Verify count/values, reset/isolation, public photos, failure handling and both hosted demo roles, then update the final submission revision.
+
+## Author wording and README image proposal — 25 October
+Owner acceptance: remove standalone AI-credit boilerplate from current descriptions while retaining truthful technical agent/workflow records, author Mohammed Sheikh-Noor and immutable Git history. Prepare a compact editable functionality infographic for review; do not replace the README front image until owner approval. Retain actual customer read-only and staff authenticated boundaries and do not imply live website enquiry delivery.
