@@ -17,7 +17,7 @@ This single command runs pytest, frontend tests, the TypeScript/production build
 - tests/test_hosting.py: hosting configuration, headers and static-asset recovery.
 - tests/test_catalogue.py: public response/image boundaries and authenticated staff API separation.
 - tests/test_operations.py and tests/test_mcp.py: real local signal collection/correlation, policy and read-only protocol checks.
-- Frontend Vitest tests: interface behaviour, enquiry/task lifecycle, direct links, scheduling context, editor markers and browser-demo isolation; these are not real-browser or live-database tests.
+- Frontend Vitest tests: interface behaviour, enquiry/task lifecycle, direct links, scheduling context, editor markers, mobile menu opening/closing and navigation, and browser-demo isolation; these are not real-browser or live-database tests.
 
 For the optional local PostgreSQL regression, use a disposable database named dealer_test on localhost/127.0.0.1, set TEST_DATABASE_URL privately, then run `uv run python -m pytest tests/test_auth.py tests/test_journey.py tests/test_photos.py`. The fixture creates and removes a random test schema; never point it at business data. CI provisions its own isolated database.
 

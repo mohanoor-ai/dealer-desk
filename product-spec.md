@@ -20,7 +20,7 @@ The deployment contains demonstration records and historical reference prices. I
 
 ### Vehicle browsing
 
-The landing page shows selected reference listings and compact browsing links. Visitors search/filter the catalogue, switch thumbnail/list layout and open a vehicle detail page. Details show price context, availability and credited illustrative photos. Contact details are not invented when none have been supplied.
+The landing page shows selected reference listings and compact browsing links. Visitors search/filter the catalogue, switch thumbnail/list layout and open a vehicle detail page. Details show price context, availability and credited illustrative photos. Contact details are not invented when none have been supplied. At widths up to 760px, top and bottom three-bar controls open a vertical customer or staff menu. The modal supports keyboard dismissal, focus return and current-page indication.
 
 The read-only catalogue includes at most 100 non-archived listings marked internally for demonstration, excluding operational test makes. Responses contain listing fields and credited illustrative photo metadata, not staff notes, customer records, accounts or audit events. Photo delivery repeats that publication check.
 

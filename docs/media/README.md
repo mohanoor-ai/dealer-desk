@@ -16,11 +16,35 @@ File: landing-page.png. Captured 25 October 2026 from the actual production webs
 
 The visible header, Roadster hero, search controls and illustration notice belong to the running application. An existing staff session was present, so navigation reads Staff workspace; visitors without an app session see Staff sign in. No identity, credential, cookie or connection string appears. The hero is generated concept artwork, visibly labelled as an illustration, not a photograph of an available vehicle. Reference vehicle photos elsewhere on the page retain their own credits.
 
+## Full-page site collage
+
+Files: site-collage.jpg and the four originals in screenshots/. Captured 25 October 2026 from https://dealer-desk-prod.vercel.app/ after production health identified bbf5a3fbc7ace63f82fe5e4e792fb5221d9a2609. The browser used its normal desktop viewport. All photographs had loaded before catalogue capture. The full-page originals are unaltered browser captures; an HTML/CSS layout scaled them proportionally with captions into the collage. No UI content was generated or reconstructed. Browser output is JPEG, retained with matching .jpg filenames.
+
+- [Homepage](screenshots/landing-full.jpg): /#/home, including featured vehicles, compact browsing and footer.
+- [Catalogue](screenshots/catalogue-full.jpg): /#/catalogue, all ten listings.
+- [Vehicle details](screenshots/vehicle-full.jpg): /#/car/3, Ford Puma with its reference-price notice and photo credit.
+- [Staff overview](screenshots/staff-overview-full.jpg): /#/overview, existing authenticated manager session, ten stock vehicles and the two previously recorded demonstration enquiries for Jamie Taylor and Alex Morgan. No contact details, password or session token appears. Records were not changed for this capture.
+
+Public browsing needs no app login. An existing staff session changes the header entry to Staff workspace. The saved staff overview is separate from the temporary browser demo and does not imply that a customer reply was sent.
+
+## Logo
+
+File: dealer-desk-logo.svg. Reuses the application's existing SVG emblem path and DEALER DESK wordmark, with its forest-green colour. It is a repository presentation asset, not a new brand design or a change to the owner's GitHub profile.
+
+## Mobile navigation
+
+Files: mobile-navigation.jpg and mobile-bottom-navigation.jpg. Actual local browser captures at 390×844 on 25 October 2026, using the compiled source committed as bbf5a3fbc7ace63f82fe5e4e792fb5221d9a2609 and the isolated loopback SQLite copy. They show the top and bottom menu controls opening the vertical customer navigation. Manual checks also covered 320×640, Escape, link selection, staff destinations and ending the browser-only demo. Viewport overrides were reset. These are local responsive checks, not an automated cross-device matrix. Production served the same compiled JavaScript/CSS bundle after release; public health matched the source revision.
+
 ## Reference photograph credits
 
-Thumbnails visible in the Overview/collage are reference illustrations, not actual stock photos. Optimized/resized copies appear inside the unaltered app screenshots.
+Photographs visible in the captures are illustrative references, not actual dealership stock. Optimized/resized copies appear inside the unaltered app screenshots. The full catalogue collage contains these credited photographs:
 
 - Ford: Vauxford; [source](https://commons.wikimedia.org/wiki/File:2020_Ford_Puma_Titanium_EcoBoost_Hybrid_1.0_Front.jpg); [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0).
+- Jaecoo: © M 93; [source](https://commons.wikimedia.org/wiki/File:Jaecoo_J7_1.6T_4WD_%E2%80%93_f_21032025.jpg); [CC BY-SA 3.0 de](https://creativecommons.org/licenses/by-sa/3.0/de/deed.en).
+- Kia: LuvsMG481; [source](https://commons.wikimedia.org/wiki/File:2025_Kia_Sportage_S_front_only.jpg); [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0).
+- Nissan: Alexander-93; [source](https://commons.wikimedia.org/wiki/File:2024_Nissan_Qashqai_e-Power_IMG_2187.jpg); [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0).
+- Vauxhall: Alexander Migl; [source](https://commons.wikimedia.org/wiki/File:Opel_Corsa-e_at_IAA_2019_IMG_0738.jpg); [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0).
+- Volkswagen: Vauxford; [source](https://commons.wikimedia.org/wiki/File:2020_Volkswagen_Golf_Style_1.5_Front.jpg); [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0).
 - MG: © M 93; [source](https://commons.wikimedia.org/wiki/File:MG_HS_Hybrid%2B_Luxury_(II)_%E2%80%93_f_12032026.jpg); [CC BY-SA 3.0 de](https://creativecommons.org/licenses/by-sa/3.0/de/deed.en).
 - MINI: Alexander-93; [source](https://commons.wikimedia.org/wiki/File:Mini_Hatch_(J01)_Ditzingen_Mobil_IMG_9772_(cropped).jpg); [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0).
 - Tesla: Alexander-93; [source](https://commons.wikimedia.org/wiki/File:Tesla_Model_3_(2023)_Autofr%C3%BChling_Ulm_IMG_9282.jpg); [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0).

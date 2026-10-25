@@ -1,8 +1,12 @@
 # Dealer Desk
 
-[![Dealer Desk landing page with the Roadster concept, vehicle search and customer navigation.](docs/media/landing-page.png)](https://dealer-desk-prod.vercel.app/)
+<p align="center"><img src="docs/media/dealer-desk-logo.svg" alt="Dealer Desk stencil logo" width="360"></p>
 
-<sub>Live production website · Captured 25 October 2026 · [Image details](docs/media/README.md#landing-page)</sub>
+[![Full-page views of the Dealer Desk homepage, vehicle catalogue, vehicle details and saved staff overview.](docs/media/site-collage.jpg)](docs/media/site-collage.jpg)
+
+<sub>Production website · 25 October 2026 · [Capture details](docs/media/README.md#full-page-site-collage)</sub>
+
+Full-size pages: [Homepage](docs/media/screenshots/landing-full.jpg) · [Catalogue](docs/media/screenshots/catalogue-full.jpg) · [Vehicle details](docs/media/screenshots/vehicle-full.jpg) · [Staff overview](docs/media/screenshots/staff-overview-full.jpg)
 
 By [Mohammed Sheikh-Noor](https://github.com/mohanoor-ai).
 
@@ -20,7 +24,7 @@ When vehicle stock, customer enquiries and follow-up tasks are kept in separate 
 
 ### System functionality
 
-**Customer website:** visitors browse reference listings, search and filter vehicles, switch thumbnail/list views and open vehicle details with credited photographs. Browsing does not require a staff account. Website enquiry delivery is not yet connected.
+**Customer website:** visitors browse reference listings, search and filter vehicles, switch thumbnail/list views and open vehicle details with credited photographs. Browsing does not require a staff account. Website enquiry delivery is not yet connected. On phones, top and bottom menu buttons open vertical navigation; the staff menu provides the workspace destinations.
 
 **Staff/dealer workspace:** individual accounts provide access to stock management, photos, enquiries and follow-ups. Staff records a request against a vehicle, opens the enquiry directly, schedules the next action and completes or reopens the task. The overview identifies enquiries without a next action and shows scheduled work with its due date. Viewer accounts are read-only; sales staff can manage records; managers can also inspect audit history.
 
@@ -91,6 +95,8 @@ Actual staff UI captured 25 October 2026 from application code [0b1aff9](https:/
 
 Alex asks whether the Ford Puma is available to view. Staff opens enquiry #2, schedules an availability check and completes that internal task. The enquiry remains open and returns to “No next action scheduled” until staff decides the next step. These are saved API/database operations, not the browser-memory demo. No customer reply was sent. [Workflow evidence](docs/verification.md).
 
+Mobile navigation: [Top menu](docs/media/mobile-navigation.jpg) · [Bottom menu](docs/media/mobile-bottom-navigation.jpg). These local browser captures accompany manual checks at 320px and 390px widths. [Capture details](docs/media/README.md#mobile-navigation).
+
 ## Architecture
 
 ```mermaid
@@ -156,7 +162,7 @@ uv run python -m scripts.verify
 
 After dependency setup, this command runs backend tests, frontend tests, the production build and the limited source/history audit, stopping at the first failure. PostgreSQL, clean Compose, replacement/rollback and local operations labs run as additional CI stages.
 
-The verified application revision [14f075b](https://github.com/mohanoor-ai/dealer-desk/commit/14f075b938b1cc4a3812edaea87c6d12d7b7f6b7) passed 38 backend and 14 frontend tests plus all additional stages in [CI run 40215259023](https://github.com/mohanoor-ai/dealer-desk/actions/runs/40215259023). Production health matched that revision. Documentation-only revisions can follow it; their own checks remain visible in Actions.
+The verified application revision [bbf5a3f](https://github.com/mohanoor-ai/dealer-desk/commit/bbf5a3fbc7ace63f82fe5e4e792fb5221d9a2609) passed 38 backend and 16 frontend tests plus all additional stages in [CI run 40224933435](https://github.com/mohanoor-ai/dealer-desk/actions/runs/40224933435). Production health matched that revision. Documentation-only revisions can follow it; their own checks remain visible in Actions.
 
 [Testing commands](docs/testing.md) explain each layer. [Verification](docs/verification.md) retains actual observations and limits. Browser captures/manual checks are not an automated cross-engine suite. The local Docker engine was unavailable during the final checks; hosted CI demonstrated the clean Compose journey and recovery.
 
