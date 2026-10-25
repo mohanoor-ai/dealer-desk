@@ -1,7 +1,7 @@
 import {useEffect,useRef,useState} from 'react';
 import type {FormEvent} from 'react';
 import type {Snapshot,Vehicle} from './types';
-import {ApiError,loadSnapshot,request,poundsToPence} from './api';
+import {ApiError,loadSnapshot,request,poundsToPence,modelForSave} from './api';
 import {useRoute} from './navigation';
 import {StockPage,OverviewPage,VehiclePage,EnquiriesPage,FollowUpsPage,Heading} from './Pages';
 import {VehicleForm} from './WorkForms';
@@ -95,7 +95,7 @@ export default function App(){
   async function saveVehicle(event:FormEvent<HTMLFormElement>){
     event.preventDefault();const data=new FormData(event.currentTarget);setSaving(true);setError('');
     try{
-      const fields={make:String(data.get('make')).trim(),model:String(data.get('model')).trim(),year:Number(data.get('year')),price_pence:poundsToPence(String(data.get('price')))};
+      const fields={make:String(data.get('make')).trim(),model:modelForSave(String(data.get('model')),editing?.model),year:Number(data.get('year')),price_pence:poundsToPence(String(data.get('price')))};
       const saved=await request<Vehicle>(editing?`/api/vehicles/${editing.id}`:'/api/vehicles',editing?'PATCH':'POST',editing?{...fields,revision:editing.revision}:fields);
       setEditing(null);await refresh();window.location.hash=`/vehicles/${saved.id}`;setNotice('Vehicle saved.');
     }catch(error){showError(error);}finally{setSaving(false);}

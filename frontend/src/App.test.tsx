@@ -1,7 +1,7 @@
 import {afterEach,beforeEach,expect,test,vi} from 'vitest';
 import {render,screen,fireEvent,cleanup} from '@testing-library/react';
 import App from './App';
-import {poundsToPence,request} from './api';
+import {poundsToPence,request,modelForSave} from './api';
 import {endDemo} from './demo';
 
 beforeEach(()=>{window.location.hash='/stock';vi.stubGlobal('fetch',vi.fn());});
@@ -67,4 +67,10 @@ test('customer demo starts without login and ends back at staff sign-in',async()
  expect(screen.queryByLabelText('Password')).not.toBeInTheDocument();
  expect(screen.queryByRole('button',{name:'Explore customer demo'})).not.toBeInTheDocument();
  expect(screen.getAllByRole('link',{name:/Staff sign in/}).every(a=>a.getAttribute('href')==='#/login')).toBe(true);
+ });
+
+ test('vehicle edits preserve the internal catalogue marker without duplicating it',()=>{
+ expect(modelForSave('Puma Titanium','Puma (sample)')).toBe('Puma Titanium (sample)');
+ expect(modelForSave('Puma (sample)','Puma (sample)')).toBe('Puma (sample)');
+ expect(modelForSave(' Golf Life ','Golf')).toBe('Golf Life');
  });

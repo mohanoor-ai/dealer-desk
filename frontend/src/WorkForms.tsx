@@ -8,7 +8,7 @@ export type Change = (path:string,method:string,data:unknown)=>Promise<boolean>;
 export function VehicleForm({vehicle,saving,onSave,onCancel}:{vehicle:Vehicle|null;saving:boolean;onSave:(event:FormEvent<HTMLFormElement>)=>void;onCancel:()=>void}) {
   return <form key={vehicle?.id||'new'} onSubmit={onSave} className="vehicle-form">
     <label>Make<input name="make" defaultValue={vehicle?.make} required maxLength={60} placeholder="e.g. Ford"/></label>
-    <label>Model<input name="model" defaultValue={vehicle?.model} required maxLength={80} placeholder="e.g. Puma Titanium"/></label>
+    <label>Model<input name="model" defaultValue={vehicle?vehicleName('',vehicle.model).trim():''} required maxLength={vehicle?.model.endsWith(' (sample)')?71:80} placeholder="e.g. Puma Titanium"/></label>
     <div className="form-row"><label>Year<input name="year" type="number" min={1900} max={2100} defaultValue={vehicle?.year||2026} required/></label><label>Price (£)<input name="price" type="number" step="0.01" min="0" max="1000000" defaultValue={vehicle?(vehicle.price_pence/100).toFixed(2):''} placeholder="0.00" required/></label></div>
     {vehicle&&<p className="hint">Changes are checked against the version you opened. If another person saves first, refresh and review before trying again.</p>}
     <div className="dialog-actions"><button className="secondary" type="button" disabled={saving} onClick={onCancel}>Cancel</button><button disabled={saving}>{saving?'Saving…':'Save vehicle'}</button></div>
