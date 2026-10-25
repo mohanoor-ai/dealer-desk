@@ -22,7 +22,7 @@ export function EnquiryForm({snapshot,change,saving,preferredVehicle=0}:{snapsho
   }
   return <form onSubmit={submit} key={preferredVehicle}>
     <label>Vehicle<select name="vehicle_id" defaultValue={preferredVehicle||snapshot.vehicles[0]?.id} required>{snapshot.vehicles.map(vehicle=><option key={vehicle.id} value={vehicle.id}>{vehicleName(vehicle.make,vehicle.model)} · #{vehicle.id}</option>)}</select></label>
-    <label>Customer name<input name="customer" required maxLength={80} placeholder="Fictional customer name"/></label>
+    <label>Customer name<input name="customer" required maxLength={80} placeholder="e.g. Alex Morgan"/></label>
     <label>Message<textarea name="message" required maxLength={1000} placeholder="What would they like to know?"/></label>
     <button disabled={saving||!snapshot.vehicles.length}>{saving?'Saving…':'Save enquiry'}</button>
   </form>;

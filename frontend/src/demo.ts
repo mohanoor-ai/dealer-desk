@@ -10,7 +10,7 @@ export function endDemo(){state=null;expires=0;}
 export function startDemo(next:DemoRole){
   role=next;expires=Date.now()+30*60*1000;
   const stamp=new Date().toISOString();
-  state={vehicles:[['Ford','Puma',2499500],['Nissan','Qashqai',2799500],['Volkswagen','Golf',2299500]].map(([make,model,price],i)=>({id:i+1,make:String(make),model:String(model),year:2024,price_pence:Number(price),status:'available',archived:false,approved_facts:['Fictional demonstration vehicle. Price is illustrative.'],revision:1,created_at:stamp,updated_at:stamp,photo_count:0})),enquiries:[],tasks:[]};
+  state={vehicles:[['Ford','Puma',2499500],['Nissan','Qashqai',2799500],['Volkswagen','Golf',2299500]].map(([make,model,price],i)=>({id:i+1,make:String(make),model:String(model),year:2024,price_pence:Number(price),status:'available',archived:false,approved_facts:['Reference vehicle. Price is illustrative.'],revision:1,created_at:stamp,updated_at:stamp,photo_count:0})),enquiries:[],tasks:[]};
   return expires;
 }
 // Deliberately has no fetch, browser storage, cookies or access to dealership data.
