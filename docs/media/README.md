@@ -50,3 +50,7 @@ Photographs visible in the captures are illustrative references, not actual deal
 - Tesla: Alexander-93; [source](https://commons.wikimedia.org/wiki/File:Tesla_Model_3_(2023)_Autofr%C3%BChling_Ulm_IMG_9282.jpg); [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0).
 - Volvo: Elise240SX; [source](https://commons.wikimedia.org/wiki/File:2019_Volvo_XC40_T5_Momentum_in_Bright_Silver_Metallic,_front_left,_2025-09-22.jpg); [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0).
 - Ford: Vauxford; [source](https://commons.wikimedia.org/wiki/File:2020_Ford_Puma_Titanium_EcoBoost_Hybrid_1.0_Rear.jpg); [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0).
+
+## Functionality diagram
+
+File: dealer-desk-functionality.svg. Editable vector diagram prepared 25 October 2026 from the implemented public catalogue, authenticated staff workflow, API boundaries and persistence described in architecture.md. It is a functionality diagram, not a screenshot or proof of a delivered customer enquiry. It explicitly distinguishes read-only public browsing from staff-entered enquiries. The owner approved displaying it at 560px wide in README; the full-size SVG and original screenshot collage remain linked. No external image assets or private records are used.

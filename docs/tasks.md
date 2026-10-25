@@ -89,3 +89,5 @@ Acceptance: fetch the public catalogue before a new customer/staff demo, copy on
 
 ## Author wording and README image proposal — 25 October
 Owner acceptance: remove standalone AI-credit boilerplate from current descriptions while retaining truthful technical agent/workflow records, author Mohammed Sheikh-Noor and immutable Git history. Prepare a compact editable functionality infographic for review; do not replace the README front image until owner approval. Retain actual customer read-only and staff authenticated boundaries and do not imply live website enquiry delivery.
+
+Owner approved the reduced 560px functionality diagram. Replace only the tall front collage with the linked SVG, retaining the logo, screenshot originals/collage links, workflow captures and final telemetry screenshot. Verify rendered GitHub layout and final exact-commit CI before aligning the submitted revision.

@@ -2,9 +2,9 @@
 
 <p align="center"><img src="docs/media/dealer-desk-logo.svg" alt="Dealer Desk stencil logo" width="360"></p>
 
-[![Full-page views of the Dealer Desk homepage, vehicle catalogue, vehicle details and saved staff overview.](docs/media/site-collage.jpg)](docs/media/site-collage.jpg)
+<p align="center"><a href="docs/media/dealer-desk-functionality.svg"><img src="docs/media/dealer-desk-functionality.svg" alt="Dealer Desk functionality: public vehicle browsing and authenticated staff stock, enquiries and follow-ups, backed by shared persistent records." width="560"></a></p>
 
-<sub>Production website · 25 October 2026 · [Capture details](docs/media/README.md#full-page-site-collage)</sub>
+<sub>[Architecture details](docs/architecture.md) · [Full screenshot collage](docs/media/site-collage.jpg)</sub>
 
 Full-size pages: [Homepage](docs/media/screenshots/landing-full.jpg) · [Catalogue](docs/media/screenshots/catalogue-full.jpg) · [Vehicle details](docs/media/screenshots/vehicle-full.jpg) · [Staff overview](docs/media/screenshots/staff-overview-full.jpg)
 
