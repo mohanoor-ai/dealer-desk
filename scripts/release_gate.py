@@ -11,6 +11,7 @@ def passed(runs, revision):
     eligible = [run for run in runs if run.get('head_sha') == revision
                 and run.get('path') == '.github/workflows/ci.yml'
                 and run.get('event') == 'push'
+                and run.get('head_branch') == 'main'
                 and run.get('head_repository', {}).get('full_name') == REPOSITORY]
     if not eligible:
         return False

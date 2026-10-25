@@ -24,4 +24,4 @@ Temporary browser demos use fictional data in per-tab memory. They do not demons
 
 ## Remaining work
 
-Assessor access, a repeatable two-browser verification, CI-gated release and rollback, collected operational signals, an alert/repair exercise and the agent extension pack remain outstanding. R2 storage and a public customer showroom are planned. This description does not claim final assessment readiness.
+Independent staff-session conflict/refresh, exact-commit CI gating, clean CI Compose startup, image rollback/forward recovery, local correlated operational signals, a real deterministic alert/repair exercise and the read-only MCP extension are verified. Separate protected production promotion is being configured. No LLM diagnosis or independently invoked specialist is claimed. R2 storage and a public customer showroom are planned. This description does not claim final assessment readiness.

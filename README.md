@@ -74,7 +74,7 @@ Local development defaults to SQLite at data/dealer-v2.sqlite3. Set DATABASE_URL
 - Atomic revision checks reject conflicting edits; every material mutation records actor, record ID and revision in the audit table.
 - Validated API inputs, centralized browser client and helpful empty/error states.
 
-The API also supports archive/restore and manager audit queries; dedicated interface controls for these remain to be completed. Import/export, backup/restore, a public customer showroom, CI-gated delivery, full operations evidence and optional AI are not completed in this milestone. A protected Vercel development deployment is now verified below.
+The API also supports archive/restore and manager audit queries; dedicated interface controls for these remain to be completed. Import/export, backup/restore, a public customer showroom, a production monitoring service and optional AI are not completed in this milestone. A protected Vercel development deployment is now verified below.
 
 ## Tests
 After `uv sync --frozen` and `npm ci --prefix frontend`, run `uv run python -m scripts.verify` for backend tests, frontend tests, the production build and the limited source/history audit. The command stops if any check fails. Individual commands and database/browser/container boundaries are in [testing instructions](docs/testing.md). Actual results and limitations are in [verification](docs/verification.md).
@@ -105,8 +105,8 @@ Acceptance criteria and remaining work: https://github.com/mohanoor-ai/dealer-de
 
 Hosted checks: https://github.com/mohanoor-ai/dealer-desk/actions
 
-The first hosted CI run passed for cd525a9. Protected development hosting is verified. CI-gated CD and public release remain pending; see docs/verification.md for exact evidence.
+The first hosted CI run passed for cd525a9. Protected development hosting is verified. Exact-commit CI gating and local operations/recovery are verified; the separate protected production release is being configured. See docs/verification.md for exact evidence.
 
 ## Learning in public
 
-Three articles are being prepared: scope and architecture; browser/API/database persistence; and testing and deployment. Drafts remain private until reviewed. Published article links will be collected in the [article index](docs/articles/README.md). These articles explain implementation decisions; assessment evidence remains in the verification record.
+Read [Building Dealer Desk](docs/articles/01-building-dealer-desk.md), [From the browser to saved records](docs/articles/02-browser-to-saved-records.md), and [Testing release and recovery](docs/articles/03-testing-release-and-recovery.md). These technical articles describe actual decisions and checks, with AI assistance disclosed. The [article index](docs/articles/README.md) collects them; assessment evidence remains in the verification record. Private lesson notes and transcripts stay outside the repository.

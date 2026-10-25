@@ -14,8 +14,12 @@ The CI workflow starts the application and PostgreSQL using Compose in a dedicat
 
 Next CI builds the previous Git revision into the app image, starts it against the same disposable rehearsal database and verifies the saved journey. It then restores the current image and verifies again. Only the smoke verification helper is copied into the previous container; its application code remains the previous image. This tests compatible code rollback and forward recovery, not rollback of a destructive schema migration. Actual output is retained as container-verification.txt and rollback-verification.txt workflow artifacts.
 
+## Manual production release
+
+The operator selects a full reviewed revision and runs `uv run python -m scripts.promote <revision>`. This checks trusted exact-revision CI, verifies the local commit exists, and advances production-release without force. The production project will deploy that branch; development remains on main. This explicit action uses the operator's existing Git permissions and needs no extra deployment token. Check health/staff workflow after deployment.
+
 ## Production boundary
 
-A separate protected production project and database branch require owner authorization and configuration before manual production promotion can be exercised. Until then no independent production deployment or cloud rollback is claimed. Keep the existing Vercel protection enabled. Do not promote a release with unreviewed migrations, missing smoke evidence or incompatible database changes.
+The owner authorized a separate protected production project and isolated Neon branch on 25 October. The branch is created and configuration is in progress; no completed production deployment or cloud rollback is yet claimed. Keep the existing Vercel protection enabled. Do not promote a release with unreviewed migrations, missing smoke evidence or incompatible database changes.
 
 Cloud operator checklist: verify exact CI revision, identify immutable deployment, inspect dev smoke evidence, manually select the approved production release, verify protected health/staff journey, and retain deployment IDs and results. Roll back only to a compatible known-good image; restore data separately into an isolated database before any deliberate cutover. Code rollback does not undo database writes.
