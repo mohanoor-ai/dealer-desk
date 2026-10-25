@@ -1,0 +1,114 @@
+{
+  "source": "GitHub Actions API",
+  "revision": "5fc3aaecc00dceea0a41effb3c63c4ca37f75134",
+  "url": "https://github.com/mohanoor-ai/dealer-desk/actions/runs/40182100368",
+  "status": "completed",
+  "conclusion": "success",
+  "steps": [
+    {
+      "name": "Set up job",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Initialize containers",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run actions/checkout@v4",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run actions/setup-python@v5",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run actions/setup-node@v4",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run python -m pip install uv",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run uv sync --frozen",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run npm ci",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Core verification",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "PostgreSQL integration regression",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Run docker build -t dealer-desk:ci .",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Clean Compose journey and container replacement",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Previous-image rollback and forward recovery",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Controlled local operations rehearsal",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Preserve verification output",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Stop disposable Compose services",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Post Run actions/setup-node@v4",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Post Run actions/setup-python@v5",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Post Run actions/checkout@v4",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Stop containers",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "Complete job",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ]
+}

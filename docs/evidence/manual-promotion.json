@@ -1,0 +1,10 @@
+{
+  "action": "operator-invoked promotion under owner authorization",
+  "revision": "5fc3aaecc00dceea0a41effb3c63c4ca37f75134",
+  "branch": "production-release",
+  "trusted_main_ci": "https://github.com/mohanoor-ai/dealer-desk/actions/runs/40182100368",
+  "ci_result": "success",
+  "command": "uv run python -m scripts.promote <full revision>",
+  "branch_updated": true,
+  "cloud_smoke": "pending"
+}

@@ -18,6 +18,16 @@ def test_local_database_and_cookie_defaults():
     assert not secure_cookies()
 
 
+def test_health_identifies_revision_without_echoing_invalid_environment(client, monkeypatch):
+    monkeypatch.setenv('VERCEL_GIT_COMMIT_SHA', 'a'*40)
+    response = client.get('/health')
+    assert response.status_code == 200 and response.json()['revision'] == 'a'*40
+    monkeypatch.setenv('VERCEL_GIT_COMMIT_SHA', 'private-invalid-value')
+    response = client.get('/health')
+    assert response.json()['revision'] == 'unknown'
+    assert 'private-invalid-value' not in response.text
+
+
 @pytest.mark.parametrize('value', [None, 'sqlite:///:memory:', 'postgresql://user:private@host/db'])
 def test_hosted_runtime_rejects_missing_persistent_secure_storage(monkeypatch, value):
     monkeypatch.setenv('VERCEL', '1')

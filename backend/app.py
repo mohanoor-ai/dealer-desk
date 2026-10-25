@@ -201,7 +201,10 @@ def create_app(database_url=None):
     @app.get('/health')
     def health(db=Depends(database)):
         db.execute(select(Vehicle.id).limit(1))
-        return {'status': 'ok', 'version': app.version}
+        revision = os.environ.get('VERCEL_GIT_COMMIT_SHA', os.environ.get('APP_REVISION', 'local'))
+        if not re.fullmatch(r'[a-f0-9]{40}|local', revision):
+            revision = 'unknown'
+        return {'status': 'ok', 'version': app.version, 'revision': revision}
 
     @app.post('/api/auth/login', response_model=s.UserOutput)
     def login(body: s.Login, request: Request, response: Response, db=Depends(database)):

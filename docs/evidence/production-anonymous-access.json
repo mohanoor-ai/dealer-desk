@@ -1,0 +1,20 @@
+{
+  "anonymous_requests": [
+    {
+      "path": "/",
+      "status": 302,
+      "redirect_host": "vercel.com"
+    },
+    {
+      "path": "/health",
+      "status": 302,
+      "redirect_host": "vercel.com"
+    },
+    {
+      "path": "/api/vehicles",
+      "status": 302,
+      "redirect_host": "vercel.com"
+    }
+  ],
+  "protected": true
+}
