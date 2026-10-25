@@ -1,0 +1,47 @@
+import {afterEach,expect,test,vi} from 'vitest';
+import {render,screen,fireEvent,cleanup} from '@testing-library/react';
+import {OverviewPage,EnquiriesPage,FollowUpsPage} from './Pages';
+import {routeFromHash} from './navigation';
+import {taskTiming} from './workflow';
+import type {Snapshot,Task} from './types';
+afterEach(cleanup);
+const stamp='2026-10-25T10:00:00Z';
+const snapshot:Snapshot={vehicles:[{id:1,make:'Ford',model:'Puma (sample)',year:2026,price_pence:2714500,status:'available',archived:false,revision:1,approved_facts:[],created_at:stamp,updated_at:stamp}],enquiries:[{id:1,vehicle_id:1,customer:'Fictional buyer A',message:'Is the Puma available to view?',status:'new',revision:1,created_at:stamp,updated_at:stamp},{id:2,vehicle_id:1,customer:'Fictional buyer B',message:'Please check the listed price.',status:'contacted',revision:1,created_at:stamp,updated_at:stamp},{id:3,vehicle_id:1,customer:'Closed buyer',message:'Closed request',status:'closed',revision:1,created_at:stamp,updated_at:stamp}],tasks:[]};
+const task:Task={id:8,enquiry_id:2,due_date:'2026-10-26',note:'Check the reference price before replying.',completed:false,revision:1,created_at:stamp,updated_at:stamp};
+test('open enquiries remain visibly unscheduled after their last task completes',()=>{
+ const {rerender}=render(<OverviewPage snapshot={snapshot} canWrite onAdd={()=>{}}/>);
+ expect(screen.getAllByText('No next action scheduled')).toHaveLength(2);
+ expect(screen.queryByText('Closed buyer')).not.toBeInTheDocument();
+ expect(screen.queryByText("You're up to date")).not.toBeInTheDocument();
+ expect(screen.getByRole('link',{name:'Open enquiries →'})).toHaveAttribute('href','#/enquiries?status=open');
+ expect(screen.getByRole('link',{name:'View 2 open enquiries'})).toHaveAttribute('href','#/enquiries?status=open');
+ expect(screen.getByRole('link',{name:/^Enquiry #2$/})).toHaveAttribute('href','#/enquiries?enquiry=2');
+ rerender(<OverviewPage snapshot={{...snapshot,tasks:[task]}} canWrite onAdd={()=>{}}/>);
+ expect(screen.getAllByText('No next action scheduled')).toHaveLength(1);
+ expect(screen.getByText(task.note)).toBeInTheDocument();
+ expect(screen.getByRole('link',{name:'View follow-up →'})).toHaveAttribute('href','#/follow-ups?enquiry=2');
+ rerender(<OverviewPage snapshot={{...snapshot,tasks:[{...task,completed:true}]}} canWrite onAdd={()=>{}}/>);
+ expect(screen.getAllByText('No next action scheduled')).toHaveLength(2);
+});
+test('schedule link preselects the chosen enquiry including after delayed records arrive',async()=>{
+ const change=vi.fn().mockResolvedValue(true);
+ const {unmount}=render(<EnquiriesPage snapshot={snapshot} canWrite saving={false} change={change} preferredVehicle={0} selectedEnquiry={2}/>);
+ expect(screen.getByRole('link',{name:'Schedule follow-up'})).toHaveAttribute('href','#/follow-ups?enquiry=2');
+ const route=routeFromHash(screen.getByRole('link',{name:'Schedule follow-up'}).getAttribute('href')!);unmount();
+ const {rerender}=render(<FollowUpsPage snapshot={{vehicles:[],enquiries:[],tasks:[]}} canWrite saving={false} change={change} enquiryId={route.enquiryId}/>);
+ rerender(<FollowUpsPage snapshot={snapshot} canWrite saving={false} change={change} enquiryId={route.enquiryId}/>);
+ expect(screen.getByLabelText('Enquiry')).toHaveValue('2');
+ fireEvent.change(screen.getByLabelText('Due date'),{target:{value:'2026-10-26'}});
+ fireEvent.change(screen.getByLabelText('Task note'),{target:{value:task.note}});
+ fireEvent.click(screen.getByRole('button',{name:'Save follow-up'}));
+ await vi.waitFor(()=>expect(change).toHaveBeenCalledWith('/api/tasks','POST',{enquiry_id:2,due_date:'2026-10-26',note:task.note}));
+});
+test('viewer sees missing next action without scheduling controls; dates are explicit',()=>{
+ render(<OverviewPage snapshot={snapshot} canWrite={false} onAdd={()=>{}}/>);
+ expect(screen.getAllByText('No next action scheduled')).toHaveLength(2);
+ expect(screen.queryByRole('link',{name:'Schedule follow-up'})).not.toBeInTheDocument();
+ expect(taskTiming({...task,due_date:'2026-10-24'},'2026-10-25')).toBe('Overdue');
+ expect(taskTiming({...task,due_date:'2026-10-25'},'2026-10-25')).toBe('Due today');
+ expect(taskTiming(task,'2026-10-25')).toBe('Upcoming');
+ expect(routeFromHash('#/follow-ups?enquiry=not-a-number').enquiryId).toBe(0);
+});

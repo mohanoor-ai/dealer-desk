@@ -120,8 +120,8 @@ export default function App(){
           {demo==='customer'?<CustomerDemo snapshot={snapshot} vehicle={route.page==='vehicle'?vehicle:undefined} loading={loading} saving={saving} change={change}/>:<>
           {route.page==='stock'&&<StockPage snapshot={snapshot} loading={loading} canWrite={canWrite} onAdd={onAdd}/>}
           {route.page==='overview'&&<OverviewPage snapshot={snapshot} canWrite={canWrite} onAdd={onAdd}/>}
-          {route.page==='enquiries'&&<EnquiriesPage snapshot={snapshot} canWrite={canWrite} saving={saving} change={change} preferredVehicle={preferredVehicle}/>}
-          {route.page==='follow-ups'&&<FollowUpsPage snapshot={snapshot} canWrite={canWrite} saving={saving} change={change}/>}
+          {route.page==='enquiries'&&<EnquiriesPage snapshot={snapshot} canWrite={canWrite} saving={saving} change={change} preferredVehicle={preferredVehicle} initialFilter={route.filter} selectedEnquiry={route.enquiryId}/>}
+          {route.page==='follow-ups'&&<FollowUpsPage snapshot={snapshot} canWrite={canWrite} saving={saving} change={change} enquiryId={route.enquiryId}/>}
           {route.page==='vehicle'&&(vehicle?<VehiclePage vehicle={vehicle} snapshot={snapshot} canWrite={canWrite} saving={saving} change={change} refresh={refresh} onEdit={()=>{setError('');setEditing({...vehicle});}} onEnquire={()=>{setPreferredVehicle(vehicle.id);window.location.hash='/enquiries';}}/>:<div className="empty"><h1>{loading?'Loading vehicle…':'Vehicle not found'}</h1><p>It may have been archived or removed from active stock.</p><a href="#/stock">Return to stock</a></div>)}
           {route.page==='new'&&(canWrite?<><Heading eyebrow="YOUR INVENTORY / NEW VEHICLE" title="Add to your stock." description="Start with the essentials. You can add photos on the vehicle page."/><section className="panel new-vehicle-panel"><VehicleForm vehicle={null} saving={saving} onSave={saveVehicle} onCancel={()=>{window.location.hash='/stock';}}/></section></>:<div className="empty">Your account has read-only access.</div>)}
           </>}

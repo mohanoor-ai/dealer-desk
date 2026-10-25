@@ -47,3 +47,8 @@ Acceptance: approved warm white/forest green layout, original stencil DD logo an
 
 ## Public production access — 25 October
 Owner requested removal of the Vercel wall. Acceptance verified: production homepage/sample catalogue open without Vercel credentials; private stock/enquiry/task APIs require app login; previews and development retain protection. Actual no-cookie results recorded in verification.md.
+
+## Issue 5 — actionable open enquiries
+Acceptance: Open enquiries links to non-closed records; overview names customer/vehicle and displays actual enquiry text plus unscheduled/overdue/due-today/upcoming state; enquiry cards link existing incomplete tasks or preselect that enquiry in Schedule follow-up; completing the last task while enquiry stays open restores unscheduled state; closed enquiries excluded from attention. Preserve viewer restrictions and backend auth. Verify with regression tests and a real saved local workflow. Update issue/evidence and release; bulk upload and message integrations remain deferred.
+
+Owner refinement: clicking the enquiry count opens open enquiries; clicking an individual enquiry number opens that exact enquiry from Overview, enquiry cards, vehicle-linked enquiries and follow-up tasks.
