@@ -14,6 +14,8 @@ Dealer Desk is a web application for one car dealership. It keeps vehicle availa
 
 [Public website](https://dealer-desk-prod.vercel.app/) · [Source code](https://github.com/mohanoor-ai/dealer-desk) · [Task tracker](https://github.com/mohanoor-ai/dealer-desk/issues)
 
+**Running the app:** [Open the cloud deployment](https://dealer-desk-prod.vercel.app/) on [Vercel](https://vercel.com/) with [Neon PostgreSQL](https://neon.com/), or [run locally with Docker Compose](#run-locally). To recreate the hosted setup in your own accounts, follow the [cloud deployment how-to](docs/deployment-vercel.md#recreate-the-cloud-deployment).
+
 [Problem](#problem-description) · [Specification](#product-specification) · [Technology](#technology-stack) · [Workflow](#workflow-in-practice) · [Setup](#run-locally) · [Tests](#tests-and-verification) · [Deployment](#deployment) · [Operations](#observability-and-incident-response) · [Issues](#issue-tracker)
 
 ## Problem description
@@ -74,7 +76,7 @@ Supporting specifications and records:
 | FastAPI + Pydantic | Handles API requests and validates incoming data |
 | SQLAlchemy + Alembic | Accesses business records and manages versioned database migrations |
 | PostgreSQL / SQLite | PostgreSQL stores hosted records; SQLite supports local development |
-| Vercel + Neon | Vercel hosts the frontend/API; Neon hosts PostgreSQL |
+| [Vercel](https://vercel.com/) + [Neon](https://neon.com/) | Vercel hosts the frontend/API; Neon hosts PostgreSQL |
 | Pillow | Validates/processes uploads, removes image metadata and creates thumbnails |
 | pytest + Vitest / React Testing Library | Tests backend/database behaviour and frontend interactions |
 | [Docker Compose](docker-compose.yml) | Runs the application and PostgreSQL together locally |
@@ -168,7 +170,9 @@ The verified application revision [bbf5a3f](https://github.com/mohanoor-ai/deale
 
 ## Deployment
 
-Vercel serves the built frontend and FastAPI application. Neon PostgreSQL stores business records, staff sessions, audit events and processed images. Database connections stay server-side and use TLS.
+[Vercel](https://vercel.com/) serves the built frontend and FastAPI application. [Neon PostgreSQL](https://neon.com/) stores business records, staff sessions, audit events and processed images. Database connections stay server-side and use TLS.
+
+Docker Compose reproduces the application locally. Versioned migrations, locked dependencies and the deployment steps support recreating the cloud setup with a separate database; they do not copy the existing hosted records. [Run locally](#run-locally) · [Recreate the cloud deployment](docs/deployment-vercel.md#recreate-the-cloud-deployment).
 
 | Environment | URL | Access |
 |---|---|---|
