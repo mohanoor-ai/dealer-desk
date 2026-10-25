@@ -74,6 +74,8 @@ Foreign keys preserve relationships. Pydantic rejects unknown fields and invalid
 | A1 | Read-only MCP, reusable procedure, specialist definition and enforced policy have explicit permissions | extension pack; MCP/policy tests; independent specialist invocation not demonstrated |
 | S1 | Actual source/dependency scan findings and their disposition are retained with scope/limits | security/review.md; security JSON reports; limited scanner |
 
+New demos copy the current public catalogue before activating; they do not use a fixed three-car fixture. Bootstrap failure or an empty catalogue leaves the demo inactive with an error. Reset restores that starting snapshot and a new session fetches the catalogue again.
+
 ## Public project journal
 
 Visitors can read fourteen authored project articles without staff login, available through direct public URLs. Article links are relative to the app origin and sources/images ship with the build. Markdown remains readable in the repository; private notes/transcripts are excluded. Each post identifies its author/date and course hashtag.

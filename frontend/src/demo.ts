@@ -1,4 +1,6 @@
-import type {Snapshot} from './types';
+import type {Snapshot,Vehicle,Photo} from './types';
+export type DemoVehicleSeed=Pick<Vehicle,'id'|'make'|'model'|'year'|'price_pence'|'status'>&{photos?:Photo[]};
+let pictures=new Map<number,Photo[]>();
 
 export type DemoRole='customer'|'dealer';
 let state:Snapshot|null=null;
@@ -6,14 +8,19 @@ let role:DemoRole='customer';
 let expires=0;
 export class DemoError extends Error {}
 export function demoActive(){return state!==null;}
-export function endDemo(){state=null;expires=0;}
-export function startDemo(next:DemoRole){
+export function endDemo(){state=null;expires=0;pictures.clear();}
+export function startDemo(next:DemoRole,seed:DemoVehicleSeed[]){
+  if(!seed.length)throw new DemoError('There are no public vehicles available for the demo. Please try again later.');
   role=next;expires=Date.now()+30*60*1000;
   const stamp=new Date().toISOString();
-  state={vehicles:[['Ford','Puma',2499500],['Nissan','Qashqai',2799500],['Volkswagen','Golf',2299500]].map(([make,model,price],i)=>({id:i+1,make:String(make),model:String(model),year:2024,price_pence:Number(price),status:'available',archived:false,approved_facts:['Reference vehicle. Price is illustrative.'],revision:1,created_at:stamp,updated_at:stamp,photo_count:0})),enquiries:[],tasks:[]};
+  pictures=new Map(seed.slice(0,100).map(car=>[car.id,structuredClone((car.photos||[]).filter(p=>p.illustrative))]));
+  state={vehicles:seed.slice(0,100).map(car=>{
+    const photos=pictures.get(car.id)||[],cover=photos.find(p=>p.is_cover)||photos[0];
+    return {id:car.id,make:car.make,model:car.model,year:car.year,price_pence:car.price_pence,status:car.status,archived:false,approved_facts:['Reference vehicle. Price is illustrative.'],revision:1,created_at:stamp,updated_at:stamp,photo_count:photos.length,cover_photo_id:cover?.id||null,cover_photo:cover||null};
+  }),enquiries:[],tasks:[]};
   return expires;
 }
-// Deliberately has no fetch, browser storage, cookies or access to dealership data.
+// Deliberately has no fetch, browser storage, cookies or access to private dealership records.
 export function demoRequest(path:string,method:string,data?:unknown):unknown {
   if(!state)throw new DemoError('Start a new demo.');
   if(Date.now()>=expires)throw new DemoError('Your demo has expired. End it and start a new demo.');
@@ -21,7 +28,7 @@ export function demoRequest(path:string,method:string,data?:unknown):unknown {
   if(!match)throw new DemoError('This operation is unavailable in the browser demo.');
   const collection=match[1] as keyof Snapshot,id=Number(match[2]);
   const rows=state[collection] as unknown as Record<string,unknown>[];
-  if(match[3]){if(method==='GET')return [];throw new DemoError('Photo uploads require a staff account.');}
+  if(match[3]){if(method==='GET')return structuredClone(pictures.get(id)||[]);throw new DemoError('Photo uploads require a staff account.');}
   const row=rows.find(item=>item.id===id);
   if(method==='GET'){
     if(id){if(!row)throw new DemoError('Record not found.');return structuredClone(row);}

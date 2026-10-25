@@ -6,7 +6,7 @@ import {useRoute} from './navigation';
 import {StockPage,OverviewPage,VehiclePage,EnquiriesPage,FollowUpsPage,Heading} from './Pages';
 import {VehicleForm} from './WorkForms';
 import CustomerDemo from './CustomerDemo';
-import {startDemo,endDemo,type DemoRole} from './demo';
+import {startDemo,endDemo,type DemoRole,type DemoVehicleSeed} from './demo';
 import './style.css';
 import './pages.css';
 import Storefront,{Brand} from './Storefront';
@@ -24,6 +24,8 @@ export default function App(){
   const [demo,setDemo]=useState<DemoRole|null>(null);
   const [demoExpiry,setDemoExpiry]=useState(0);
   const [demoChooser,setDemoChooser]=useState(false);
+  const [demoStarting,setDemoStarting]=useState(false);
+  const demoSeed=useRef<DemoVehicleSeed[]>([]);
   const publicPage=!demo&&['learning','home','catalogue','catalogue-detail','contact','privacy'].includes(route.page);
   const [checking,setChecking]=useState(true);
   const [snapshot,setSnapshot]=useState(empty);
@@ -36,10 +38,16 @@ export default function App(){
   const editDialog=useRef<HTMLDialogElement>(null);
   const canWrite=!!user&&user.role!=='viewer';
 
-  function openDemo(role:DemoRole){
-    setDemoChooser(false);setDemoExpiry(startDemo(role));setDemo(role);setSnapshot(empty);setError('');setNotice('');setEditing(null);
-    setUser({id:0,username:`${role==='dealer'?'Dealer':'Customer'} demo`,role:role==='dealer'?'sales':'viewer'});
-    window.location.hash='/stock';
+  async function openDemo(role:DemoRole){
+    if(demoStarting)return;
+    setDemoStarting(true);setError('');
+    try{
+      const seed=demo?demoSeed.current:(await request<{items:DemoVehicleSeed[]}>('/api/catalogue')).items;
+      const expiry=startDemo(role,seed);demoSeed.current=structuredClone(seed);
+      setDemoChooser(false);setDemoExpiry(expiry);setDemo(role);setSnapshot(empty);setNotice('');setEditing(null);
+      setUser({id:0,username:`${role==='dealer'?'Dealer':'Customer'} demo`,role:role==='dealer'?'sales':'viewer'});
+      window.location.hash='/stock';
+    }catch(error){showError(error);}finally{setDemoStarting(false);}
   }
   function closeDemo(){endDemo();setDemo(null);setDemoExpiry(0);setUser(null);setSnapshot(empty);setEditing(null);setError('');setNotice('');window.location.hash='/login';}
   useEffect(()=>{
@@ -134,7 +142,7 @@ export default function App(){
           <footer className="workspace-footer"><span>Dealer Desk</span>Vehicle stock, enquiries and follow-ups.</footer>
         </>}
       {(publicPage||!user)&&<footer className="public-footer"><span>Dealer Desk</span><a href="#/privacy">Privacy</a><a href={user?'#/overview':'#/login'}>{user?'Staff workspace':'Staff sign in'}</a><button className="text-button" onClick={()=>setDemoChooser(true)}>Try demo</button><small>Reference images are illustrative</small></footer>}
-      {demoChooser&&<section id="demo-choices" tabIndex={-1} className="panel demo-chooser" aria-label="Choose a demo"><h2>Try Dealer Desk</h2><p>Explore the workflow in this tab. Changes reset when you finish; enquiries are not sent.</p><button onClick={()=>openDemo('customer')}>Explore customer demo</button> <button className="secondary" onClick={()=>openDemo('dealer')}>Explore staff demo</button> <button className="secondary" onClick={()=>setDemoChooser(false)}>Close demo choices</button></section>}
+      {demoChooser&&<section id="demo-choices" tabIndex={-1} className="panel demo-chooser" aria-label="Choose a demo"><h2>Try Dealer Desk</h2>{demoStarting&&<p role="status">Loading current vehicle listings…</p>}<p>Explore the workflow in this tab. Changes reset when you finish; enquiries are not sent.</p><button disabled={demoStarting} onClick={()=>openDemo('customer')}>Explore customer demo</button> <button className="secondary" disabled={demoStarting} onClick={()=>openDemo('dealer')}>Explore staff demo</button> <button className="secondary" onClick={()=>setDemoChooser(false)}>Close demo choices</button></section>}
       {editing&&<dialog ref={editDialog} className="upload-dialog" onCancel={event=>{if(saving)event.preventDefault();else setEditing(null);}} onClose={()=>setEditing(null)}><div className="section-heading"><h2>Edit vehicle</h2><button className="icon-button" disabled={saving} aria-label="Close vehicle editor" onClick={()=>setEditing(null)}>×</button></div>{error&&<p role="alert" className="error">{error}</p>}<VehicleForm vehicle={editing} saving={saving} onSave={saveVehicle} onCancel={()=>setEditing(null)}/></dialog>}
     </main>
   </>;

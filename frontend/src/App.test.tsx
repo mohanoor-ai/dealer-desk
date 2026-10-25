@@ -39,7 +39,7 @@ test('viewer gets useful empty state without write controls',async()=>{
 });
 
 test('customer demo starts without login and ends back at staff sign-in',async()=>{
-  vi.mocked(fetch).mockResolvedValue(reply({error:{message:'Please sign in.'}},401) as Response);
+  vi.mocked(fetch).mockImplementation(async(input)=>String(input)==='/api/catalogue'?reply({items:[{id:1,make:'Ford',model:'Puma',year:2026,price_pence:2714500,status:'available'},{id:2,make:'Nissan',model:'Qashqai',year:2026,price_pence:3063500,status:'available'}]}) as Response:reply({error:{message:'Please sign in.'}},401) as Response);
   render(<App/>);
   fireEvent.click(await screen.findByRole('button',{name:'Try demo'}));
   fireEvent.click(screen.getByRole('button',{name:'Explore customer demo'}));
@@ -54,7 +54,7 @@ test('customer demo starts without login and ends back at staff sign-in',async()
   fireEvent.change(screen.getByLabelText('Message'),{target:{value:'Sample test drive'}});
   fireEvent.click(screen.getByRole('button',{name:'Save enquiry'}));
   expect(await screen.findByText('Saved successfully.')).toBeInTheDocument();
-  expect(vi.mocked(fetch).mock.calls.every(([url])=>String(url).includes('/auth/me'))).toBe(true);
+  expect(vi.mocked(fetch).mock.calls.every(([url])=>String(url).includes('/auth/me')||String(url)==='/api/catalogue')).toBe(true);
   fireEvent.click(screen.getByRole('button',{name:'End demo'}));
   expect(await screen.findByLabelText('Password')).toBeInTheDocument();
 });
@@ -75,3 +75,10 @@ test('customer demo starts without login and ends back at staff sign-in',async()
  expect(modelForSave(' Golf Life ','Golf')).toBe('Golf Life');
  expect(()=>modelForSave('   ','Puma (sample)')).toThrow('Enter a model name.');
  });
+
+test('failed public catalogue loading leaves demo inactive with a recoverable error',async()=>{
+ vi.mocked(fetch).mockImplementation(async(input)=>String(input)==='/api/catalogue'?reply({error:{message:'Listings unavailable'}},503) as Response:reply({error:{message:'Please sign in.'}},401) as Response);
+ render(<App/>);fireEvent.click(await screen.findByRole('button',{name:'Try demo'}));fireEvent.click(screen.getByRole('button',{name:'Explore staff demo'}));
+ expect(await screen.findByRole('alert')).toHaveTextContent('Listings unavailable');
+ expect(screen.queryByRole('button',{name:'End demo'})).not.toBeInTheDocument();expect(screen.getByRole('button',{name:'Explore staff demo'})).toBeEnabled();
+});

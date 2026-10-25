@@ -216,3 +216,9 @@ Article wording correction: at the owner's request removed the Prepared with AI 
 
 
 Removed the homepage article-promotion block and Learning in public links from customer footer/mobile navigation at the owner’s request. Direct index/detail URLs and all fourteen submitted article links remain functional. README unchanged. Frontend suite: 19 passed; TypeScript/Vite build passed. No database or article content change. Gated hosted checks follow publication.
+
+
+## Current catalogue in temporary demos — 25 October
+Replaced the hard-coded three older cars with a bounded copy of the public catalogue fetched before activation through the central API client. Both demo roles receive current public names/years/prices and credited illustrative photos. Reset restores the copied baseline; end/start reloads the catalogue. Empty or failed bootstrap shows an error without a stale fallback. Vehicle fields are explicitly copied, private records are not loaded, and demo mutations/photo metadata remain memory-only; images use the public catalogue endpoint. Frontend suite: 22 passed; TypeScript/Vite build passed. Regressions cover ten-record/value copying, source immutability/reset, empty/failing bootstrap, public photo routing and existing no-network-write/expiry/role boundaries. Hosted assembled-role and exact-revision checks follow publication. No saved vehicle or schema change.
+
+Full local core verification passed: 38 backend tests, 22 frontend tests, TypeScript/Vite build and limited audit (202 source files, 44 reachable commits, zero findings under its documented rules). Actual output: evidence/current-demo-core.txt. The assembled local staff demo showed ten current cars and ten public photo thumbnail URLs; reset and the customer demo also showed ten. These are temporary in-memory interactions, not saved database changes.

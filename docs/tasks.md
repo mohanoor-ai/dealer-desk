@@ -83,3 +83,6 @@ Owner wording correction: remove Prepared with AI assistance and the project-pro
 
 ## Remove journal promotion from customer pages — 25 October
 Owner acceptance: remove the homepage FROM THE PROJECT/Building Dealer Desk article block and public Learning in public footer/navigation entry. Preserve all fourteen direct article URLs and their submitted links; keep README unchanged. Run frontend checks and gated release, verify public rendering and retain the latest submission revision.
+
+## Seed demos from current public listings — 25 October
+Acceptance: fetch the public catalogue before a new customer/staff demo, copy only public vehicle fields and credited illustrative photos into per-tab memory, and remove the outdated hard-coded three-car seed. Reset restores the starting catalogue snapshot; ending and starting again refreshes it. Failure/empty catalogue must show an error without starting a stale demo. Keep demo mutations/enquiries/tasks/photo metadata in memory, no staff database reads/writes, and no network fallback for demo operations. Verify count/values, reset/isolation, public photos, failure handling and both hosted demo roles, then update the final submission revision.

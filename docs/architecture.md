@@ -22,7 +22,7 @@ Saved staff snapshots load from paginated APIs and poll every three seconds with
 
 The catalogue and staff pages share styling but use different data boundaries. Internal reference markers are hidden in vehicle labels/editor input and preserved when staff saves an existing reference model.
 
-Temporary customer/staff demos intercept business operations inside per-tab JavaScript memory, with no network fallback. They reset on refresh/end and reject operations after 30-minute expiry. No guest account, session cookie or browser storage is created. Background suspension can delay physical memory clearing until the tab resumes. Collections/text are bounded and photo uploads are unavailable in the simulation.
+Before a new customer/staff demo starts, the central API client reads only the public catalogue and copies its bounded public vehicle/photo fields into per-tab JavaScript memory. Demo business operations then have no network fallback. Public reference image bytes use the existing catalogue photo endpoint; photo metadata, edits, enquiries and tasks remain in memory. Reset restores the starting snapshot; ending and starting again reloads current public listings. They reset on refresh/end and reject operations after 30-minute expiry. No guest account, session cookie or browser storage is created. Background suspension can delay physical memory clearing until the tab resumes. Collections/text are bounded and photo uploads are unavailable in the simulation.
 
 ## Hosted environments and release
 

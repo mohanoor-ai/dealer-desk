@@ -35,7 +35,7 @@ export function poundsToPence(value:string):number {
 export function money(value:number){return new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP'}).format(value/100);}
 
 export function photoUrl(id:number, thumbnail=false) {
-  return `/api/photos/${id}/image${thumbnail?'?thumbnail=true':''}`;
+  return demoActive()?`/api/catalogue/photos/${id}${thumbnail?'?thumbnail=true':''}`:`/api/photos/${id}/image${thumbnail?'?thumbnail=true':''}`;
 }
 
 export function readPhoto(file:File):Promise<string> {
