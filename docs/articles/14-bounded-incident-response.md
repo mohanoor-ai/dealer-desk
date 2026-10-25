@@ -1,6 +1,6 @@
 # Observing a failure before attempting a repair
 
-Mohammed Sheikh-Noor · 25 October 2026 · Prepared with AI assistance.
+Mohammed Sheikh-Noor · 25 October 2026
 
 A request returning an error is the start of an investigation, not permission for an agent to run arbitrary commands. Dealer Desk has a controlled local operations rehearsal with a narrow failure and recovery boundary.
 
@@ -14,6 +14,6 @@ This was not a hosted production incident, an LLM diagnosis or unrestricted auto
 
 [Operations details and capture provenance](../operations.md) · [Policy and tests](../../tests/test_operations.py)
 
-AI Dev Tools Zoomcamp project progress · [DataTalks.Club](https://datatalks.club/) · [Alexey Grigorev](https://alexeygrigorev.com/)
+[AI Dev Tools Zoomcamp](https://github.com/DataTalksClub/ai-dev-tools-zoomcamp)
 
 #aidevtools #DataTalksClub #BuildInPublic #SoftwareEngineering

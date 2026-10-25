@@ -1,6 +1,6 @@
 # Testing release and recovery in Dealer Desk
 
-Mohammed Sheikh-Noor · 25 October 2026 · Prepared with AI assistance.
+Mohammed Sheikh-Noor · 25 October 2026
 
 Dealer Desk now has one core verification command: `uv run python -m scripts.verify`. It runs backend tests, frontend tests, the production build and a limited source/history scan, stopping when a command fails. PostgreSQL and container checks remain separate CI steps. [Run instructions](../testing.md) explain each layer.
 
@@ -17,6 +17,6 @@ A controlled local fault made three authenticated stock reads return 503. That t
 The owner-approved protected production copy now uses an isolated Neon branch and manual promotion after exact-revision CI. A planned cloud rollback between two compatible, security-fixed releases and forward restoration both passed health checks and preserved a completed demonstration follow-up. This was a recovery rehearsal, not a production incident; code rollback did not restore database contents. [Release/recovery details](../release-recovery.md) and the [evidence index](../assessment-evidence.md) retain that distinction.
 
 
-AI Dev Tools Zoomcamp project progress · [DataTalks.Club](https://datatalks.club/) · [Alexey Grigorev](https://alexeygrigorev.com/)
+[AI Dev Tools Zoomcamp](https://github.com/DataTalksClub/ai-dev-tools-zoomcamp)
 
 #aidevtools #DataTalksClub #BuildInPublic #SoftwareEngineering

@@ -1,6 +1,6 @@
 # From the browser to saved records
 
-Mohammed Sheikh-Noor · 25 October 2026 · Prepared with AI assistance.
+Mohammed Sheikh-Noor · 25 October 2026
 
 A stock tracker must retain work when the browser reloads. Dealer Desk's staff interface sends requests to a real API and database. A vehicle receives an identifier; an enquiry references that vehicle; a follow-up references the enquiry. Completing the follow-up changes its stored state and the Overview totals.
 
@@ -19,6 +19,6 @@ The [database tests](../../tests/test_journey.py) separately exercise persistenc
 The overview now links each enquiry number directly to its saved record and distinguishes open enquiries from scheduled tasks. An enquiry without an incomplete task says “No next action scheduled”. Scheduling from that enquiry selects it automatically; completing a task leaves the enquiry open until staff explicitly changes its status. The README workflow collage shows actual local API/database steps with demonstration records, rather than a delivered customer message.
 
 
-AI Dev Tools Zoomcamp project progress · [DataTalks.Club](https://datatalks.club/) · [Alexey Grigorev](https://alexeygrigorev.com/)
+[AI Dev Tools Zoomcamp](https://github.com/DataTalksClub/ai-dev-tools-zoomcamp)
 
 #aidevtools #DataTalksClub #BuildInPublic #SoftwareEngineering

@@ -1,6 +1,6 @@
 # Building Dealer Desk: keeping the first scope useful
 
-Mohammed Sheikh-Noor · 25 October 2026 · Prepared with AI assistance.
+Mohammed Sheikh-Noor · 25 October 2026
 
 A dealership needs to know which vehicles are available, which enquiries need attention and what action comes next. Dealer Desk puts those records in one shared workspace. The first scope is one dealership and a staff workflow: save a vehicle, record a linked enquiry, schedule a follow-up and complete it without losing the history.
 
@@ -17,6 +17,6 @@ Captured 25 October 2026 from the actual local staff interface using application
 The useful boundary is a complete, small journey with clear evidence. More screens, stock records or generated descriptions do not replace persistence, permissions and reproducibility. The current [assessment index](../assessment-evidence.md) shows both evidence and remaining limits.
 
 
-AI Dev Tools Zoomcamp project progress · [DataTalks.Club](https://datatalks.club/) · [Alexey Grigorev](https://alexeygrigorev.com/)
+[AI Dev Tools Zoomcamp](https://github.com/DataTalksClub/ai-dev-tools-zoomcamp)
 
 #aidevtools #DataTalksClub #BuildInPublic #SoftwareEngineering

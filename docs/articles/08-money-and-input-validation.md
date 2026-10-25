@@ -1,6 +1,6 @@
 # Keeping vehicle prices in whole pennies
 
-Mohammed Sheikh-Noor · 25 October 2026 · Prepared with AI assistance.
+Mohammed Sheikh-Noor · 25 October 2026
 
 A vehicle price is entered in pounds, but Dealer Desk stores price_pence as an integer. For example, an input of 12.30 becomes 1230 pennies. This avoids relying on binary floating-point arithmetic for stored monetary values.
 
@@ -12,6 +12,6 @@ These details are small compared with a whole page, but they affect saved data. 
 
 [Frontend validation tests](../../frontend/src/App.test.tsx) · [Shared API client](../../frontend/src/api.ts)
 
-AI Dev Tools Zoomcamp project progress · [DataTalks.Club](https://datatalks.club/) · [Alexey Grigorev](https://alexeygrigorev.com/)
+[AI Dev Tools Zoomcamp](https://github.com/DataTalksClub/ai-dev-tools-zoomcamp)
 
 #aidevtools #DataTalksClub #BuildInPublic #SoftwareEngineering

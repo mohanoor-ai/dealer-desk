@@ -1,6 +1,6 @@
 # Adding vehicle photographs with clear limits
 
-Mohammed Sheikh-Noor · 25 October 2026 · Prepared with AI assistance.
+Mohammed Sheikh-Noor · 25 October 2026
 
 A vehicle listing needs more than one photograph, but an upload endpoint must handle files as untrusted input. Dealer Desk checks file size, decoded format and image dimensions before retaining an image.
 
@@ -12,6 +12,6 @@ Photo tests cover validation, persistence, quotas, access and cover selection. T
 
 [Photo tests](../../tests/test_photos.py) · [Photograph credits](../../sample-assets/stock/credits.json) · [Screenshot provenance](../media/README.md)
 
-AI Dev Tools Zoomcamp project progress · [DataTalks.Club](https://datatalks.club/) · [Alexey Grigorev](https://alexeygrigorev.com/)
+[AI Dev Tools Zoomcamp](https://github.com/DataTalksClub/ai-dev-tools-zoomcamp)
 
 #aidevtools #DataTalksClub #BuildInPublic #SoftwareEngineering

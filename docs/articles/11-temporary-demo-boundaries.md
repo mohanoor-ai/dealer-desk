@@ -1,6 +1,6 @@
 # Trying the workflow without creating a staff account
 
-Mohammed Sheikh-Noor · 25 October 2026 · Prepared with AI assistance.
+Mohammed Sheikh-Noor · 25 October 2026
 
 People reviewing the app need a way to explore its controls without changing shared stock. Dealer Desk has optional customer and staff demonstrations held in the current browser tab.
 
@@ -12,6 +12,6 @@ Photo uploads require a staff account and are unavailable in the demonstration. 
 
 [Demo implementation](../../frontend/src/demo.ts) · [Architecture boundaries](../architecture.md)
 
-AI Dev Tools Zoomcamp project progress · [DataTalks.Club](https://datatalks.club/) · [Alexey Grigorev](https://alexeygrigorev.com/)
+[AI Dev Tools Zoomcamp](https://github.com/DataTalksClub/ai-dev-tools-zoomcamp)
 
 #aidevtools #DataTalksClub #BuildInPublic #SoftwareEngineering

@@ -1,6 +1,6 @@
 # Showing vehicles without exposing staff records
 
-Mohammed Sheikh-Noor · 25 October 2026 · Prepared with AI assistance.
+Mohammed Sheikh-Noor · 25 October 2026
 
 The customer website needs vehicle names, reference prices, availability and credited photographs. It does not need enquiry messages, internal notes, users or audit history. Dealer Desk uses a separate response shape for its public catalogue.
 
@@ -12,6 +12,6 @@ The current website is a demonstration: prices are recorded reference values and
 
 [Catalogue regression](../../tests/test_catalogue.py) · [Catalogue API](../../backend/app.py) · [Product specification](../../product-spec.md)
 
-AI Dev Tools Zoomcamp project progress · [DataTalks.Club](https://datatalks.club/) · [Alexey Grigorev](https://alexeygrigorev.com/)
+[AI Dev Tools Zoomcamp](https://github.com/DataTalksClub/ai-dev-tools-zoomcamp)
 
 #aidevtools #DataTalksClub #BuildInPublic #SoftwareEngineering

@@ -1,6 +1,6 @@
 # Giving a coding assistant a useful specification
 
-Mohammed Sheikh-Noor · 25 October 2026 · Prepared with AI assistance.
+Mohammed Sheikh-Noor · 25 October 2026
 
 Dealer Desk started with a small operational problem: staff need vehicle availability, linked enquiries and the next action in one place. The useful instruction is a behaviour someone can check. For example, completing a follow-up must leave the enquiry open unless staff changes its status.
 
@@ -12,6 +12,6 @@ This project used one coding-assistant workflow for implementation and verificat
 
 [Product specification](../../product-spec.md) · [Project instructions](../../AGENTS.md) · [Issue trace](../issue-traceability.md)
 
-AI Dev Tools Zoomcamp project progress · [DataTalks.Club](https://datatalks.club/) · [Alexey Grigorev](https://alexeygrigorev.com/)
+[AI Dev Tools Zoomcamp](https://github.com/DataTalksClub/ai-dev-tools-zoomcamp)
 
 #aidevtools #DataTalksClub #BuildInPublic #SoftwareEngineering

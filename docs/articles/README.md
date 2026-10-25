@@ -2,7 +2,7 @@
 
 Published pages belong to the Dealer Desk website. These Markdown files are their readable, build-time sources; the app does not fetch article text from GitHub. The index is [Learning in public](https://dealer-desk-prod.vercel.app/#/learning).
 
-Author: Mohammed Sheikh-Noor. Published 25 October 2026 with AI assistance disclosed. The posts describe actual project decisions/checks, without invented personal experiences or independent reviews.
+Author: Mohammed Sheikh-Noor. Published 25 October 2026. The posts describe actual project decisions/checks, without invented personal experiences or independent reviews.
 
 | Article | Website | Markdown source |
 |---|---|---|
@@ -21,4 +21,4 @@ Author: Mohammed Sheikh-Noor. Published 25 October 2026 with AI assistance discl
 | Releasing the revision that actually passed CI | [Read article](https://dealer-desk-prod.vercel.app/#/learning/exact-revision-releases) | [13-exact-revision-releases.md](13-exact-revision-releases.md) |
 | Observing a failure before attempting a repair | [Read article](https://dealer-desk-prod.vercel.app/#/learning/bounded-incident-response) | [14-bounded-incident-response.md](14-bounded-incident-response.md) |
 
-The course guidance specifies #aidevtools and references to DataTalks.Club/Alexey Grigorev; each post includes those links. Hashtags on this website do not send social-platform notifications. Moderation decides whether submitted posts earn learning-in-public points. Fourteen is the submission limit, not a minimum requirement. Private lesson notes and transcripts are excluded.
+The course guidance specifies #aidevtools; each post retains that tag and a single course link at the owner’s request. Hashtags on this website do not send social-platform notifications. Moderation decides whether submitted posts earn learning-in-public points. Fourteen is the submission limit, not a minimum requirement. Private lesson notes and transcripts are excluded.

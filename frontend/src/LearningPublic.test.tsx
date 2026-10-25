@@ -11,8 +11,10 @@ test('all fourteen direct article routes render their authored text and bundled 
   expect(route.page).toBe('learning');expect(route.articleSlug).toBe(article.slug);
   const {container}=render(<LearningPublic slug={route.articleSlug}/>);
   expect(screen.getByRole('heading',{level:1,name:article.title})).toBeInTheDocument();
+  expect(container).not.toHaveTextContent('Prepared with AI assistance');
+  expect(container).not.toHaveTextContent('AI Dev Tools Zoomcamp project progress');
   expect(screen.getByLabelText('Article hashtags')).toHaveTextContent('#aidevtools');
-  expect(screen.getByRole('link',{name:'DataTalks.Club'})).toHaveAttribute('href','https://datatalks.club/');
+  expect(screen.getByRole('link',{name:'AI Dev Tools Zoomcamp'})).toHaveAttribute('href','https://github.com/DataTalksClub/ai-dev-tools-zoomcamp');
   for(const image of container.querySelectorAll('img'))expect(image.src).not.toContain('github.com');
   cleanup();
  }

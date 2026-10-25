@@ -1,6 +1,6 @@
 # Releasing the revision that actually passed CI
 
-Mohammed Sheikh-Noor · 25 October 2026 · Prepared with AI assistance.
+Mohammed Sheikh-Noor · 25 October 2026
 
 A green check on one commit does not prove that a different deployment was tested. Dealer Desk gates delivery on a successful trusted GitHub Actions run for the exact source revision.
 
@@ -12,6 +12,6 @@ After the mobile release, public health identified bbf5a3f, the catalogue return
 
 [Release gate](../../scripts/release_gate.py) · [Promotion command](../../scripts/promote.py) · [Recovery runbook](../release-recovery.md)
 
-AI Dev Tools Zoomcamp project progress · [DataTalks.Club](https://datatalks.club/) · [Alexey Grigorev](https://alexeygrigorev.com/)
+[AI Dev Tools Zoomcamp](https://github.com/DataTalksClub/ai-dev-tools-zoomcamp)
 
 #aidevtools #DataTalksClub #BuildInPublic #SoftwareEngineering

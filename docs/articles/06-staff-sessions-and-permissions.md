@@ -1,6 +1,6 @@
 # Why staff sign-in belongs behind the public catalogue
 
-Mohammed Sheikh-Noor · 25 October 2026 · Prepared with AI assistance.
+Mohammed Sheikh-Noor · 25 October 2026
 
 A visitor browsing cars does not need a staff account. Editing vehicle prices, reading customer enquiries and scheduling staff work require a different boundary. Dealer Desk therefore separates public browsing from authenticated staff operations.
 
@@ -12,6 +12,6 @@ Logout revokes the session. Public self-registration is not implemented. Tempora
 
 [Authentication tests](../../tests/test_auth.py) · [Security boundaries](../security.md) · [Architecture](../architecture.md)
 
-AI Dev Tools Zoomcamp project progress · [DataTalks.Club](https://datatalks.club/) · [Alexey Grigorev](https://alexeygrigorev.com/)
+[AI Dev Tools Zoomcamp](https://github.com/DataTalksClub/ai-dev-tools-zoomcamp)
 
 #aidevtools #DataTalksClub #BuildInPublic #SoftwareEngineering

@@ -1,6 +1,6 @@
 # Keeping the browser and API in agreement
 
-Mohammed Sheikh-Noor · 25 October 2026 · Prepared with AI assistance.
+Mohammed Sheikh-Noor · 25 October 2026
 
 The browser and backend need a shared description of a vehicle, enquiry and follow-up. Dealer Desk retains an OpenAPI contract alongside its FastAPI implementation. The contract check compares the implemented API with the committed description.
 
@@ -12,6 +12,6 @@ The distinction matters when AI tools generate both ends of a feature. Matching 
 
 [OpenAPI contract](../../openapi.yaml) · [API client](../../frontend/src/api.ts) · [Contract test](../../tests/test_contract.py)
 
-AI Dev Tools Zoomcamp project progress · [DataTalks.Club](https://datatalks.club/) · [Alexey Grigorev](https://alexeygrigorev.com/)
+[AI Dev Tools Zoomcamp](https://github.com/DataTalksClub/ai-dev-tools-zoomcamp)
 
 #aidevtools #DataTalksClub #BuildInPublic #SoftwareEngineering

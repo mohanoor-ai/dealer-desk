@@ -1,6 +1,6 @@
 # Replacing scrolling menus on a phone
 
-Mohammed Sheikh-Noor · 25 October 2026 · Prepared with AI assistance.
+Mohammed Sheikh-Noor · 25 October 2026
 
 The desktop header has room for navigation links, while a narrow phone screen does not. Dealer Desk now replaces the top link row with a three-bar menu button at widths up to 760 pixels. A fixed bottom shortcut bar has a matching menu control.
 
@@ -14,6 +14,6 @@ Manual local browser checks covered 320×640 and 390×844 layouts, route selecti
 
 [Mobile navigation](../../frontend/src/MobileNavigation.tsx) · [Verification](../verification.md)
 
-AI Dev Tools Zoomcamp project progress · [DataTalks.Club](https://datatalks.club/) · [Alexey Grigorev](https://alexeygrigorev.com/)
+[AI Dev Tools Zoomcamp](https://github.com/DataTalksClub/ai-dev-tools-zoomcamp)
 
 #aidevtools #DataTalksClub #BuildInPublic #SoftwareEngineering

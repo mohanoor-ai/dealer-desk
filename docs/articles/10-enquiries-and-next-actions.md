@@ -1,6 +1,6 @@
 # Turning an open enquiry into a specific next action
 
-Mohammed Sheikh-Noor · 25 October 2026 · Prepared with AI assistance.
+Mohammed Sheikh-Noor · 25 October 2026
 
 An overview count is useful only if staff can find the work behind it. Dealer Desk makes the open-enquiry count a link to the open list, and each enquiry number links to its exact record.
 
@@ -14,6 +14,6 @@ Completing the check did not close the enquiry or send a reply. The still-open e
 
 [Issue trace](../issue-traceability.md) · [Capture details](../media/README.md)
 
-AI Dev Tools Zoomcamp project progress · [DataTalks.Club](https://datatalks.club/) · [Alexey Grigorev](https://alexeygrigorev.com/)
+[AI Dev Tools Zoomcamp](https://github.com/DataTalksClub/ai-dev-tools-zoomcamp)
 
 #aidevtools #DataTalksClub #BuildInPublic #SoftwareEngineering
