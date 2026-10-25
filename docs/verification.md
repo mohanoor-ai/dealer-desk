@@ -170,3 +170,6 @@ Documentation checks: 88 local Markdown links resolved with zero missing targets
 
 ## README reading order — 25 October
 Applied the owner-approved Problem description subsections (The problem, System functionality, Expected system behaviour), explicitly separating customer browsing from the staff/dealer workspace. Moved Product specification near the top with a concise technical acceptance table, actual execution responsibilities and linked evidence. Replaced the operations narrative with five capability bullets and one full-details link. Added a short contents line and natural project headings rather than rubric numbers. README links/anchors: 43 checked, zero missing; whitespace check passed. Documentation-only; no application tests repeated locally.
+
+## Project evidence and issue overview — 25 October
+Added Project evidence to README with the twelve exact criterion titles, factual summaries and linked supporting records, without scores or a course-labelled section. Queried the public tracker separately for open/closed issues: 1/4/5 closed, 2/3 open. Added the five-issue table with implementation/deferred scope separate from tracker state, and an all-issues link. Checked 74 README links/anchors with zero missing targets, all twelve titles/order, and whitespace. Documentation-only; no local runtime tests repeated and no issue states changed.

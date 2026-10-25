@@ -6,7 +6,7 @@ Dealer Desk is a web application for one car dealership. It keeps vehicle availa
 
 [Public website](https://dealer-desk-prod.vercel.app/) · [Source code](https://github.com/mohanoor-ai/dealer-desk) · [Task tracker](https://github.com/mohanoor-ai/dealer-desk/issues)
 
-[Problem](#problem-description) · [Specification](#product-specification) · [Technology](#technology-and-deployment) · [Workflow](#workflow-in-practice) · [Setup](#run-locally) · [Tests](#tests-and-verification) · [Operations](#observability-and-incident-response)
+[Problem](#problem-description) · [Specification](#product-specification) · [Technology](#technology-and-deployment) · [Workflow](#workflow-in-practice) · [Setup](#run-locally) · [Tests](#tests-and-verification) · [Operations](#observability-and-incident-response) · [Project evidence](#project-evidence) · [Issues](#issue-tracker)
 
 ## Problem description
 
@@ -168,6 +168,70 @@ The verified application revision [14f075b](https://github.com/mohanoor-ai/deale
 - Backup and restore checks.
 
 [View operations and incident-response details →](docs/operations.md)
+
+## Project evidence
+
+### Problem Description
+
+The [problem description](#problem-description) explains the dealership problem, customer/staff functionality and expected behaviour.
+
+### Product Specification
+
+The [specification](product-spec.md) defines scope and numbered acceptance criteria. The [public tracker](https://github.com/mohanoor-ai/dealer-desk/issues) and [issue #5 example](docs/issue-traceability.md) connect those criteria to actual execution.
+
+### Agent Team Specification
+
+[Responsibilities](docs/team.md) and the [execution process](docs/process.md) identify the owner and coding assistant's roles. Engineering and verification were performed within one assistant workflow; independent specialist execution is not claimed.
+
+### Context Management
+
+[AGENTS.md](AGENTS.md) directs work through modular specification, architecture, process, testing and security documents. The [AI-use record](docs/ai-use.md) describes actual assistance and corrections.
+
+### Application
+
+The [public website](https://dealer-desk-prod.vercel.app/) provides vehicle browsing. Authenticated staff pages connect stock, enquiries and follow-ups to persistent storage. [Workflow captures](#workflow-in-practice) and [local setup](#run-locally) show how to inspect it.
+
+### Testing
+
+One [verification command](#tests-and-verification) runs backend/frontend tests, build and the limited source audit. The verified application revision passed 38 backend and 14 frontend tests; [CI](https://github.com/mohanoor-ai/dealer-desk/actions/runs/40215259023) adds PostgreSQL, container and recovery checks.
+
+### Containerization
+
+[Docker Compose](docker-compose.yml) runs the application and PostgreSQL. The [startup commands](#run-locally) provision local access, and CI verifies clean startup and record persistence after app replacement. The local Docker engine limitation is recorded in [verification](docs/verification.md).
+
+### Deployment
+
+[Vercel and Neon](docs/environments.md) host separate development/production environments. Production browsing is public; staff records require app login. [Deployment verification](docs/verification.md) retains observed revisions and access checks.
+
+### CI/CD
+
+[GitHub Actions](.github/workflows/ci.yml) checks main pushes and pull requests. An exact-revision gate controls development builds; production promotion is explicit. [Release/recovery evidence](docs/release-recovery.md) records compatible rollback and forward restoration.
+
+### Observability
+
+OpenTelemetry request metrics, traces and structured logs are collected, stored and correlated in a custom local UI. [Operations details](docs/operations.md) describe the signal boundaries; Grafana/LGTM and managed production monitoring are not deployed.
+
+### Alerting on User Impact
+
+Three failed authenticated stock reads trigger StockReadUnavailable in the isolated rehearsal. The [incident report](docs/evidence/incident-rehearsal.json) records the failures, response and recovery.
+
+### On-Call Agent
+
+An alert invokes a deterministic policy responder that repairs only the known local fault and rechecks the same request. [Implementation and limits](docs/operations.md) describe the guardrails; LLM diagnosis and autonomous production repair are not implemented.
+
+## Issue tracker
+
+Status checked 25 October 2026. Open/closed is the tracker state; the scope column distinguishes completed work from deferred or partial implementation.
+
+| Issue | Tracker state | Scope |
+|---|---|---|
+| [#1 — Deploy a protected Vercel development version with Neon](https://github.com/mohanoor-ai/dealer-desk/issues/1) | Closed | Completed and verified |
+| [#2 — Add Cloudflare R2 photo storage with verified access boundaries](https://github.com/mohanoor-ai/dealer-desk/issues/2) | Open | Deferred; photos remain database-backed |
+| [#3 — Connect public showroom and isolated demo access to dealer workflows](https://github.com/mohanoor-ai/dealer-desk/issues/3) | Open | Browsing/demo separation implemented; live enquiry delivery and remaining controls deferred |
+| [#4 — Complete assessment delivery and operational evidence](https://github.com/mohanoor-ai/dealer-desk/issues/4) | Closed | Delivery and local operations demonstrated with documented limits |
+| [#5 — Make open enquiries actionable from the staff overview](https://github.com/mohanoor-ai/dealer-desk/issues/5) | Closed | Direct navigation, missing next actions and scheduling verified |
+
+[View all issues →](https://github.com/mohanoor-ai/dealer-desk/issues?q=is%3Aissue)
 
 ## Current limits and deferred work
 

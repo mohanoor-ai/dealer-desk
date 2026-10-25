@@ -60,3 +60,6 @@ Acceptance: README presents problem, expected behaviour, stack/platforms, setup/
 
 ## README assessor reading order — 25 October
 Owner-approved acceptance: Problem description contains The problem, System functionality and Expected system behaviour; distinguish customer website from staff/dealer workspace. Product specification appears early with concise acceptance criteria and linked detail. Observability is a short capability list with one full-details link. Use natural project headings and a short contents line; retain key verification results in README without rubric numbering or implied grades. Documentation-only change.
+
+## README project evidence and issue summary — 25 October
+Acceptance: add Project evidence with the twelve exact criterion titles, concise factual summaries and evidence links; no scores or course-labelled heading. Add a linked issue table that distinguishes GitHub open/closed state from implementation/deferred scope, based on current public tracker checks. Keep a full-list link and preserve existing reading order. Documentation-only.
