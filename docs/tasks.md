@@ -44,3 +44,6 @@ Acceptance: enforce CI-gated dev delivery and manual production promotion with i
 
 ## Site-wide interface — 25 October
 Acceptance: approved warm white/forest green layout, original stencil DD logo and labelled flying-roadster concept hero; home, catalogue, vehicle detail, contact and separate staff sign-in; imported sample stock read through a bounded read-only catalogue with only sample vehicles and illustrative photos; staff endpoints remain authenticated; one discreet demo entry; compact/list stock controls; responsive shared typography/forms/navigation across existing staff pages. No new enquiry delivery, bulk upload, email or WhatsApp integration. Verify catalogue privacy boundaries, navigation and frontend build; capture actual rendered pages before release.
+
+## Public production access — 25 October
+Owner requested removal of the Vercel wall. Acceptance verified: production homepage/sample catalogue open without Vercel credentials; private stock/enquiry/task APIs require app login; previews and development retain protection. Actual no-cookie results recorded in verification.md.

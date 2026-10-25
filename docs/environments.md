@@ -26,3 +26,6 @@ Both consoles remained on their existing Hobby/Free plans. No paid environment, 
 5. Use a compatible known-good production deployment for rollback, then repeat smoke checks. Never choose a release affected by an unresolved security advisory.
 
 The security-fixed first production revision is 5fc3aae. Its CI passed before the branch was advanced; the first cloud deployment and later rollback/forward-restoration results are recorded in verification.md and evidence/cloud-recovery.json. Production-only synthetic writes were absent from the development branch (evidence/database-isolation.json). Creating a project or starting a build is not proof of a healthy release.
+
+## Production access update — 25 October
+Owner requested removal of the Vercel sign-in wall for phone/public browsing. Production changed from All Deployments to Standard Protection. The production alias is public; preview deployments and the separate development project remain protected. Individual staff app login remains enforced. Anonymous / and /api/catalogue returned 200 (ten samples); /api/vehicles, /api/enquiries and /api/tasks returned 401. Earlier setup/protection descriptions above are historical. No app code, data or credentials changed.

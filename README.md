@@ -1,5 +1,7 @@
 # Dealer Desk
 
+Public website: https://dealer-desk-prod.vercel.app/ — browse sample vehicles without a Vercel account. Staff management still requires an individual app login. Development and preview deployments remain protected. Access updated at the owner’s request on 25 October 2026.
+
 By [Mohammed Sheikh-Noor](https://github.com/mohanoor-ai).
 
 Dealer Desk is a web application for a single car dealership to manage vehicle stock, customer enquiries and follow-up tasks in one place. Staff sign in with role-based permissions, and records are saved in a shared database. The application uses React, TypeScript, FastAPI and PostgreSQL, with a development deployment on Vercel and Neon. Viewers can read; sales staff can update workflows; managers can inspect the audit history.
