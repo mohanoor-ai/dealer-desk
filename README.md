@@ -4,7 +4,7 @@ By [Mohammed Sheikh-Noor](https://github.com/mohanoor-ai).
 
 Dealer Desk is a web application for a single car dealership to manage vehicle stock, customer enquiries and follow-up tasks in one place. Staff sign in with role-based permissions, and records are saved in a shared database. The application uses React, TypeScript, FastAPI and PostgreSQL, with a development deployment on Vercel and Neon. Viewers can read; sales staff can update workflows; managers can inspect the audit history.
 
-[Open the app](https://dealer-desk-dev.vercel.app/) · [Source code](https://github.com/mohanoor-ai/dealer-desk) · [Project overview](docs/project-overview.md)
+[Open the app](https://dealer-desk-dev.vercel.app/) Â· [Source code](https://github.com/mohanoor-ai/dealer-desk) Â· [Project overview](docs/project-overview.md)
 
 The hosted development app currently requires Vercel authorization and an individually provisioned staff account. It is not yet an unrestricted public demo. Reviewers can also run it locally using the instructions below.
 
@@ -74,7 +74,7 @@ Local development defaults to SQLite at data/dealer-v2.sqlite3. Set DATABASE_URL
 - Atomic revision checks reject conflicting edits; every material mutation records actor, record ID and revision in the audit table.
 - Validated API inputs, centralized browser client and helpful empty/error states.
 
-The API also supports archive/restore and manager audit queries; dedicated interface controls for these remain to be completed. Import/export, backup/restore, a public customer showroom, a production monitoring service and optional AI are not completed in this milestone. A protected Vercel development deployment is now verified below.
+The API also supports archive/restore and manager audit queries; dedicated interface controls for these remain to be completed. Import/export, a public persisted customer showroom, a production monitoring service and optional AI remain outside this assessment release. An isolated local backup/restore lab and protected development/production deployments are verified below.
 
 ## Tests
 After `uv sync --frozen` and `npm ci --prefix frontend`, run `uv run python -m scripts.verify` for backend tests, frontend tests, the production build and the limited source/history audit. The command stops if any check fails. Individual commands and database/browser/container boundaries are in [testing instructions](docs/testing.md). Actual results and limitations are in [verification](docs/verification.md).
@@ -96,7 +96,7 @@ The [assessment evidence index](docs/assessment-evidence.md) maps the current im
 
 Development responsibilities and review boundaries are described in [team](docs/team.md) and [process](docs/process.md). [AI use](docs/ai-use.md) records actual assistance and corrections; [security](docs/security.md) describes tool/data permissions and remaining risks. These documents do not claim independent reviews that did not happen.
 
-Current and planned release/incident diagrams are in [docs/diagrams.md](docs/diagrams.md). The [local operations lab](docs/operations.md) demonstrates real OTLP collection, correlated request signals, an alert and a deterministic bounded repair. The [extension pack](docs/agent-extension-pack.md) includes a read-only MCP tool and enforced recovery policy. [Release controls](docs/release-recovery.md) describe the exact-commit CI gate, container recovery rehearsal and pending independent production setup. Private learning notes stay outside this repository.
+Current and planned release/incident diagrams are in [docs/diagrams.md](docs/diagrams.md). The [local operations lab](docs/operations.md) demonstrates real OTLP collection, correlated request signals, an alert and a deterministic bounded repair. The [extension pack](docs/agent-extension-pack.md) includes a read-only MCP tool and enforced recovery policy. [Release controls](docs/release-recovery.md) describe the exact-commit CI gate, container recovery rehearsal and verified separate protected production setup. Private learning notes stay outside this repository.
 
 ## Public project tracking
 Source: https://github.com/mohanoor-ai/dealer-desk
@@ -105,8 +105,10 @@ Acceptance criteria and remaining work: https://github.com/mohanoor-ai/dealer-de
 
 Hosted checks: https://github.com/mohanoor-ai/dealer-desk/actions
 
-The first hosted CI run passed for cd525a9. Protected development hosting is verified. Exact-commit CI gating and local operations/recovery are verified; the separate protected production release is being configured. See docs/verification.md for exact evidence.
+The first hosted CI run passed for cd525a9. Protected development hosting is verified. Exact-commit CI gating and local operations/recovery are verified; the separate protected production release, manual promotion and compatible cloud rollback/forward restoration are verified. See docs/verification.md for exact evidence.
 
 ## Learning in public
 
 Read [Building Dealer Desk](docs/articles/01-building-dealer-desk.md), [From the browser to saved records](docs/articles/02-browser-to-saved-records.md), and [Testing release and recovery](docs/articles/03-testing-release-and-recovery.md). These technical articles describe actual decisions and checks, with AI assistance disclosed. The [article index](docs/articles/README.md) collects them; assessment evidence remains in the verification record. Private lesson notes and transcripts stay outside the repository.
+
+Protected production: https://dealer-desk-prod.vercel.app/ (Vercel authorization followed by individual staff login). Reproducible local setup and retained evidence are available to assessors without sharing account credentials.

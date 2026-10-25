@@ -16,10 +16,10 @@ Next CI builds the previous Git revision into the app image, starts it against t
 
 ## Manual production release
 
-The operator selects a full reviewed revision and runs `uv run python -m scripts.promote <revision>`. This checks trusted exact-revision CI, verifies the local commit exists, and advances production-release without force. The production project will deploy that branch; development remains on main. This explicit action uses the operator's existing Git permissions and needs no extra deployment token. Check health/staff workflow after deployment.
+The operator selects a full reviewed revision and runs `uv run python -m scripts.promote <revision>`. This checks trusted exact-revision CI, verifies the local commit exists, and advances production-release without force. The production project deploys that branch; development remains on main. This explicit action uses the operator's existing Git permissions and needs no extra deployment token. Check health/staff workflow after deployment.
 
 ## Production boundary
 
-The owner authorized a separate protected production project and isolated Neon branch on 25 October. The branch is created and configuration is in progress; no completed production deployment or cloud rollback is yet claimed. Keep the existing Vercel protection enabled. Do not promote a release with unreviewed migrations, missing smoke evidence or incompatible database changes.
+The owner authorized a separate protected production project and isolated Neon branch on 25 October. The protected project and isolated branch are configured. Security-fixed release 5fc3aae passed its hosted journey; 30dad17 was then promoted after successful main CI. An actual Instant Rollback to 5fc3aae and Promote restoration to 30dad17 both returned healthy responses and retained the completed synthetic follow-up. See evidence/cloud-recovery.json, evidence/database-isolation.json and verification.md. Keep the existing Vercel protection enabled. Do not promote a release with unreviewed migrations, missing smoke evidence or incompatible database changes.
 
 Cloud operator checklist: verify exact CI revision, identify immutable deployment, inspect dev smoke evidence, manually select the approved production release, verify protected health/staff journey, and retain deployment IDs and results. Roll back only to a compatible known-good image; restore data separately into an isolated database before any deliberate cutover. Code rollback does not undo database writes.

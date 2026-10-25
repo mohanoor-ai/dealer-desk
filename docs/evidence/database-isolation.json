@@ -1,0 +1,14 @@
+{
+  "separate_branch_endpoints": true,
+  "development_unmodified_by_production_fixture": true,
+  "results": {
+    "development": {
+      "synthetic_enquiries": 0,
+      "synthetic_completed_tasks": 0
+    },
+    "production": {
+      "synthetic_enquiries": 1,
+      "synthetic_completed_tasks": 1
+    }
+  }
+}

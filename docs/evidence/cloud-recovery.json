@@ -1,0 +1,28 @@
+{
+  "environment": "protected dealer-desk-prod, isolated Neon branch",
+  "rehearsal": true,
+  "database_schema_changed": false,
+  "initial": {
+    "revision": "30dad176e0e2e59f5b9fc6e32526f3c095a43643",
+    "deployment": "4ZTWSUCnry2hPzXhbo7TeYfmt9XY",
+    "health": "ok",
+    "revision_metadata_matched": true
+  },
+  "rollback": {
+    "revision": "5fc3aaecc00dceea0a41effb3c63c4ca37f75134",
+    "deployment": "5y8BWR6LgZhokAXYmpE75b1Zq1wy",
+    "health": "ok",
+    "revision_field_absent_as_expected_for_previous_release": true,
+    "completed_follow_up_preserved_in_browser": true,
+    "security_fix_present": true
+  },
+  "restoration": {
+    "revision": "30dad176e0e2e59f5b9fc6e32526f3c095a43643",
+    "deployment": "4ZTWSUCnry2hPzXhbo7TeYfmt9XY",
+    "health": "ok",
+    "revision_metadata_matched": true,
+    "completed_follow_up_preserved_in_browser": true,
+    "instant_rollback_undone": true,
+    "observed_date": "2026-10-25"
+  }
+}

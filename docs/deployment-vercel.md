@@ -29,7 +29,7 @@ Keep migration credentials separate from runtime credentials. Create the first s
 - Current frontend polling must pause when hidden and reduce idle usage.
 - PostgreSQL photo persistence and hosted redeployment checks passed. Complete current-image Compose replacement and backup/restore checks.
 - R2 implementation is planned; current photos still live in database binary fields. No R2 credentials, bucket or migration exists yet.
-- Hosted CI and automatic Vercel Git deployment work. CI-gated delivery/manual promotion, telemetry, impact alert, responder and rollback evidence remain pending.
+- Hosted CI gates exact-revision Vercel builds. Separate protected production promotion, cloud rollback/forward restoration and isolated database writes are verified. Local OTLP correlation, impact alert and bounded deterministic repair are demonstrated separately; see verification.md.
 
 ## Account step after local preparation
 The owner connects the reviewed public repository or authorizes a scoped Vercel CLI connection, selects the existing personal Vercel account and development Neon project, and enters database secrets directly into hosting settings. No paid subscription is needed for this personal project within quotas. Confirm public/private inventory before source publication. Keep this first deployment protected; public release is a separate gate after the blockers above are resolved.

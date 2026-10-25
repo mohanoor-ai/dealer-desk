@@ -6,5 +6,10 @@
   "ci_result": "success",
   "command": "uv run python -m scripts.promote <full revision>",
   "branch_updated": true,
-  "cloud_smoke": "pending"
+  "cloud_smoke": "passed on first fixed release",
+  "subsequent_promotion": {
+    "revision": "30dad176e0e2e59f5b9fc6e32526f3c095a43643",
+    "ci": "https://github.com/mohanoor-ai/dealer-desk/actions/runs/40183576180",
+    "health_revision_verified": true
+  }
 }

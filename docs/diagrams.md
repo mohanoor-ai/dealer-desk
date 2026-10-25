@@ -1,6 +1,6 @@
 # System and workflow diagrams
 
-Documentation checkpoint: 24 October 2026. Current diagrams describe application baseline b01d342. Planned diagrams describe work that has not yet been demonstrated. Mermaid source is editable in this file and the README; no external diagram service is required to edit it.
+Documentation checkpoint: 25 October 2026. Staff architecture remains the b01d342 baseline; release and operations diagrams include verified changes through 30dad17. Mermaid source is editable in this file and the README; no external diagram service is required to edit it.
 
 ## Current: hosted staff architecture
 
@@ -45,55 +45,43 @@ sequenceDiagram
     end
 ```
 
-The API tests cover permissions and competing edits. A repeatable two-browser staff regression remains on the backlog; do not infer it from this sequence diagram.
+The API tests cover permissions and competing edits. A manual independent-session conflict and polling check passed; see verification.md. This is not an automated cross-engine browser suite.
 
-## Current: delivery has two independent paths
-
-```mermaid
-flowchart TB
-    Commit[Push to main] --> CI[GitHub Actions: tests and build]
-    Commit --> Deploy[Vercel Git deployment]
-    CI --> Result[Pass or fail recorded]
-    Deploy --> Dev[Protected development app]
-```
-
-The diagram above records the original independent triggers. A new gate in scripts/build_vercel.py now requires a successful trusted CI run for the exact commit before frontend build; see release-recovery.md and verification.md for hosted enforcement status. Manual production remains separate.
-
-## Planned: gated release, promotion and rollback
+## Current: gated development and manual production
 
 ```mermaid
 flowchart TB
-    Change[Reviewed source change] --> Checks[Required tests and build]
-    Checks --> Pass{Checks pass?}
-    Pass -->|No| Stop[Stop; retain working release]
-    Pass -->|Yes| Artifact[Identified build artifact]
-    Artifact --> Dev[Deploy to development]
-    Dev --> Smoke[Smoke test and review]
-    Smoke --> Approval[Manual production promotion]
-    Approval --> Prod[Release the tested artifact]
-    Prod --> Verify[Verify production journey]
-    Verify -->|Failure| Rollback[Return to previous compatible release]
+    Commit[Push reviewed revision to main] --> CI[GitHub Actions: tests, build and recovery labs]
+    Commit --> Gate[Vercel build waits for trusted exact-revision CI]
+    CI --> Gate
+    Gate -->|Success only| Dev[Protected development deployment]
+    Dev --> Smoke[Review smoke evidence]
+    Smoke --> Manual[Operator runs promote with full revision]
+    Manual --> Branch[Advance production-release without force]
+    Branch --> Prod[Protected production build checks same CI]
+    Prod --> DB[Isolated production Neon branch]
+    Prod --> Health[Verify health revision and saved journey]
+    Health --> Rehearsal[Compatible release rollback and forward restoration]
 ```
 
-Status: planned. Separate configuration/data, release gating, manual production promotion and exercised rollback are not complete. Code rollback does not restore database contents or undo migrations; backup/restore is a separate rehearsal. Implementation must fit the selected hosting platform rather than pretend Vercel deploys our Docker image.
+The cloud rollback/forward rehearsal between security-fixed 5fc3aae and 30dad17 passed. Vercel builds source; the separately tested Docker images are used for local/CI Compose. Code rollback does not undo database writes or schema migrations. An isolated SQLite restore lab is separate from a hosted Neon restore.
 
 ## Current local lab: bounded incident response
 
 ```mermaid
 flowchart TB
-    Fault[Controlled local request failure] --> Signals[Collect metrics, logs and traces]
-    Signals --> Alert[User-impact alert fires]
-    Alert --> Evidence[Save bounded incident evidence]
-    Evidence --> Agent[Start headless agent in isolated worktree]
-    Agent --> Fix[Reproduce and test a minimal fix]
-    Fix --> Policy{External policy allows action?}
-    Policy -->|No| Escalate[Escalate with evidence]
-    Policy -->|Yes| Apply[Apply checked change in incident lab]
-    Apply --> Recovery[Repeat failed request and verify recovery]
-    Recovery --> Record[Record version, action and outcome]
+    Fault[Rename table in marked synthetic SQLite fixture] --> Request[Authenticated stock requests return 503]
+    Request --> Signals[OTLP metrics, logs and traces collected locally]
+    Request --> Alert[Three failures trigger stock alert]
+    Alert --> Agent[Deterministic policy responder]
+    Agent --> Policy{Fixed local path and known fault?}
+    Policy -->|No| Escalate[Escalate without mutation]
+    Policy -->|Yes| Repair[Restore only the known table name]
+    Repair --> Recovery[Same stock journey returns 200]
+    Recovery --> Record[Verify record preservation and save report]
 ```
 
-Status: local OTLP collection, correlation UI, three-failure stock alert and deterministic fixed-action repair are demonstrated in operations.md. The responder has no hosted credentials or arbitrary command tool. Production telemetry and model-backed diagnosis are not claimed.
+The responder has no hosted credentials, model-generated commands or arbitrary shell tool. Correlation UI, actual alert and repair are demonstrated in operations.md. Production telemetry and model-backed diagnosis are not claimed.
 
 ## Screenshot policy
 
