@@ -66,3 +66,6 @@ Acceptance: add Project evidence with the twelve exact criterion titles, concise
 
 ## Final README consolidation — 25 October
 Owner-approved acceptance: remove repeated Project evidence section; preserve unique context/CI/alert/responder details in existing sections; retain Product specification links and issue table/full-list link; remove Course alignment from operations.md; place the existing actual telemetry screenshot at the end of README with date, environment and accurate working-tree source qualification. Check links/rendering and refresh submission candidate. Documentation only.
+
+## README landing image, technology and deployment — 25 October
+Owner-approved acceptance: add an actual public landing-page screenshot directly beneath the project name with concise capture/source details; keep staff workflow screenshots separate. Explain each implemented technology’s role briefly. Add a distinct Deployment section after tests and before observability covering platforms, access, environment separation, CI gate/manual production, verification/recovery and a full runbook link. Preserve telemetry image at README end. Check links/rendering; documentation and image only.

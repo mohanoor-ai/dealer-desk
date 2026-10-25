@@ -10,6 +10,12 @@ The temporary local sales identity was signed out, disabled and its sessions rev
 
 The older 24 October hosted Overview image from b01d342 is retained in Git history; it has been replaced here following the interface update.
 
+## Landing page
+
+File: landing-page.png. Captured 25 October 2026 from the actual production website at https://dealer-desk-prod.vercel.app/#/home. Public /health identified application revision 14f075b938b1cc4a3812edaea87c6d12d7b7f6b7 (version 0.4.0) at capture time. This is an unaltered browser viewport capture, not the earlier generated website mockup.
+
+The visible header, Roadster hero, search controls and illustration notice belong to the running application. An existing staff session was present, so navigation reads Staff workspace; visitors without an app session see Staff sign in. No identity, credential, cookie or connection string appears. The hero is generated concept artwork, visibly labelled as an illustration, not a photograph of an available vehicle. Reference vehicle photos elsewhere on the page retain their own credits.
+
 ## Reference photograph credits
 
 Thumbnails visible in the Overview/collage are reference illustrations, not actual stock photos. Optimized/resized copies appear inside the unaltered app screenshots.

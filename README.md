@@ -1,12 +1,16 @@
 # Dealer Desk
 
+[![Dealer Desk landing page with the Roadster concept, vehicle search and customer navigation.](docs/media/landing-page.png)](https://dealer-desk-prod.vercel.app/)
+
+<sub>Live production website · Captured 25 October 2026 · [Image details](docs/media/README.md#landing-page)</sub>
+
 By [Mohammed Sheikh-Noor](https://github.com/mohanoor-ai).
 
 Dealer Desk is a web application for one car dealership. It keeps vehicle availability, customer enquiries and follow-up tasks in a shared workspace, so staff can see which enquiry needs a next action and avoid conflicting stock edits.
 
 [Public website](https://dealer-desk-prod.vercel.app/) · [Source code](https://github.com/mohanoor-ai/dealer-desk) · [Task tracker](https://github.com/mohanoor-ai/dealer-desk/issues)
 
-[Problem](#problem-description) · [Specification](#product-specification) · [Technology](#technology-and-deployment) · [Workflow](#workflow-in-practice) · [Setup](#run-locally) · [Tests](#tests-and-verification) · [Operations](#observability-and-incident-response) · [Issues](#issue-tracker)
+[Problem](#problem-description) · [Specification](#product-specification) · [Technology](#technology-stack) · [Workflow](#workflow-in-practice) · [Setup](#run-locally) · [Tests](#tests-and-verification) · [Deployment](#deployment) · [Operations](#observability-and-incident-response) · [Issues](#issue-tracker)
 
 ## Problem description
 
@@ -57,28 +61,25 @@ Supporting specifications and records:
 - [Testing instructions](docs/testing.md) and [verification record](docs/verification.md).
 - [Assessment evidence index](docs/assessment-evidence.md).
 
-## Technology and deployment
+## Technology stack
 
-| Area | Implementation |
+| Technology | Role in the application |
 |---|---|
-| Frontend | React, TypeScript, Vite |
-| Backend and API validation | Python, FastAPI, Pydantic; committed OpenAPI contract |
-| Persistence | SQLAlchemy, Alembic; SQLite locally or PostgreSQL |
-| Hosting | Vercel application/frontend; Neon PostgreSQL |
-| Staff access | Individual accounts, hashed passwords, expiring server sessions, backend role checks |
-| Images | Pillow processing; bounded image/thumbnail bytes stored in the database |
-| Tests | pytest; Vitest and React Testing Library; separate PostgreSQL/container/browser checks |
-| Containers and delivery | [Docker Compose](docker-compose.yml); [GitHub Actions](.github/workflows/ci.yml); exact-revision CI gate; manual production promotion |
-| Local operations | OpenTelemetry, OTLP HTTP/protobuf, custom loopback SQLite collector and correlation UI |
-| Agent extensions | Read-only MCP stdio tool, reusable verification procedure, specialist definition and enforced response policy |
+| React + TypeScript | Builds the customer website and staff interface with checked data types |
+| Vite | Runs frontend development and builds the website assets |
+| FastAPI + Pydantic | Handles API requests and validates incoming data |
+| SQLAlchemy + Alembic | Accesses business records and manages versioned database migrations |
+| PostgreSQL / SQLite | PostgreSQL stores hosted records; SQLite supports local development |
+| Vercel + Neon | Vercel hosts the frontend/API; Neon hosts PostgreSQL |
+| Pillow | Validates/processes uploads, removes image metadata and creates thumbnails |
+| pytest + Vitest / React Testing Library | Tests backend/database behaviour and frontend interactions |
+| [Docker Compose](docker-compose.yml) | Runs the application and PostgreSQL together locally |
+| [GitHub Actions](.github/workflows/ci.yml) | Runs automated checks before releases |
+| OpenTelemetry | Produces request metrics, structured logs and traces |
+| Custom telemetry receiver/dashboard | Stores and displays correlated signals in the local operations setup |
+| Read-only MCP tool | Returns aggregate rehearsal stock counts through the stdio protocol |
 
-| Environment | URL | Access |
-|---|---|---|
-| Production | https://dealer-desk-prod.vercel.app/ | Public browsing; individual app login for staff records |
-| Development | https://dealer-desk-dev.vercel.app/ | Vercel authorization, then staff app login |
-| Local | Address printed by the startup command | Loopback access; locally created staff account |
-
-Production and development use separate Neon branch endpoints. Production tracks `production-release`, advanced explicitly after successful main CI. Preview protection remains enabled. See [environments](docs/environments.md) and [release/recovery](docs/release-recovery.md).
+[View architecture and implementation details →](docs/architecture.md)
 
 ## Workflow in practice
 
@@ -158,6 +159,22 @@ After dependency setup, this command runs backend tests, frontend tests, the pro
 The verified application revision [14f075b](https://github.com/mohanoor-ai/dealer-desk/commit/14f075b938b1cc4a3812edaea87c6d12d7b7f6b7) passed 38 backend and 14 frontend tests plus all additional stages in [CI run 40215259023](https://github.com/mohanoor-ai/dealer-desk/actions/runs/40215259023). Production health matched that revision. Documentation-only revisions can follow it; their own checks remain visible in Actions.
 
 [Testing commands](docs/testing.md) explain each layer. [Verification](docs/verification.md) retains actual observations and limits. Browser captures/manual checks are not an automated cross-engine suite. The local Docker engine was unavailable during the final checks; hosted CI demonstrated the clean Compose journey and recovery.
+
+## Deployment
+
+Vercel serves the built frontend and FastAPI application. Neon PostgreSQL stores business records, staff sessions, audit events and processed images. Database connections stay server-side and use TLS.
+
+| Environment | URL | Access |
+|---|---|---|
+| Production | https://dealer-desk-prod.vercel.app/ | Public vehicle browsing; individual app login for staff management |
+| Development | https://dealer-desk-dev.vercel.app/ | Vercel authorization followed by staff app login |
+| Local | Address printed by the startup command | Loopback access with a locally created staff account |
+
+Development and production use separate Neon branch endpoints. Main pushes trigger GitHub Actions; the Vercel build waits for successful trusted CI at the exact source revision. Development delivery is automatic after that check. Production tracks `production-release`, advanced explicitly through the promotion command. Preview protection remains enabled.
+
+Release verification checks the deployed health revision and the relevant saved workflow. Compatible cloud rollback and forward restoration were exercised without losing the saved follow-up. Database restore is checked separately in an isolated SQLite lab; code rollback does not undo database changes.
+
+[View deployment instructions →](docs/deployment-vercel.md)
 
 ## Observability and incident response
 
