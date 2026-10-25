@@ -1,0 +1,2 @@
+{"stage": "verify", "records_preserved": true, "task_completed": true}
+{"stage": "verify", "records_preserved": true, "task_completed": true}

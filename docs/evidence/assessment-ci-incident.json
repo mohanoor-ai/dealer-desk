@@ -1,0 +1,43 @@
+{
+  "alert": {
+    "name": "StockReadUnavailable",
+    "at": "2026-10-25T19:22:13.468036+00:00",
+    "condition": "3 consecutive authenticated stock reads failed",
+    "probes": [
+      {
+        "status": 503,
+        "trace_id": "44a966df76df3486c6ae468703094e75"
+      },
+      {
+        "status": 503,
+        "trace_id": "51e3c1e9d4a0fb1d7cc1e4d1746a94a4"
+      },
+      {
+        "status": 503,
+        "trace_id": "59c272259928f03ea7709473b63cf6f4"
+      }
+    ]
+  },
+  "response": {
+    "action": "restore_stock_table",
+    "evidence": {
+      "vehicle_table_present": false,
+      "rehearsal_table_present": true
+    },
+    "changed": true,
+    "after": {
+      "vehicle_table_present": true,
+      "rehearsal_table_present": false
+    }
+  },
+  "recovery": {
+    "status": 200,
+    "trace_id": "64982f1972a4154052e2dd57ea4ba52a"
+  },
+  "recovered": true,
+  "record_preserved": true,
+  "responder_type": "deterministic policy agent, not an LLM",
+  "environment": "isolated loopback SQLite rehearsal; no hosted fault",
+  "source_commit": "389bd146394bb740e33e26657629561215599c22",
+  "source_has_uncommitted_changes": false
+}

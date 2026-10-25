@@ -1,0 +1,3 @@
+{"stage": "create", "vehicle": 1, "task_completed": true}
+JOURNEY_STATE={"vehicle": 1, "task": 1}
+{"stage": "verify", "records_preserved": true, "task_completed": true}

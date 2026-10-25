@@ -1,0 +1,63 @@
+
+Checking: -m pytest tests
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0
+rootdir: C:\Users\moha_\Documents\Codex\2026-10-22\files-pasted-by-the-user-act\outputs\dealer-desk
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collected 38 items
+
+tests\test_audit.py .                                                    [  2%]
+tests\test_auth.py ......                                                [ 18%]
+tests\test_catalogue.py .                                                [ 21%]
+tests\test_contract.py .                                                 [ 23%]
+tests\test_hosting.py .........                                          [ 47%]
+tests\test_journey.py ......                                             [ 63%]
+tests\test_mcp.py .                                                      [ 65%]
+tests\test_operations.py ......                                          [ 81%]
+tests\test_photos.py ......                                              [ 97%]
+tests\test_release_gate.py .                                             [100%]
+
+============================= 38 passed in 16.89s =============================
+
+Checking: C:\Users\moha_\AppData\Local\hermes\node\npm.cmd test
+
+> frontend-v2@1.0.0 test
+> vitest run
+
+
+ RUN  v5.0.4 C:/Users/moha_/Documents/Codex/2026-10-22/files-pasted-by-the-user-act/outputs/dealer-desk/frontend
+
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+Not implemented: Window's scrollTo() method
+
+ Test Files  4 passed (4)
+      Tests  16 passed (16)
+   Start at  21:59:57
+   Duration  24.03s (environment 80%, setup 15%, tests 2%, import 2%, transform 1%)
+
+
+Checking: C:\Users\moha_\AppData\Local\hermes\node\npm.cmd run build
+
+> frontend-v2@1.0.0 build
+> tsc --noEmit && vite build
+
+vite v8.3.4 building client environment for production...
+transforming...
+✓ 29 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                0.35 kB │ gzip:  0.26 kB
+dist/assets/roadster-concept-By7Fqu-Q.png  2,024.68 kB
+dist/assets/index-C3qUBaSY.css                34.75 kB │ gzip:  8.21 kB
+dist/assets/index-CSti_fN8.js                278.66 kB │ gzip: 83.78 kB
+
+✓ built in 789ms
+
+Checking: -m scripts.audit_release
+Checked 182 source files and 39 reachable commits.
+0 findings. This limited scan does not prove absence of secrets.
+Core verification passed. PostgreSQL, browsers and containers need separate checks.

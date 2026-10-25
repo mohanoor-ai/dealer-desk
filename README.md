@@ -63,7 +63,7 @@ Supporting specifications and records:
 - [Issue-to-implementation traceability](docs/issue-traceability.md): issue #5, its acceptance criteria, changes, tests, screenshots, CI and release.
 - [API contract](openapi.yaml).
 - [Testing instructions](docs/testing.md) and [verification record](docs/verification.md).
-- [Assessment evidence index](docs/assessment-evidence.md).
+- [Assessment criteria and reproduction guide](docs/assessment-evidence.md).
 
 ## Technology stack
 

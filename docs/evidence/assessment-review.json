@@ -1,0 +1,24 @@
+{
+  "review_date": "2026-10-25",
+  "official_rubric_revision": "526d9c12506c159e7a8f3cef30e5de1eeaec287b",
+  "application_source": "389bd146394bb740e33e26657629561215599c22",
+  "ci_run": "https://github.com/mohanoor-ai/dealer-desk/actions/runs/40225569002",
+  "artifact_id": 12610588755,
+  "artifact_name": "implemented-api",
+  "artifact_sha256": "178421a19b5cefe4f0f12d95afa172f8e100710a086bc087700efaf01f9e0735",
+  "artifact_files": {
+    "docs/evidence/incident-rehearsal.json": "assessment-ci-incident.json",
+    "docs/evidence/backup-restore.json": "assessment-ci-backup.json",
+    "container-verification.txt": "assessment-ci-container.txt",
+    "rollback-verification.txt": "assessment-ci-rollback.txt"
+  },
+  "reports_copied_without_content_changes": true,
+  "production_read_only_check": {
+    "health_status": "ok",
+    "revision": "bbf5a3fbc7ace63f82fe5e4e792fb5221d9a2609",
+    "public_catalogue_status": 200,
+    "public_catalogue_count": 10,
+    "anonymous_staff_stock_status": 401
+  },
+  "production_modified": false
+}
