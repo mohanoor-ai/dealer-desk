@@ -24,6 +24,7 @@ from backend.models import User, LoginSession, Vehicle, Enquiry, Task, AuditEven
 from backend.photos import prepare_photo, MAX_PHOTOS
 from backend.contract import describe_api
 from backend.config import secure_cookies
+from backend.telemetry import Telemetry
 
 logger = logging.getLogger('dealer')
 ROOT = Path(__file__).resolve().parents[1]
@@ -87,15 +88,18 @@ def page(db, model, conditions, offset, limit):
 def create_app(database_url=None):
     engine = build_engine(database_url)
     factory = session_factory(engine)
+    telemetry = Telemetry()
 
     @asynccontextmanager
     async def lifespan(app):
         yield
+        telemetry.shutdown()
         engine.dispose()
 
     app = FastAPI(title='Dealer Desk API', version='0.4.0', lifespan=lifespan)
     app.state.engine = engine
     app.state.sessions = factory
+    app.state.telemetry = telemetry
     # Local milestone guard only. Distributed public deployment requires a shared limiter.
     attempts = defaultdict(deque)
     attempt_lock = Lock()
@@ -144,7 +148,19 @@ def create_app(database_url=None):
                 return JSONResponse({'error': {'code': 'forbidden', 'message': 'Use the same-origin application.',
                                                'request_id': request.state.request_id}}, status_code=403)
         started = time.monotonic()
-        response = await call_next(request)
+        with telemetry.request() as span:
+            try:
+                response = await call_next(request)
+            except Exception:
+                route = request.scope.get('route')
+                telemetry.finish(span, getattr(route, 'path', 'unmatched'), request.method, 500,
+                                 (time.monotonic() - started) * 1000)
+                raise
+            route = request.scope.get('route')
+            telemetry.finish(span, getattr(route, 'path', 'unmatched'), request.method,
+                             response.status_code, (time.monotonic() - started) * 1000)
+            if span.get_span_context().is_valid:
+                response.headers['X-Trace-ID'] = format(span.get_span_context().trace_id, '032x')
         response.headers['X-Request-ID'] = request.state.request_id
         response.headers['X-Content-Type-Options'] = 'nosniff'
         response.headers['Referrer-Policy'] = 'same-origin'

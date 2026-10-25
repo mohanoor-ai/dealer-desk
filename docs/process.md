@@ -12,4 +12,4 @@ Public issues 1–4 establish deployment, storage, demo and operational acceptan
 
 ## Release boundary
 
-GitHub Actions checks changes; Vercel Git deployment currently operates independently. A green CI run is not a deployment gate. Manual production promotion, tested rollback and full operational recovery remain incomplete. Keep protected development hosting enabled and never describe it as an unrestricted public customer service.
+GitHub Actions checks changes. The Vercel build entry point now contains an exact-commit CI guard; hosted verification of that guard is recorded in verification.md. Unit tests alone do not establish hosted enforcement. Manual production promotion, tested rollback and full operational recovery remain incomplete. Keep protected development hosting enabled and never describe it as an unrestricted public customer service.

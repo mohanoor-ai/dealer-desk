@@ -57,7 +57,7 @@ flowchart TB
     Deploy --> Dev[Protected development app]
 ```
 
-The deployment does not currently wait for the GitHub result. A successful CI run is not proof that this gate exists.
+The diagram above records the original independent triggers. A new gate in scripts/build_vercel.py now requires a successful trusted CI run for the exact commit before frontend build; see release-recovery.md and verification.md for hosted enforcement status. Manual production remains separate.
 
 ## Planned: gated release, promotion and rollback
 
@@ -77,7 +77,7 @@ flowchart TB
 
 Status: planned. Separate configuration/data, release gating, manual production promotion and exercised rollback are not complete. Code rollback does not restore database contents or undo migrations; backup/restore is a separate rehearsal. Implementation must fit the selected hosting platform rather than pretend Vercel deploys our Docker image.
 
-## Planned: bounded incident response
+## Current local lab: bounded incident response
 
 ```mermaid
 flowchart TB
@@ -93,7 +93,7 @@ flowchart TB
     Recovery --> Record[Record version, action and outcome]
 ```
 
-Status: planned. No collected telemetry dashboard, triggered alert or agent repair is claimed. The incident lab must use fictional data; the responder gets no unrestricted hosted-manager credentials. A screenshot of an invented dashboard or manually written alert would not establish this workflow.
+Status: local OTLP collection, correlation UI, three-failure stock alert and deterministic fixed-action repair are demonstrated in operations.md. The responder has no hosted credentials or arbitrary command tool. Production telemetry and model-backed diagnosis are not claimed.
 
 ## Screenshot policy
 

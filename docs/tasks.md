@@ -38,3 +38,6 @@ Acceptance: use the owner-confirmed spelling Mohammed Sheikh-Noor in README, pro
 
 ## Submission evidence completion — 25 October
 Acceptance: recheck official current rubric and form; add modular team/process/testing/security and AI-use docs describing actual collaboration without invented handoffs; provide one fail-fast backend/frontend verification command; run checks and retain sanitized real output; reconcile stale status claims; keep protected hosting and private content separate; prepare exact revision and form fields. Operations and release capabilities must remain labelled incomplete unless actually demonstrated.
+
+## Complete release and operations — 25 October
+Acceptance: enforce CI-gated dev delivery and manual production promotion with immutable revision/smoke/rollback evidence; instrument the real stock journey with correlated redacted metrics/logs/traces, collected/stored/viewable in a local UI; demonstrate an actual user-impact alert and bounded alert-triggered repair in an isolated environment; add runnable extension workflow/tool/guardrail and permission tests; verify clean setup and two-browser persistence; retain real artifacts and reconcile all status documents. Never weaken hosted protection or use production data for fault injection.

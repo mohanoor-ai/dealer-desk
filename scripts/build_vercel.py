@@ -2,11 +2,15 @@
 from pathlib import Path
 import shutil
 import subprocess
+import os
+from scripts.release_gate import require_ci
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
 def main():
+    if os.environ.get('VERCEL'):
+        require_ci(os.environ.get('VERCEL_GIT_COMMIT_SHA'))
     npm = shutil.which('npm')
     if not npm:
         raise SystemExit('Node.js and npm are required to build the frontend.')

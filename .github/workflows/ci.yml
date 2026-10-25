@@ -5,6 +5,7 @@ permissions:
 jobs:
   tests:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     services:
       postgres:
         image: postgres:16-alpine
@@ -43,6 +44,49 @@ jobs:
         env:
           TEST_DATABASE_URL: postgresql+psycopg://dealer@127.0.0.1:5432/dealer_test
       - run: docker build -t dealer-desk:ci .
+      - name: Clean Compose journey and container replacement
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -c "import secrets,pathlib; pathlib.Path('.env.rehearsal').write_text('POSTGRES_PASSWORD='+secrets.token_hex(32)+'\nDEALER_PORT=8792\n')"
+          docker compose -p dealer-rehearsal --env-file .env.rehearsal up --build -d --wait --wait-timeout 180
+          docker compose -p dealer-rehearsal --env-file .env.rehearsal exec -T -e DEALER_CI_REHEARSAL=1 app python -m scripts.container_smoke create | tee container-verification.txt
+          container=$(docker compose -p dealer-rehearsal --env-file .env.rehearsal ps -q app)
+          docker cp "$container:/tmp/dealer-ci-journey.json" "$RUNNER_TEMP/dealer-ci-journey.json"
+          docker compose -p dealer-rehearsal --env-file .env.rehearsal up -d --no-deps --force-recreate --wait app
+          container=$(docker compose -p dealer-rehearsal --env-file .env.rehearsal ps -q app)
+          docker cp "$RUNNER_TEMP/dealer-ci-journey.json" "$container:/tmp/dealer-ci-journey.json"
+          docker compose -p dealer-rehearsal --env-file .env.rehearsal exec -T -u root app chown dealer:dealer /tmp/dealer-ci-journey.json
+          docker compose -p dealer-rehearsal --env-file .env.rehearsal exec -T -e DEALER_CI_REHEARSAL=1 app python -m scripts.container_smoke verify | tee -a container-verification.txt
+      - name: Previous-image rollback and forward recovery
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker tag dealer-rehearsal-app:latest dealer-desk:rehearsal-current
+          mkdir -p "$RUNNER_TEMP/previous-source"
+          git archive HEAD^ | tar -x -C "$RUNNER_TEMP/previous-source"
+          docker build -t dealer-rehearsal-app:latest "$RUNNER_TEMP/previous-source"
+          docker compose -p dealer-rehearsal --env-file .env.rehearsal up -d --no-build --no-deps --force-recreate --wait app
+          container=$(docker compose -p dealer-rehearsal --env-file .env.rehearsal ps -q app)
+          docker cp scripts/container_smoke.py "$container:/app/scripts/container_smoke.py"
+          docker cp "$RUNNER_TEMP/dealer-ci-journey.json" "$container:/tmp/dealer-ci-journey.json"
+          docker compose -p dealer-rehearsal --env-file .env.rehearsal exec -T -u root app chown dealer:dealer /tmp/dealer-ci-journey.json
+          docker compose -p dealer-rehearsal --env-file .env.rehearsal exec -T -e DEALER_CI_REHEARSAL=1 app python -m scripts.container_smoke verify | tee rollback-verification.txt
+          docker tag dealer-desk:rehearsal-current dealer-rehearsal-app:latest
+          docker compose -p dealer-rehearsal --env-file .env.rehearsal up -d --no-build --no-deps --force-recreate --wait app
+          container=$(docker compose -p dealer-rehearsal --env-file .env.rehearsal ps -q app)
+          docker cp "$RUNNER_TEMP/dealer-ci-journey.json" "$container:/tmp/dealer-ci-journey.json"
+          docker compose -p dealer-rehearsal --env-file .env.rehearsal exec -T -u root app chown dealer:dealer /tmp/dealer-ci-journey.json
+          docker compose -p dealer-rehearsal --env-file .env.rehearsal exec -T -e DEALER_CI_REHEARSAL=1 app python -m scripts.container_smoke verify | tee -a rollback-verification.txt
+      - name: Controlled local operations rehearsal
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv run python -m ops.collector > "$RUNNER_TEMP/collector.txt" 2>&1 &
+          collector=$!
+          trap 'kill "$collector" || true' EXIT
+          uv run python -m ops.rehearse
+          uv run python -m ops.backup_lab
       - name: Preserve verification output
         if: always()
         uses: actions/upload-artifact@v4
@@ -51,3 +95,10 @@ jobs:
           path: |
             openapi.yaml
             core-verification.txt
+            container-verification.txt
+            rollback-verification.txt
+            docs/evidence/incident-rehearsal.json
+            docs/evidence/backup-restore.json
+      - name: Stop disposable Compose services
+        if: always()
+        run: docker compose -p dealer-rehearsal --env-file .env.rehearsal stop

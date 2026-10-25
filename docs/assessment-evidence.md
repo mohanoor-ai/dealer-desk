@@ -15,11 +15,11 @@ Official requirements checked against course revision [de41e409](https://github.
 | Containerization | Dockerfile; docker-compose.yml; start.ps1; start.sh; earlier replacement/persistence evidence | Docker engine did not complete a fresh check on 25 October |
 | Deployment | deployment-vercel.md; hosted journey/redeployment evidence; media/dealer-overview.png with source commit | Protected Vercel development deployment; no unrestricted showroom claimed |
 | CI/CD | .github/workflows/ci.yml; hosted workflow history; Vercel Git deployment evidence | Independent CI and deploy; no passing-test gate, production promotion or rollback rehearsal yet |
-| Observability | Existing request IDs and bounded route/status/duration logs | No collected/stored/correlated metrics, logs and traces UI |
-| Alerting | No completed evidence | User-impact alert not implemented |
-| On-call agent | No completed evidence | Alert-driven agent repair and recovery not implemented |
+| Observability | backend/telemetry.py; ops/collector.py; operations.md; real correlation screenshot | Local OTLP collector, SQLite storage and correlation UI demonstrated; no production telemetry service claimed |
+| Alerting | Three failed authenticated stock reads triggered StockReadUnavailable; incident-rehearsal.json | Isolated local rehearsal, not a production alert service |
+| On-call agent | Alert automatically invokes ops/responder.py; 503 to 200 and record preservation recorded | Deterministic policy agent; no LLM diagnosis or autonomous production repair claimed |
 
-The agent extension pack is separate module scope, not a thirteenth scoring row in this pinned final rubric. It is unfinished. Security/data boundaries and the limited source/history scanner are documented in security.md. Optional articles are indexed in articles/README.md; drafts are not published progress links.
+The agent extension pack is separate module scope, not a thirteenth scoring row in this pinned final rubric. See agent-extension-pack.md for the runnable read-only MCP tool, reusable workflow, specialist definition and enforced guardrail. No independent specialist invocation is claimed. Security/data boundaries and the limited source/history scanner are documented in security.md. Optional articles are indexed in articles/README.md; drafts are not published progress links.
 
 ## Reviewer route
 

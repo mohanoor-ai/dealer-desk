@@ -1,0 +1,10 @@
+{
+  "scope": "isolated-local-rehearsal",
+  "database": "data/rehearsal.sqlite3",
+  "permitted_action": "restore_stock_table",
+  "requires_marker": "data/rehearsal-authorized.json",
+  "deny_hosted_environments": true,
+  "allow_arbitrary_sql": false,
+  "allow_shell_commands": false,
+  "enforcement": "ops.responder.authorize"
+}

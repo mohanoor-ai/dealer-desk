@@ -96,7 +96,7 @@ The [assessment evidence index](docs/assessment-evidence.md) maps the current im
 
 Development responsibilities and review boundaries are described in [team](docs/team.md) and [process](docs/process.md). [AI use](docs/ai-use.md) records actual assistance and corrections; [security](docs/security.md) describes tool/data permissions and remaining risks. These documents do not claim independent reviews that did not happen.
 
-Current and planned release/incident diagrams are in [docs/diagrams.md](docs/diagrams.md). Release promotion, collected telemetry and alert-driven repair are labelled planned until implemented and verified. Private learning notes are kept outside this repository.
+Current and planned release/incident diagrams are in [docs/diagrams.md](docs/diagrams.md). The [local operations lab](docs/operations.md) demonstrates real OTLP collection, correlated request signals, an alert and a deterministic bounded repair. The [extension pack](docs/agent-extension-pack.md) includes a read-only MCP tool and enforced recovery policy. [Release controls](docs/release-recovery.md) describe the exact-commit CI gate, container recovery rehearsal and pending independent production setup. Private learning notes stay outside this repository.
 
 ## Public project tracking
 Source: https://github.com/mohanoor-ai/dealer-desk

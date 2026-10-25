@@ -48,6 +48,7 @@ def main():
         for rule in findings(path, (ROOT / path).read_bytes()):
             hits.add(('working-tree', path, rule))
     commits = git('rev-list', '--all').decode().splitlines()
+    checked_blobs = {}
     for commit in commits:
         rows = git('ls-tree', '-rz', '--full-tree', commit).split(b'\0')
         for row in filter(None, rows):
@@ -56,8 +57,10 @@ def main():
             if kind != b'blob':
                 continue
             path = raw.decode('utf-8')
-            content = git('cat-file', 'blob', blob.decode())
-            for rule in findings(path, content):
+            cache_key = (path, blob)
+            if cache_key not in checked_blobs:
+                checked_blobs[cache_key] = findings(path, git('cat-file', 'blob', blob.decode()))
+            for rule in checked_blobs[cache_key]:
                 hits.add((commit[:12], path, rule))
     print(f'Checked {count} source files and {len(commits)} reachable commits.')
     for revision, path, rule in sorted(hits):
