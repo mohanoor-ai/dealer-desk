@@ -6,18 +6,56 @@ Dealer Desk is a web application for one car dealership. It keeps vehicle availa
 
 [Public website](https://dealer-desk-prod.vercel.app/) · [Source code](https://github.com/mohanoor-ai/dealer-desk) · [Task tracker](https://github.com/mohanoor-ai/dealer-desk/issues)
 
-## Problem and expected behaviour
+[Problem](#problem-description) · [Specification](#product-specification) · [Technology](#technology-and-deployment) · [Workflow](#workflow-in-practice) · [Setup](#run-locally) · [Tests](#tests-and-verification) · [Operations](#observability-and-incident-response)
 
-A stock list does not show what a customer asked, whether somebody checked the vehicle, or what should happen next. Dealer Desk connects those records:
+## Problem description
 
-- Visitors browse reference vehicle listings, search/filter stock and open vehicle details with photograph credits.
-- Staff sign in, add or edit vehicles, record enquiries and schedule follow-ups against the correct enquiry.
-- The overview identifies open enquiries without a next action and shows scheduled work with its due date.
-- Clicking the enquiry count opens the open-enquiry list. Clicking an enquiry number opens that record.
-- Completing a task leaves the enquiry open until staff closes it. An open enquiry with no remaining task is shown as unscheduled.
-- Saved records survive reload/restart. A stale vehicle edit returns a conflict rather than overwriting another staff member's change.
+### The problem
 
-The public catalogue uses demonstration listings and historical reference prices, not offers for sale. Website enquiry delivery and email/WhatsApp/SMS integrations are not connected. Optional browser demos reset their per-tab memory and do not write to the staff database.
+When vehicle stock, customer enquiries and follow-up tasks are kept in separate lists, staff cannot easily see what a customer asked, which vehicle it concerns or what should happen next. Shared stock edits also need protection against one person overwriting another person's update.
+
+### System functionality
+
+**Customer website:** visitors browse reference listings, search and filter vehicles, switch thumbnail/list views and open vehicle details with credited photographs. Browsing does not require a staff account. Website enquiry delivery is not yet connected.
+
+**Staff/dealer workspace:** individual accounts provide access to stock management, photos, enquiries and follow-ups. Staff records a request against a vehicle, opens the enquiry directly, schedules the next action and completes or reopens the task. The overview identifies enquiries without a next action and shows scheduled work with its due date. Viewer accounts are read-only; sales staff can manage records; managers can also inspect audit history.
+
+### Expected system behaviour
+
+- Saved staff records survive page reloads and application restarts.
+- The enquiry count opens the open-enquiry list; an enquiry number opens that exact record.
+- An open enquiry without an incomplete task is labelled No next action scheduled.
+- Scheduling from an enquiry selects the correct record. Completing a task does not close the enquiry or send a customer reply.
+- Backend validation and role checks reject invalid or unauthorized changes. A stale edit returns a conflict instead of overwriting newer data.
+- The public catalogue excludes customer records and internal notes. Optional browser demos reset their per-tab memory without writing to the staff database.
+
+Reference prices and photographs are illustrative, not offers for sale. Email, WhatsApp and SMS are not connected.
+
+## Product specification
+
+The implemented scope is one dealership with a read-only customer catalogue and an authenticated staff workspace. Core technical acceptance criteria are:
+
+| Area | Expected result |
+|---|---|
+| Validation and access | Invalid input is rejected; private reads and writes require the appropriate staff access |
+| Stock and persistence | Vehicle, enquiry and task relationships remain saved after reload/restart |
+| Concurrent edits | A stale revision returns HTTP 409 and preserves the newer record |
+| Enquiry workflow | Direct record links, correct scheduling context and explicit missing next actions |
+| Photos | File/type/dimension limits, metadata removal, persistence, cover selection and attribution |
+| Delivery | Successful exact-revision CI before deployment; explicit production promotion and verified compatible recovery |
+| Operations | Collected/correlated request signals, a user-impact alert and a bounded response with recovery checks |
+
+Tasks move from acceptance criteria through implementation, verification and release. Mohammed Sheikh-Noor defines scope and reviews behaviour; the coding assistant implements changes, runs checks and records results. Engineering and verification were performed within one assistant workflow.
+
+Supporting specifications and records:
+
+- [Product specification and technical acceptance criteria](product-spec.md).
+- [Public task tracker](https://github.com/mohanoor-ai/dealer-desk/issues) and [task record](docs/tasks.md).
+- [Agent responsibilities](docs/team.md), [execution process](docs/process.md), [project instructions](AGENTS.md) and [AI-use record](docs/ai-use.md).
+- [Issue-to-implementation traceability](docs/issue-traceability.md): issue #5, its acceptance criteria, changes, tests, screenshots, CI and release.
+- [API contract](openapi.yaml).
+- [Testing instructions](docs/testing.md) and [verification record](docs/verification.md).
+- [Assessment evidence index](docs/assessment-evidence.md).
 
 ## Technology and deployment
 
@@ -42,7 +80,7 @@ The public catalogue uses demonstration listings and historical reference prices
 
 Production and development use separate Neon branch endpoints. Production tracks `production-release`, advanced explicitly after successful main CI. Preview protection remains enabled. See [environments](docs/environments.md) and [release/recovery](docs/release-recovery.md).
 
-## Application screenshots
+## Workflow in practice
 
 ![Dealer Desk overview showing ten vehicles, two open enquiries and their missing next actions.](docs/media/dealer-overview.png)
 
@@ -123,21 +161,13 @@ The verified application revision [14f075b](https://github.com/mohanoor-ai/deale
 
 ## Observability and incident response
 
-The local operations lab instruments authenticated stock reads with OpenTelemetry metrics, traces and structured logs. OTLP exports are collected and stored in a bounded loopback SQLite receiver. Its UI correlates request spans, logs and sampled metric exemplars without customer fields, request bodies or credentials.
+- Request metrics, structured logs and traces.
+- Signal collection, storage and a correlation dashboard.
+- Stock-read failure alert.
+- Bounded incident response and recovery verification.
+- Backup and restore checks.
 
-Three failed stock reads trigger an alert. A deterministic responder checks an isolated rehearsal database and authorization marker, repairs only the known table-rename fault, then verifies the same request returns 200 and the saved record remains. Unknown conditions escalate. An independent SQLite backup/restore is tested separately.
-
-The course teaches OpenTelemetry with Prometheus, Loki, Tempo and Grafana. This project uses a custom local receiver/storage/UI instead; those four services and a hosted monitoring platform are not deployed. The responder does not invoke an LLM. [Run the operations lab](docs/operations.md) · [Release controls](docs/release-recovery.md) · [Extension permissions](docs/permissions.md).
-
-## Specification, task execution and assessment evidence
-
-- [Product specification](product-spec.md): users, workflows, scope and numbered technical acceptance criteria.
-- [Public issues](https://github.com/mohanoor-ai/dealer-desk/issues) and [task record](docs/tasks.md): acceptance criteria and actual completion status.
-- [Worked issue traceability](docs/issue-traceability.md): issue #5 from owner report through implementation, tests, screenshots, CI and release.
-- [Responsibilities](docs/team.md), [process](docs/process.md) and [AGENTS.md](AGENTS.md): context, execution and permission boundaries.
-- [AI-use record](docs/ai-use.md): actual assistance, corrections and limitations; no independent review is invented.
-- [Assessment evidence index](docs/assessment-evidence.md): reviewer navigation for the twelve criteria, separate from a grade claim.
-- [API contract](openapi.yaml), [security](docs/security.md) and [dependency review](security/review.md): interfaces, controls and recorded findings.
+[View operations and incident-response details →](docs/operations.md)
 
 ## Current limits and deferred work
 

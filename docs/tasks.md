@@ -57,3 +57,6 @@ Owner wording refinement: ordinary example customer names/messages, no fictional
 
 ## Assessment documentation reconciliation — 25 October
 Acceptance: README presents problem, expected behaviour, stack/platforms, setup/tests, AI-assisted process and evidence; product specification describes current behaviour and numbered acceptance criteria with deferred scope separate; architecture/process reflect public production and tested release/recovery; issue #5 traceability links owner report, execution, code, tests, CI and deployment; observability distinguishes the implemented local collector/UI from the taught Grafana/LGTM stack. Preserve dated verification history and screenshot provenance. Check links, wording consistency and source audit; no application, database or hosting change.
+
+## README assessor reading order — 25 October
+Owner-approved acceptance: Problem description contains The problem, System functionality and Expected system behaviour; distinguish customer website from staff/dealer workspace. Product specification appears early with concise acceptance criteria and linked detail. Observability is a short capability list with one full-details link. Use natural project headings and a short contents line; retain key verification results in README without rubric numbering or implied grades. Documentation-only change.
