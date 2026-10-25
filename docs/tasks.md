@@ -69,3 +69,6 @@ Owner-approved acceptance: remove repeated Project evidence section; preserve un
 
 ## README landing image, technology and deployment — 25 October
 Owner-approved acceptance: add an actual public landing-page screenshot directly beneath the project name with concise capture/source details; keep staff workflow screenshots separate. Explain each implemented technology’s role briefly. Add a distinct Deployment section after tests and before observability covering platforms, access, environment separation, CI gate/manual production, verification/recovery and a full runbook link. Preserve telemetry image at README end. Check links/rendering; documentation and image only.
+
+## Logo, full-page collage and mobile navigation — 25 October
+Acceptance: reuse the existing DD SVG identity in the GitHub README; replace the top-only landing image with a collage of actual full-page landing/catalogue/detail/staff screens, preserving individual originals and provenance. On narrow screens, replace scrolling top/bottom link rows with three-bar controls and vertical navigation; support customer/staff contexts, close/Escape/route changes, focus handling and safe-area spacing. Desktop navigation remains visible. Verify component behaviour, build, rendered captures and hosted release; no invented customer data or photo claims.

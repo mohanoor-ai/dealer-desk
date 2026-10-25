@@ -11,6 +11,7 @@ import './style.css';
 import './pages.css';
 import Storefront,{Brand} from './Storefront';
 import './site.css';
+import MobileNavigation from './MobileNavigation';
 
 type User={id:number;username:string;role:'viewer'|'sales'|'manager'};
 const empty:Snapshot={vehicles:[],enquiries:[],tasks:[]};
@@ -103,12 +104,16 @@ export default function App(){
   useEffect(()=>{if(user&&!demo&&route.page==='login')window.location.hash='/overview';},[user,demo,route.page]);
   const vehicle=snapshot.vehicles.find(vehicle=>vehicle.id===route.id);
   const onAdd=()=>{window.location.hash='/vehicles/new';};
+  const staffView=!!user&&!publicPage;
+  const mobileItems=staffView?navigation.filter(([page])=>demo!=='customer'||page==='stock').map(([page,label])=>({label,href:`#/${page}`,current:route.page===page||(page==='stock'&&['vehicle','new'].includes(route.page))})):[{label:'Home',href:'#/home',current:route.page==='home'},{label:'Vehicles',href:'#/catalogue',current:['catalogue','catalogue-detail'].includes(route.page)},{label:'Contact',href:'#/contact',current:route.page==='contact'},{label:user?'Staff workspace':'Staff sign in',href:user?'#/overview':'#/login',current:route.page==='login'},{label:'Privacy',href:'#/privacy',current:route.page==='privacy'}];
+  useEffect(()=>{if(demoChooser){const choices=document.getElementById('demo-choices');choices?.scrollIntoView?.({block:'start',behavior:'smooth'});choices?.focus();}},[demoChooser]);
 
   return <>
     <a className="skip" href="#main">Skip to content</a>
     <div className="sample-notice">Demonstration website · Vehicles and prices shown for illustration.</div>
     <header className={publicPage||!user?'public-header':'workspace-header'}><a className="brand" href="#/home" aria-label="Dealer Desk home" onClick={()=>{if(demo)closeDemo();}}><Brand/></a>
       {publicPage||!user?<nav aria-label="Website navigation"><a href="#/catalogue" aria-current={route.page==='catalogue'?'page':undefined}>Vehicles</a><a href="#/contact" aria-current={route.page==='contact'?'page':undefined}>Contact</a><a className="staff-entry" href={user?'#/overview':'#/login'}>{user?'Staff workspace ↗':'Staff sign in ↗'}</a></nav>:<><nav aria-label="Main navigation">{navigation.filter(([page])=>demo!=='customer'||page==='stock').map(([page,label,icon])=><a key={page} href={`#/${page}`} className={(route.page===page||(page==='stock'&&['vehicle','new'].includes(route.page)))?'active':''} aria-current={(route.page===page||(page==='stock'&&route.page==='vehicle'))?'page':undefined}><span aria-hidden="true">{icon}</span>{label}</a>)}</nav><div className="account"><span>{user.username}<small>{user.role}</small></span><button className="secondary" onClick={logout}>Sign out</button></div></>}
+      <MobileNavigation items={mobileItems} routeKey={window.location.hash} staff={staffView} onLogout={user?logout:undefined} onTryDemo={publicPage||!user?()=>setDemoChooser(true):undefined}/>
     </header>
     <main id="main">
       {demo&&<section className="banner" aria-label="Temporary demo"><strong>{demo==='dealer'?'Dealer':'Customer'} demo</strong> · Ends at {new Date(demoExpiry).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}. Changes stay in this tab and reset when the demo ends or the page reloads. Photo uploads require a staff account. <button className="secondary" onClick={()=>openDemo(demo)}>Reset demo</button> <button className="secondary" onClick={closeDemo}>End demo</button></section>}
@@ -125,10 +130,10 @@ export default function App(){
           {route.page==='vehicle'&&(vehicle?<VehiclePage vehicle={vehicle} snapshot={snapshot} canWrite={canWrite} saving={saving} change={change} refresh={refresh} onEdit={()=>{setError('');setEditing({...vehicle});}} onEnquire={()=>{setPreferredVehicle(vehicle.id);window.location.hash='/enquiries';}}/>:<div className="empty"><h1>{loading?'Loading vehicle…':'Vehicle not found'}</h1><p>It may have been archived or removed from active stock.</p><a href="#/stock">Return to stock</a></div>)}
           {route.page==='new'&&(canWrite?<><Heading eyebrow="YOUR INVENTORY / NEW VEHICLE" title="Add to your stock." description="Start with the essentials. You can add photos on the vehicle page."/><section className="panel new-vehicle-panel"><VehicleForm vehicle={null} saving={saving} onSave={saveVehicle} onCancel={()=>{window.location.hash='/stock';}}/></section></>:<div className="empty">Your account has read-only access.</div>)}
           </>}
-          <footer><span>Dealer Desk</span>Vehicle stock, enquiries and follow-ups.</footer>
+          <footer className="workspace-footer"><span>Dealer Desk</span>Vehicle stock, enquiries and follow-ups.</footer>
         </>}
       {(publicPage||!user)&&<footer className="public-footer"><span>Dealer Desk</span><a href="#/privacy">Privacy</a><a href={user?'#/overview':'#/login'}>{user?'Staff workspace':'Staff sign in'}</a><button className="text-button" onClick={()=>setDemoChooser(true)}>Try demo</button><small>Reference images are illustrative</small></footer>}
-      {demoChooser&&<section className="panel demo-chooser" aria-label="Choose a demo"><h2>Try Dealer Desk</h2><p>Explore the workflow in this tab. Changes reset when you finish; enquiries are not sent.</p><button onClick={()=>openDemo('customer')}>Explore customer demo</button> <button className="secondary" onClick={()=>openDemo('dealer')}>Explore staff demo</button> <button className="secondary" onClick={()=>setDemoChooser(false)}>Close demo choices</button></section>}
+      {demoChooser&&<section id="demo-choices" tabIndex={-1} className="panel demo-chooser" aria-label="Choose a demo"><h2>Try Dealer Desk</h2><p>Explore the workflow in this tab. Changes reset when you finish; enquiries are not sent.</p><button onClick={()=>openDemo('customer')}>Explore customer demo</button> <button className="secondary" onClick={()=>openDemo('dealer')}>Explore staff demo</button> <button className="secondary" onClick={()=>setDemoChooser(false)}>Close demo choices</button></section>}
       {editing&&<dialog ref={editDialog} className="upload-dialog" onCancel={event=>{if(saving)event.preventDefault();else setEditing(null);}} onClose={()=>setEditing(null)}><div className="section-heading"><h2>Edit vehicle</h2><button className="icon-button" disabled={saving} aria-label="Close vehicle editor" onClick={()=>setEditing(null)}>×</button></div>{error&&<p role="alert" className="error">{error}</p>}<VehicleForm vehicle={editing} saving={saving} onSave={saveVehicle} onCancel={()=>setEditing(null)}/></dialog>}
     </main>
   </>;
