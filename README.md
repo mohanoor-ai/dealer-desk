@@ -210,14 +210,7 @@ Status checked 25 October 2026. Open/closed is the tracker state; the scope colu
 
 Live website enquiries, conversation/reply history, staff assignment, bulk upload, R2 migration, messaging integrations, Grafana/LGTM, managed production monitoring and an in-app LLM are deferred. Archive/restore and manager audit endpoints exist, but dedicated interface controls remain incomplete. The login limiter is process-local; a public-write service requires a separate abuse-control review.
 
-Only demonstration data is used here. Keep credentials, `.env`, databases, backups and exports outside Git. Private learning notes and raw lesson transcripts are separate local deliverables. This personal hosted project is not a claim of readiness for real customer operations. [Security boundaries](docs/security.md).
-
-## Learning in public
-
-[Building Dealer Desk](docs/articles/01-building-dealer-desk.md) · [From the browser to saved records](docs/articles/02-browser-to-saved-records.md) · [Testing release and recovery](docs/articles/03-testing-release-and-recovery.md).
-
-These technical articles describe actual decisions and checks, with AI assistance disclosed. The [article index](docs/articles/README.md) collects them. Private notes and transcripts are not part of the public app.
-
+Only demonstration data is used here. Keep credentials, `.env`, databases, backups and exports outside Git. 
 ## Telemetry dashboard
 
 ![Telemetry dashboard correlating request traces, structured logs and sampled metric exemplars.](docs/evidence/operations-correlation.png)
