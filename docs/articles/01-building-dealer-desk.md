@@ -8,10 +8,15 @@ React and TypeScript provide the browser interface. One API client handles backe
 
 The [specification](../../product-spec.md) separates expected behaviour from implementation status. Public issues and [acceptance criteria](../tasks.md) make changes reviewable. This matters with AI assistance: a plausible generated screen does not establish that a record was validated, saved or protected by server permissions. Those behaviours need their own checks.
 
-The product excludes payments, vehicle-history checks and multi-dealership tenancy. A public customer showroom and R2 storage remain separate work. Current photos persist in the database. Temporary browser demos illustrate interactions with fictional data and disappear on reset or refresh; they are not the shared staff system.
+The product excludes payments, vehicle-history checks and multi-dealership tenancy. The public catalogue provides browsing; live enquiry delivery and R2 storage remain deferred. Current photos persist in the database. Temporary browser demos illustrate interactions with demonstration records and disappear on reset or refresh; they are not the shared staff system.
 
-![Actual staff Overview with fictional records](../media/dealer-overview.png)
+![Actual staff overview with demonstration records](../media/dealer-overview.png)
 
-This is the real protected development app captured on 24 October from b01d342. It contains one sample vehicle, one open enquiry and no open follow-ups; the counts were not staged for the image. [Capture details and stock-photo credit](../media/README.md).
+Captured 25 October 2026 from the actual local staff interface using application code 0b1aff9 and an isolated database copy. It shows ten active reference listings, two open enquiries and no incomplete follow-ups. [Capture details and stock-photo credits](../media/README.md).
 
 The useful boundary is a complete, small journey with clear evidence. More screens, stock records or generated descriptions do not replace persistence, permissions and reproducibility. The current [assessment index](../assessment-evidence.md) shows both evidence and remaining limits.
+
+
+AI Dev Tools Zoomcamp project progress · [DataTalks.Club](https://datatalks.club/) · [Alexey Grigorev](https://alexeygrigorev.com/)
+
+#aidevtools #DataTalksClub #BuildInPublic #SoftwareEngineering

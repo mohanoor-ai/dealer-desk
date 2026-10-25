@@ -12,5 +12,9 @@ C%3A
 *.db
 *.log
 tests
-docs
+# Only public article sources and credited screenshot assets enter the build.
+docs/*
+!docs/articles/
+!docs/media/
+!docs/evidence/
 sample-assets

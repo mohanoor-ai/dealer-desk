@@ -37,3 +37,7 @@ Opt-in OpenTelemetry SDK instrumentation exports bounded route/method/status/dur
 Three failed authenticated stock reads trigger a deterministic responder against a fixed marked rehearsal database. Only a known table-rename fault can be repaired; unknown states escalate. It cannot execute arbitrary commands or access Neon. A separate read-only MCP stdio tool returns aggregate rehearsal counts. A specialist definition exists, but no independent invocation is claimed.
 
 The course's Prometheus/Loki/Tempo/Grafana stack is not deployed. The project demonstrates collection/storage/correlation through its custom local implementation. See [operations](operations.md), [permissions](permissions.md), [release/recovery](release-recovery.md), [page map](site-map.md) and [verification](verification.md).
+
+## Public project articles
+
+Fourteen authored articles live as Markdown under docs/articles. Vite bundles those sources and the referenced public screenshots into the frontend; the Docker build copies those public source directories into its frontend build stage. No GitHub request is needed to load article text/images. The public hash routes #/learning and #/learning/<slug> resolve against the current app origin. Rendering uses React text/link elements, not raw HTML. Repository implementation references remain ordinary outbound source links. Public reading requires no staff account; private learning notes and transcripts are not included.

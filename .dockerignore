@@ -7,5 +7,9 @@ data
 backups
 .env
 .env.*
-docs
+# Only public article sources and credited screenshot assets enter the build.
+docs/*
+!docs/articles/
+!docs/media/
+!docs/evidence/
 tests

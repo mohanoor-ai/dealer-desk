@@ -16,7 +16,7 @@ def main():
         raise SystemExit('Node.js and npm are required to build the frontend.')
     for args in (['ci'], ['run', 'build']):
         subprocess.run([npm, *args], cwd=ROOT / 'frontend', check=True)
-    # Dedicated generated destination, never copy repository/docs/runtime files.
+    # Only generated assets are copied; approved public article sources/images are bundled by Vite.
     shutil.copytree(ROOT / 'frontend/dist', ROOT / 'public', dirs_exist_ok=True)
 
 

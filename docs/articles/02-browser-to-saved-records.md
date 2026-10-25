@@ -17,3 +17,8 @@ Capture: 25 October 2026; isolated synthetic database; browser-a and browser-b t
 The [database tests](../../tests/test_journey.py) separately exercise persistence across a new application instance and competing API edits. These layers answer different questions: frontend tests inspect interface logic, API/database tests inspect saved behaviour, and actual browser checks inspect the assembled workflow. The [verification record](../verification.md) retains their boundaries and results.
 
 The overview now links each enquiry number directly to its saved record and distinguishes open enquiries from scheduled tasks. An enquiry without an incomplete task says “No next action scheduled”. Scheduling from that enquiry selects it automatically; completing a task leaves the enquiry open until staff explicitly changes its status. The README workflow collage shows actual local API/database steps with demonstration records, rather than a delivered customer message.
+
+
+AI Dev Tools Zoomcamp project progress · [DataTalks.Club](https://datatalks.club/) · [Alexey Grigorev](https://alexeygrigorev.com/)
+
+#aidevtools #DataTalksClub #BuildInPublic #SoftwareEngineering

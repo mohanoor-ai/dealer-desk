@@ -14,4 +14,9 @@ The operations lab uses real OpenTelemetry exports and a loopback collector with
 
 A controlled local fault made three authenticated stock reads return 503. That triggered an alert and a deterministic response agent. The agent could inspect and restore only a known renamed table in a fixed, explicitly marked rehearsal database. The same HTTP read then returned 200 and the vehicle remained saved. An independent restored backup matched the vehicle count and passed the integrity check. No hosted data was faulted, and no LLM diagnosis or unrestricted agent repair is claimed.
 
-The owner-approved protected production copy now uses an isolated Neon branch and manual promotion after exact-revision CI. A planned cloud rollback between two compatible, security-fixed releases and forward restoration both passed health checks and preserved a completed fictional follow-up. This was a recovery rehearsal, not a production incident; code rollback did not restore database contents. [Release/recovery details](../release-recovery.md) and the [evidence index](../assessment-evidence.md) retain that distinction.
+The owner-approved protected production copy now uses an isolated Neon branch and manual promotion after exact-revision CI. A planned cloud rollback between two compatible, security-fixed releases and forward restoration both passed health checks and preserved a completed demonstration follow-up. This was a recovery rehearsal, not a production incident; code rollback did not restore database contents. [Release/recovery details](../release-recovery.md) and the [evidence index](../assessment-evidence.md) retain that distinction.
+
+
+AI Dev Tools Zoomcamp project progress · [DataTalks.Club](https://datatalks.club/) · [Alexey Grigorev](https://alexeygrigorev.com/)
+
+#aidevtools #DataTalksClub #BuildInPublic #SoftwareEngineering

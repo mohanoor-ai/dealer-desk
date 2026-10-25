@@ -12,6 +12,7 @@ import './pages.css';
 import Storefront,{Brand} from './Storefront';
 import './site.css';
 import MobileNavigation from './MobileNavigation';
+import LearningPublic from './LearningPublic';
 
 type User={id:number;username:string;role:'viewer'|'sales'|'manager'};
 const empty:Snapshot={vehicles:[],enquiries:[],tasks:[]};
@@ -23,7 +24,7 @@ export default function App(){
   const [demo,setDemo]=useState<DemoRole|null>(null);
   const [demoExpiry,setDemoExpiry]=useState(0);
   const [demoChooser,setDemoChooser]=useState(false);
-  const publicPage=!demo&&['home','catalogue','catalogue-detail','contact','privacy'].includes(route.page);
+  const publicPage=!demo&&['learning','home','catalogue','catalogue-detail','contact','privacy'].includes(route.page);
   const [checking,setChecking]=useState(true);
   const [snapshot,setSnapshot]=useState(empty);
   const [loading,setLoading]=useState(false);
@@ -105,7 +106,7 @@ export default function App(){
   const vehicle=snapshot.vehicles.find(vehicle=>vehicle.id===route.id);
   const onAdd=()=>{window.location.hash='/vehicles/new';};
   const staffView=!!user&&!publicPage;
-  const mobileItems=staffView?navigation.filter(([page])=>demo!=='customer'||page==='stock').map(([page,label])=>({label,href:`#/${page}`,current:route.page===page||(page==='stock'&&['vehicle','new'].includes(route.page))})):[{label:'Home',href:'#/home',current:route.page==='home'},{label:'Vehicles',href:'#/catalogue',current:['catalogue','catalogue-detail'].includes(route.page)},{label:'Contact',href:'#/contact',current:route.page==='contact'},{label:user?'Staff workspace':'Staff sign in',href:user?'#/overview':'#/login',current:route.page==='login'},{label:'Privacy',href:'#/privacy',current:route.page==='privacy'}];
+  const mobileItems=staffView?navigation.filter(([page])=>demo!=='customer'||page==='stock').map(([page,label])=>({label,href:`#/${page}`,current:route.page===page||(page==='stock'&&['vehicle','new'].includes(route.page))})):[{label:'Home',href:'#/home',current:route.page==='home'},{label:'Vehicles',href:'#/catalogue',current:['catalogue','catalogue-detail'].includes(route.page)},{label:'Contact',href:'#/contact',current:route.page==='contact'},{label:user?'Staff workspace':'Staff sign in',href:user?'#/overview':'#/login',current:route.page==='login'},{label:'Learning in public',href:'#/learning',current:route.page==='learning'},{label:'Privacy',href:'#/privacy',current:route.page==='privacy'}];
   useEffect(()=>{if(demoChooser){const choices=document.getElementById('demo-choices');choices?.scrollIntoView?.({block:'start',behavior:'smooth'});choices?.focus();}},[demoChooser]);
 
   return <>
@@ -119,7 +120,7 @@ export default function App(){
       {demo&&<section className="banner" aria-label="Temporary demo"><strong>{demo==='dealer'?'Dealer':'Customer'} demo</strong> · Ends at {new Date(demoExpiry).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}. Changes stay in this tab and reset when the demo ends or the page reloads. Photo uploads require a staff account. <button className="secondary" onClick={()=>openDemo(demo)}>Reset demo</button> <button className="secondary" onClick={closeDemo}>End demo</button></section>}
       {!demo&&notice&& !user&&<p role="status">{notice}</p>}
       {error&&!editing&&<div role="alert" className="error">{error} {user&&<button className="secondary" onClick={()=>{setError('');refresh();}}>Refresh records</button>}</div>}
-      {publicPage?<Storefront page={route.page} id={route.id}/>:checking?<p role="status">Checking your session…</p>:!user?
+      {publicPage?(route.page==='learning'?<LearningPublic slug={route.articleSlug}/>:<Storefront page={route.page} id={route.id}/>):checking?<p role="status">Checking your session…</p>:!user?
         <section className="login"><div><p className="eyebrow">A CLEARER WORKING DAY</p><h1>Know your stock.<br/>Keep your promises.</h1><p>Stock, enquiries and the next follow-up.<br/>Together in one place.</p><div className="login-note">Your dealership workspace.</div></div><form className="panel login-form" onSubmit={login}><h2>Welcome back</h2><p>Sign in with your individual account.</p><label>Username<input name="username" autoComplete="username" required maxLength={80}/></label><label>Password<input name="password" type="password" autoComplete="current-password" required maxLength={128}/></label><button disabled={saving}>{saving?'Signing in…':'Sign in'}</button><small>Ask your dealership administrator for an account.</small></form></section>:
         <><div role="status" className={`global-notice ${notice?'has-notice':''}`}>{notice}</div>{user.role==='viewer'&&!demo&&<p className="banner">You have read-only access. Contact a manager to request changes.</p>}
           {demo==='customer'?<CustomerDemo snapshot={snapshot} vehicle={route.page==='vehicle'?vehicle:undefined} loading={loading} saving={saving} change={change}/>:<>
@@ -132,7 +133,8 @@ export default function App(){
           </>}
           <footer className="workspace-footer"><span>Dealer Desk</span>Vehicle stock, enquiries and follow-ups.</footer>
         </>}
-      {(publicPage||!user)&&<footer className="public-footer"><span>Dealer Desk</span><a href="#/privacy">Privacy</a><a href={user?'#/overview':'#/login'}>{user?'Staff workspace':'Staff sign in'}</a><button className="text-button" onClick={()=>setDemoChooser(true)}>Try demo</button><small>Reference images are illustrative</small></footer>}
+      {publicPage&&route.page==='home'&&<section className="learning-teaser"><p className="eyebrow">FROM THE PROJECT</p><h2>Building Dealer Desk</h2><p>Project articles by Mohammed Sheikh-Noor: scope, saved workflows, testing and release.</p><a href="#/learning">Read the learning-in-public articles →</a></section>}
+      {(publicPage||!user)&&<footer className="public-footer"><span>Dealer Desk</span><a href="#/learning">Learning in public</a><a href="#/privacy">Privacy</a><a href={user?'#/overview':'#/login'}>{user?'Staff workspace':'Staff sign in'}</a><button className="text-button" onClick={()=>setDemoChooser(true)}>Try demo</button><small>Reference images are illustrative</small></footer>}
       {demoChooser&&<section id="demo-choices" tabIndex={-1} className="panel demo-chooser" aria-label="Choose a demo"><h2>Try Dealer Desk</h2><p>Explore the workflow in this tab. Changes reset when you finish; enquiries are not sent.</p><button onClick={()=>openDemo('customer')}>Explore customer demo</button> <button className="secondary" onClick={()=>openDemo('dealer')}>Explore staff demo</button> <button className="secondary" onClick={()=>setDemoChooser(false)}>Close demo choices</button></section>}
       {editing&&<dialog ref={editDialog} className="upload-dialog" onCancel={event=>{if(saving)event.preventDefault();else setEditing(null);}} onClose={()=>setEditing(null)}><div className="section-heading"><h2>Edit vehicle</h2><button className="icon-button" disabled={saving} aria-label="Close vehicle editor" onClick={()=>setEditing(null)}>×</button></div>{error&&<p role="alert" className="error">{error}</p>}<VehicleForm vehicle={editing} saving={saving} onSave={saveVehicle} onCancel={()=>setEditing(null)}/></dialog>}
     </main>
