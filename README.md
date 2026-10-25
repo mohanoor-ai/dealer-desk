@@ -1,16 +1,48 @@
 # Dealer Desk
 
-Public website: https://dealer-desk-prod.vercel.app/ — browse sample vehicles without a Vercel account. Staff management still requires an individual app login. Development and preview deployments remain protected. Access updated at the owner’s request on 25 October 2026.
-
 By [Mohammed Sheikh-Noor](https://github.com/mohanoor-ai).
 
-Dealer Desk is a web application for a single car dealership to manage vehicle stock, customer enquiries and follow-up tasks in one place. Staff sign in with role-based permissions, and records are saved in a shared database. The application uses React, TypeScript, FastAPI and PostgreSQL, with a development deployment on Vercel and Neon. Viewers can read; sales staff can update workflows; managers can inspect the audit history.
+Dealer Desk is a web application for one car dealership. It keeps vehicle availability, customer enquiries and follow-up tasks in a shared workspace, so staff can see which enquiry needs a next action and avoid conflicting stock edits.
 
-[Open the website](https://dealer-desk-prod.vercel.app/) · [Source code](https://github.com/mohanoor-ai/dealer-desk) · [Project overview](docs/project-overview.md)
+[Public website](https://dealer-desk-prod.vercel.app/) · [Source code](https://github.com/mohanoor-ai/dealer-desk) · [Task tracker](https://github.com/mohanoor-ai/dealer-desk/issues)
 
-The hosted development app currently requires Vercel authorization and an individually provisioned staff account. It is not yet an unrestricted public demo. Reviewers can also run it locally using the instructions below.
+## Problem and expected behaviour
 
-The aim is to keep vehicle availability, customer conversations and the next action together, instead of tracking them in separate lists.
+A stock list does not show what a customer asked, whether somebody checked the vehicle, or what should happen next. Dealer Desk connects those records:
+
+- Visitors browse reference vehicle listings, search/filter stock and open vehicle details with photograph credits.
+- Staff sign in, add or edit vehicles, record enquiries and schedule follow-ups against the correct enquiry.
+- The overview identifies open enquiries without a next action and shows scheduled work with its due date.
+- Clicking the enquiry count opens the open-enquiry list. Clicking an enquiry number opens that record.
+- Completing a task leaves the enquiry open until staff closes it. An open enquiry with no remaining task is shown as unscheduled.
+- Saved records survive reload/restart. A stale vehicle edit returns a conflict rather than overwriting another staff member's change.
+
+The public catalogue uses demonstration listings and historical reference prices, not offers for sale. Website enquiry delivery and email/WhatsApp/SMS integrations are not connected. Optional browser demos reset their per-tab memory and do not write to the staff database.
+
+## Technology and deployment
+
+| Area | Implementation |
+|---|---|
+| Frontend | React, TypeScript, Vite |
+| Backend and API validation | Python, FastAPI, Pydantic; committed OpenAPI contract |
+| Persistence | SQLAlchemy, Alembic; SQLite locally or PostgreSQL |
+| Hosting | Vercel application/frontend; Neon PostgreSQL |
+| Staff access | Individual accounts, hashed passwords, expiring server sessions, backend role checks |
+| Images | Pillow processing; bounded image/thumbnail bytes stored in the database |
+| Tests | pytest; Vitest and React Testing Library; separate PostgreSQL/container/browser checks |
+| Containers and delivery | Docker Compose; GitHub Actions; exact-revision CI gate; manual production promotion |
+| Local operations | OpenTelemetry, OTLP HTTP/protobuf, custom loopback SQLite collector and correlation UI |
+| Agent extensions | Read-only MCP stdio tool, reusable verification procedure, specialist definition and enforced response policy |
+
+| Environment | URL | Access |
+|---|---|---|
+| Production | https://dealer-desk-prod.vercel.app/ | Public browsing; individual app login for staff records |
+| Development | https://dealer-desk-dev.vercel.app/ | Vercel authorization, then staff app login |
+| Local | Address printed by the startup command | Loopback access; locally created staff account |
+
+Production and development use separate Neon branch endpoints. Production tracks `production-release`, advanced explicitly after successful main CI. Preview protection remains enabled. See [environments](docs/environments.md) and [release/recovery](docs/release-recovery.md).
+
+## Application screenshots
 
 ![Dealer Desk overview showing ten vehicles, two open enquiries and their missing next actions.](docs/media/dealer-overview.png)
 
@@ -20,103 +52,101 @@ Actual staff UI captured 25 October 2026 from application code [0b1aff9](https:/
 
 Alex asks whether the Ford Puma is available to view. Staff opens enquiry #2, schedules an availability check and completes that internal task. The enquiry remains open and returns to “No next action scheduled” until staff decides the next step. These are saved API/database operations, not the browser-memory demo. No customer reply was sent. [Workflow evidence](docs/verification.md).
 
-The updated site has a sample-stock landing page, catalogue, detail pages and a separate staff workspace. See [page structure and access boundaries](docs/site-map.md).
-
-## Current architecture
+## Architecture
 
 ```mermaid
 flowchart TB
-    Staff[Staff browser] --> Gate[Vercel Authentication]
-    Gate --> UI[React and TypeScript frontend]
-    UI <-->|Same-origin API and staff session cookie| API[FastAPI: validation and role checks]
-    API -->|SQLAlchemy over TLS| DB[(Neon PostgreSQL)]
+    Visitor[Customer browser] --> Web[React frontend on Vercel]
+    Staff[Staff browser] --> Web
+    Web --> Catalogue[Read-only reference catalogue API]
+    Web --> Auth[Staff session and role checks]
+    Auth --> API[FastAPI stock, enquiry and task API]
+    Catalogue --> DB[(Neon PostgreSQL over TLS)]
+    API --> DB
+    DB --- Media[Processed photos and credits]
 ```
 
-This shows the protected development deployment. The backend enforces permissions. Local development can use SQLite or Compose with PostgreSQL. Photos currently live in the database; R2 is planned. Temporary demos use isolated browser memory and do not write to this database. [Architecture and diagram status](docs/diagrams.md).
+Business records and images use PostgreSQL in the hosted app; local development can use SQLite. Public catalogue responses exclude customer records, internal notes and staff audit data. Browser-memory demos are separate from this flow. [Architecture](docs/architecture.md) · [Page structure](docs/site-map.md) · [Editable diagrams](docs/diagrams.md).
 
-## Main staff journey
+## Run locally
 
-```mermaid
-flowchart TB
-    V[Save a vehicle] --> E[Record a linked enquiry]
-    E --> F[Schedule a follow-up]
-    F --> C[Complete the follow-up]
-    C --> O[Refresh the Overview]
-    O --> P[Reload or restart: saved records remain]
+### Docker Compose
+
+Install Docker Desktop with Linux containers on Windows, or Docker Engine with Compose on Linux. Initial image/dependency downloads require internet. From a checkout:
+
+```powershell
+# Windows PowerShell
+./start.ps1
 ```
 
-The real staff API/database journey has retained verification evidence. Browser-memory demos illustrate interaction only. [Verification record](docs/verification.md).
+```sh
+# Linux
+sh start.sh
+```
 
-## Start with Docker
-Install Docker Desktop on Windows (Linux containers) or Docker Engine with Compose on Linux. First setup downloads container images and dependencies and therefore needs internet.
+The startup script preserves an existing `.env` and database volume, builds/starts the app and PostgreSQL, and prompts for the first manager account if none exists. Passwords are entered interactively. Open the address printed by the script. Do not remove a volume containing records you need.
 
-Windows PowerShell: `./start.ps1`
+Create another account:
 
-Linux: `sh start.sh`
+```sh
+docker compose exec app python -m scripts.create_user alex --role sales
+```
 
-The script preserves an existing .env and database volume, builds and starts the app/database, and asks you to create the first manager account only if there are no users. Use a password of at least 12 characters. Open the browser address printed by the script. Subsequent runs preserve records and users. Never run `docker compose down -v` against data you need.
+Available roles: viewer, sales, manager. No shared password ships with the app.
 
-Create another account: `docker compose exec app python -m scripts.create_user alex --role sales`. Choose viewer, sales or manager. Passwords are entered interactively, never as command-line arguments.
+### Python and Node.js
 
-## Local developer setup
-Python 3.12+, uv and Node 24 are needed. From this folder:
+Install Python 3.12+, uv and Node.js 24:
 
 ```sh
 uv sync --frozen
-cd frontend
-npm ci
-npm run build
-cd ..
+npm ci --prefix frontend
+npm run build --prefix frontend
 uv run alembic upgrade head
 uv run python -m scripts.create_user manager --role manager
 uv run python start.py
 ```
 
-Local development defaults to SQLite at data/dealer-v2.sqlite3. Set DATABASE_URL to use PostgreSQL. The frontend development server proxies /api to port 8090; start it with `npm run dev` inside frontend. The built interface is served by FastAPI.
+The default local database is `data/dealer-v2.sqlite3`. Configure `DATABASE_URL` privately for PostgreSQL. Migrations run explicitly, not during a web request or Vercel build. For frontend development, run `npm run dev` inside `frontend`; its API proxy targets port 8090.
 
-## What works in the first milestone
-- Login, logout, expiring/revocable sessions and server-enforced viewer/sales/manager roles.
-- Create, read, search, filter and edit vehicles; vehicle status changes.
-- Enquiries linked to stock, enquiry status changes, follow-up creation/completion/reopening.
-- Persistent data and dashboard totals; shared views refresh every three seconds.
-- Atomic revision checks reject conflicting edits; every material mutation records actor, record ID and revision in the audit table.
-- Validated API inputs, centralized browser client and helpful empty/error states.
+## Tests and verification
 
-The API also supports archive/restore and manager audit queries; dedicated interface controls for these remain to be completed. Import/export, a public persisted customer showroom, a production monitoring service and optional AI remain outside this assessment release. An isolated local backup/restore lab and protected development/production deployments are verified below.
+```sh
+uv run python -m scripts.verify
+```
 
-## Tests
-After `uv sync --frozen` and `npm ci --prefix frontend`, run `uv run python -m scripts.verify` for backend tests, frontend tests, the production build and the limited source/history audit. The command stops if any check fails. Individual commands and database/browser/container boundaries are in [testing instructions](docs/testing.md). Actual results and limitations are in [verification](docs/verification.md).
+After dependency setup, this command runs backend tests, frontend tests, the production build and the limited source/history audit, stopping at the first failure. PostgreSQL, clean Compose, replacement/rollback and local operations labs run as additional CI stages.
 
-## Access and privacy
-This personal project is under development. Use sample records until the public-release checks are complete. No fixed user or password ships with the app. Keep .env, database files, backups and exports private. The private learning companion is a sibling deliverable and must not be added to this public source folder.
+The verified application revision [14f075b](https://github.com/mohanoor-ai/dealer-desk/commit/14f075b938b1cc4a3812edaea87c6d12d7b7f6b7) passed 38 backend and 14 frontend tests plus all additional stages in [CI run 40215259023](https://github.com/mohanoor-ai/dealer-desk/actions/runs/40215259023). Production health matched that revision. Documentation-only revisions can follow it; their own checks remain visible in Actions.
 
-localhost / 127.0.0.1 means this computer. The Compose port binding deliberately limits access to this computer; LAN access needs deliberate binding/firewall changes and HTTPS/authentication review. A public cloud URL is different: anyone can reach the login screen.
+[Testing commands](docs/testing.md) explain each layer. [Verification](docs/verification.md) retains actual observations and limits. Browser captures/manual checks are not an automated cross-engine suite. The local Docker engine was unavailable during the final checks; hosted CI demonstrated the clean Compose journey and recovery.
 
-## Deployment direction
+## Observability and incident response
 
-The prepared Vercel build and protected development deployment procedure are documented in [docs/deployment-vercel.md](docs/deployment-vercel.md). The source/history review is in [docs/release-audit.md](docs/release-audit.md). Protected development hosting on Vercel with Neon is verified: https://dealer-desk-dev.vercel.app/ (owner Vercel login required, followed by a separately provisioned staff login). Cloudflare R2 photo storage remains planned; current images persist in the database.
-Target: Vercel hosting with external PostgreSQL, subject to the completed free-tier and security review. Set COOKIE_SECURE=true for HTTPS. Vercel Hobby permits personal non-commercial use; a real business deployment needs suitable terms. This deployment is private to authorised Vercel users; no publicly accessible customer showroom is claimed.
+The local operations lab instruments authenticated stock reads with OpenTelemetry metrics, traces and structured logs. OTLP exports are collected and stored in a bounded loopback SQLite receiver. Its UI correlates request spans, logs and sampled metric exemplars without customer fields, request bodies or credentials.
 
-## Engineering documentation and verification
-Read docs/architecture.md for technology choices, docs/tasks.md for acceptance criteria and docs/verification.md for actual results. The original contract design is retained as docs/prior-api-design.yaml; openapi.yaml describes the current implementation. An in-app LLM is optional and is not required by the inspected current final rubric.
+Three failed stock reads trigger an alert. A deterministic responder checks an isolated rehearsal database and authorization marker, repairs only the known table-rename fault, then verifies the same request returns 200 and the saved record remains. Unknown conditions escalate. An independent SQLite backup/restore is tested separately.
 
-The [assessment evidence index](docs/assessment-evidence.md) maps the current implementation to all twelve official criteria, with explicit limitations and reviewer instructions.
+The course teaches OpenTelemetry with Prometheus, Loki, Tempo and Grafana. This project uses a custom local receiver/storage/UI instead; those four services and a hosted monitoring platform are not deployed. The responder does not invoke an LLM. [Run the operations lab](docs/operations.md) · [Release controls](docs/release-recovery.md) · [Extension permissions](docs/permissions.md).
 
-Development responsibilities and review boundaries are described in [team](docs/team.md) and [process](docs/process.md). [AI use](docs/ai-use.md) records actual assistance and corrections; [security](docs/security.md) describes tool/data permissions and remaining risks. These documents do not claim independent reviews that did not happen.
+## Specification, task execution and assessment evidence
 
-Current and planned release/incident diagrams are in [docs/diagrams.md](docs/diagrams.md). The [local operations lab](docs/operations.md) demonstrates real OTLP collection, correlated request signals, an alert and a deterministic bounded repair. The [extension pack](docs/agent-extension-pack.md) includes a read-only MCP tool and enforced recovery policy. [Release controls](docs/release-recovery.md) describe the exact-commit CI gate, container recovery rehearsal and verified separate protected production setup. Private learning notes stay outside this repository.
+- [Product specification](product-spec.md): users, workflows, scope and numbered technical acceptance criteria.
+- [Public issues](https://github.com/mohanoor-ai/dealer-desk/issues) and [task record](docs/tasks.md): acceptance criteria and actual completion status.
+- [Worked issue traceability](docs/issue-traceability.md): issue #5 from owner report through implementation, tests, screenshots, CI and release.
+- [Responsibilities](docs/team.md), [process](docs/process.md) and [AGENTS.md](AGENTS.md): context, execution and permission boundaries.
+- [AI-use record](docs/ai-use.md): actual assistance, corrections and limitations; no independent review is invented.
+- [Assessment evidence index](docs/assessment-evidence.md): reviewer navigation for the twelve criteria, separate from a grade claim.
+- [API contract](openapi.yaml), [security](docs/security.md) and [dependency review](security/review.md): interfaces, controls and recorded findings.
 
-## Public project tracking
-Source: https://github.com/mohanoor-ai/dealer-desk
+## Current limits and deferred work
 
-Acceptance criteria and remaining work: https://github.com/mohanoor-ai/dealer-desk/issues
+Live website enquiries, conversation/reply history, staff assignment, bulk upload, R2 migration, messaging integrations and an in-app LLM are deferred. Archive/restore and manager audit endpoints exist, but dedicated interface controls remain incomplete. The login limiter is process-local; a public-write service requires a separate abuse-control review.
 
-Hosted checks: https://github.com/mohanoor-ai/dealer-desk/actions
-
-The first hosted CI run passed for cd525a9. Protected development hosting is verified. Exact-commit CI gating and local operations/recovery are verified; the separate protected production release, manual promotion and compatible cloud rollback/forward restoration are verified. See docs/verification.md for exact evidence.
+Only demonstration data is used here. Keep credentials, `.env`, databases, backups and exports outside Git. Private learning notes and raw lesson transcripts are separate local deliverables. This personal hosted project is not a claim of readiness for real customer operations. [Security boundaries](docs/security.md).
 
 ## Learning in public
 
-Read [Building Dealer Desk](docs/articles/01-building-dealer-desk.md), [From the browser to saved records](docs/articles/02-browser-to-saved-records.md), and [Testing release and recovery](docs/articles/03-testing-release-and-recovery.md). These technical articles describe actual decisions and checks, with AI assistance disclosed. The [article index](docs/articles/README.md) collects them; assessment evidence remains in the verification record. Private lesson notes and transcripts stay outside the repository.
+[Building Dealer Desk](docs/articles/01-building-dealer-desk.md) · [From the browser to saved records](docs/articles/02-browser-to-saved-records.md) · [Testing release and recovery](docs/articles/03-testing-release-and-recovery.md).
 
-Protected production: https://dealer-desk-prod.vercel.app/ (Vercel authorization followed by individual staff login). Reproducible local setup and retained evidence are available to assessors without sharing account credentials.
+These technical articles describe actual decisions and checks, with AI assistance disclosed. The [article index](docs/articles/README.md) collects them. Private notes and transcripts are not part of the public app.

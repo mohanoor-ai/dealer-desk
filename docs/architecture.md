@@ -1,34 +1,39 @@
-# Architecture decision — first persistent journey
+# System architecture
 
-Browser → React/TypeScript → centralized API client → FastAPI → SQLAlchemy → SQLite locally or PostgreSQL in cloud. Alembic controls database schema changes.
+Reconciled 25 October 2026. This document describes the implemented system; deferred services are listed explicitly.
 
-React keeps forms and shared views manageable. TypeScript catches mismatched data shapes. FastAPI validates API inputs. SQLAlchemy permits the same small application to use local SQLite and hosted PostgreSQL. Alembic records changes instead of silently recreating tables. Docker Compose will provide the portable full-stack environment; Vercel deployment will use an external database.
+## Request and persistence path
 
-These are project decisions, informed by course modules 2–3, not mandatory technologies in the final rubric.
+React/TypeScript uses the central frontend/src/api.ts client for same-origin requests. FastAPI/Pydantic validates the contract; SQLAlchemy reads/writes business records; Alembic versions the schema. SQLite is the local default and PostgreSQL on Neon is the hosted database.
 
-## Security boundary
-An operator creates individual users from a local command. Passwords use salted scrypt hashes. Login creates a random session whose hash is stored in the database; the browser receives an HttpOnly SameSite cookie. Sessions expire after eight hours and logout revokes them. Production requires HTTPS and Secure cookies.
+The public catalogue has a separate read-only response shape. It includes at most 100 non-archived internally marked reference listings, excluding known operational test makes. Only credited illustrative photo metadata/bytes can be exposed through catalogue routes. Staff notes, customer/enquiry/task records, users, revisions and audit events are excluded. Staff APIs require authenticated sessions.
 
-Viewer reads; sales reads and changes stock, enquiries and tasks; manager also manages operational exports and audit access. No public self-registration. Demo uses fictional records. All mutations require a custom same-origin request header; no cross-origin API access is enabled.
+Business relationships are Vehicle → Enquiry → Follow-up. Foreign keys preserve those links. Images and thumbnails are stored in database binary columns with caption/source/licence metadata. The API, rather than a serverless local filesystem, serves image bytes. Current bounded storage is portable across SQLite/PostgreSQL; R2 is not implemented.
 
-Each edit uses an atomic SQL update matching ID and revision. A successful change and its audit event commit together. Conflicts return 409. Audit records contain actor ID and action metadata, not customer messages.
+## Staff security and concurrency
 
-## Current boundary
-Photo extension decision: store bounded optimized images and thumbnails as database binary fields for portability between SQLite and PostgreSQL and to avoid Vercel filesystem persistence assumptions. Image processing uses Pillow with restricted decoders and explicit limits. At this educational scale (12 images/car, 200 KB optimized output cap each), this is a focused choice; larger businesses should migrate the media repository to object storage. The public demo still needs its overall quota/abuse review before publication.
+Operators provision individual users through an interactive CLI. Passwords use salted scrypt hashes. The database stores hashes of random eight-hour session tokens; the browser receives an HttpOnly/SameSite cookie with Secure enabled for hosted HTTPS. Logout revokes the session. Viewer reads; sales mutates stock/enquiries/tasks/photos; manager also accesses audit history. There is no public self-registration.
 
-This milestone proves the persistent journey, authentication and conflict boundary. Public abuse controls, full recovery, cloud setup, comprehensive observability and browser evidence remain separate tasks. Do not deploy this intermediate milestone as a real dealership system.
+Backend permissions and same-origin mutation checks enforce access. Client button visibility is not an authorization boundary. A material edit atomically matches ID/revision, applies the new values and writes its audit event. A stale revision returns 409. Operational logs exclude customer messages and credentials.
 
-## Selected hosting — 24 October 2026
-Personal deployment target: Vercel for FastAPI and the built React frontend, Neon PostgreSQL for records/sessions, and Cloudflare R2 for photos after its storage adapter/migration is implemented. Current photo persistence remains database-backed. Development is protected until public access controls are verified. See deployment-vercel.md for actual configuration and release blockers. Engineering/course evidence stays in repository docs; private learning content remains outside this application.
+## Interface state and task context
 
-## Browser demo boundary — 24 October 2026
-Customer/dealer demos run entirely in per-tab JavaScript memory through the central API client. They are explicitly simulated workflows, not authenticated users or shared live database sessions. Business requests are intercepted while demo mode is active, with no network fallback, including after expiry. No guest account, password, cookie or browser storage is created. Samples reset on mode switch/reset and disappear on refresh/close/end; a 30-minute UI timer clears active state. Background browser suspension may delay physical memory clearing until the tab resumes, but operations reject access after expiry. Maximum 50 records per collection and 4,000 characters per write bound memory; photo uploads are unavailable. The backend staff authorization remains the real security boundary. Client role restrictions are UX only and grant no server authority. This avoids public database writes, so does not claim to fulfil the shared-session assessment journey. Public hosting still needs its separate access/abuse review.
+Saved staff snapshots load from paginated APIs and poll every three seconds without overlapping requests. HTTP errors leave a visible recovery path; lost authentication clears the staff view. Count/record links and scheduling preserve enquiry context through hash-route query parameters. Completing a task does not implicitly close its enquiry. Needs attention excludes closed enquiries and exposes unscheduled open work.
 
-## Local operations and release guard — 25 October 2026
+The catalogue and staff pages share styling but use different data boundaries. Internal reference markers are hidden in vehicle labels/editor input and preserved when staff saves an existing reference model.
 
-Opt-in OpenTelemetry SDK instrumentation exports bounded HTTP route metadata to an OTLP HTTP collector. The loopback development receiver persists redacted metrics/logs/traces in SQLite and shows trace/span/log/exemplar correlation in a read-only HTML UI. This is an intentionally small local demonstration, not a claim that the originally proposed Grafana stack or production telemetry has been deployed.
+Temporary customer/staff demos intercept business operations inside per-tab JavaScript memory, with no network fallback. They reset on refresh/end and reject operations after 30-minute expiry. No guest account, session cookie or browser storage is created. Background suspension can delay physical memory clearing until the tab resumes. Collections/text are bounded and photo uploads are unavailable in the simulation.
 
-A synthetic local fault triggers three failed authenticated stock reads, then a deterministic policy agent diagnoses and repairs only a known renamed table in a fixed marked rehearsal database. It cannot run arbitrary commands or touch Neon. A separate read-only MCP stdio tool returns aggregate synthetic stock counts. The Vercel build entry point now requires successful trusted CI for the exact source commit; manual production is deployed with a separate Neon branch; promotion and compatible rollback/forward restoration are verified. See environments.md and release-recovery.md.
+## Hosted environments and release
 
-## Sample catalogue interface — 25 October
-The landing page and read-only catalogue use a separate bounded sample-only DTO, not authenticated staff snapshots. Only non-archived `(sample)` listings and credited illustrative photos are included. Staff endpoints remain protected. Hosted Vercel access protection is unchanged. See site-map.md for routes and publication boundary. No enquiry delivery or bulk import feature is included.
+Vercel serves the built frontend and FastAPI. Production and development use different Neon branch endpoints; inherited database names do not imply a shared branch. The connection string remains server-side. Migrations run explicitly outside request/build startup.
+
+Production browsing is public under Vercel Standard Protection; staff APIs still require app login. Development and preview deployments remain protected. Main triggers CI and development delivery, with the build waiting for successful trusted CI at the exact source SHA. Manual promotion advances production-release without force. Compatible cloud rollback/forward restoration was exercised separately from the isolated SQLite restore lab. Code rollback does not undo database contents or migrations.
+
+## Local operations and extension boundaries
+
+Opt-in OpenTelemetry SDK instrumentation exports bounded route/method/status/duration metadata and traces/logs/metric exemplars through OTLP HTTP/protobuf. A loopback-only custom receiver stores redacted batches in SQLite and provides a read-only correlation UI. Export is disabled unless configured; no hosted monitoring service is claimed.
+
+Three failed authenticated stock reads trigger a deterministic responder against a fixed marked rehearsal database. Only a known table-rename fault can be repaired; unknown states escalate. It cannot execute arbitrary commands or access Neon. A separate read-only MCP stdio tool returns aggregate rehearsal counts. A specialist definition exists, but no independent invocation is claimed.
+
+The course's Prometheus/Loki/Tempo/Grafana stack is not deployed. The project demonstrates collection/storage/correlation through its custom local implementation. See [operations](operations.md), [permissions](permissions.md), [release/recovery](release-recovery.md), [page map](site-map.md) and [verification](verification.md).

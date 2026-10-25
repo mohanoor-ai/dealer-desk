@@ -1,73 +1,95 @@
-# Dealer Desk — course-aligned product specification
-Status: target design for the upgrade, not a claim that these features exist.
-Baseline: the existing local dealer tracker. Preserve its history.
-Purpose: demonstrate the 2026 AI-assisted engineering workflow using a useful, focused dealer application.
+# Dealer Desk product specification
 
-## Users and problem
-A small dealer's stock and follow-up work are scattered. Sales staff need accurate vehicle availability and a clear enquiry queue. A manager needs stock totals and overdue work.
-The assessed demo uses fictional vehicles and customers. Real customer operations require a separate production review.
+Status: current implemented scope, reconciled 25 October 2026. Deferred capabilities are listed separately. Detailed observations remain in [verification](docs/verification.md).
 
-## Main journeys
-1. Staff add a vehicle, check its details and change availability.
-2. Staff record an enquiry, set a follow-up and move it through new/contacted/closed.
-3. Staff complete a follow-up; the dashboard updates without losing the enquiry history.
-4. Two authorised demo browser sessions see stock changes, with revision checks preventing silent overwrites.
-5. An optional assistant drafts a listing from approved vehicle fields; staff review before accepting. It never publishes.
+## Problem and users
 
-## Vehicle data
-Current UX extension: separate hash-addressed overview, stock, enquiries, follow-up and vehicle-detail screens. A vehicle detail shows its photos, saved details and linked enquiries. Licensed reference photos are visibly labelled as stock illustrations and preserve credit/license/source. Staff may upload JPEG, PNG or WebP files (2 MiB each, at most 12 photos per vehicle) and select a cover. The server verifies image decoding, caps pixel dimensions, strips metadata, stores optimized JPEGs and thumbnails in the database, and records changes using the vehicle revision. Viewer accounts remain read-only. No remote URL fetch is exposed to users. Photos persist with the database; future large-scale object storage is outside this slice.
+A single dealership needs a shared record of vehicle availability, customer enquiries and the next staff action. Separate stock and task lists make it difficult to see which enquiries are unanswered or unscheduled, and concurrent edits can overwrite newer information.
 
-ID; make; model; year; integer price_pence; status (available/reserved/sold); approved descriptive facts; archived flag; created/updated timestamps; revision number.
-Input length/range limits appear in the contract. No registration number, external vehicle history or real customer data is required.
+| User | Expected access |
+|---|---|
+| Visitor | Browse reference listings and vehicle details without a staff account |
+| Viewer | Read staff records after signing in; no mutations |
+| Sales staff | Manage stock, photos, enquiries and follow-up tasks |
+| Manager | Sales capabilities plus manager-only audit access |
+| Operator | Provision staff accounts and run authorized migrations/releases through documented commands |
 
-## Enquiry and task data
-Enquiry ID, vehicle ID, fictional display name, bounded message, status, timestamps.
-Follow-up ID, enquiry ID, due date, completion state and timestamps.
-Foreign keys preserve relationships. Record an audit event for material state changes without storing customer messages in operational logs.
+The deployment contains demonstration records and historical reference prices. It does not accept real customer enquiries through the public website. No shared staff password is published.
 
-## Acceptance criteria
-V1: Valid stock returns 201 and an ID. Blank fields, negative/fractional pence and unknown fields are rejected. Values survive process restarts.
-V2: Search/filter/pagination operate on active stock by default. Archived records remain retrievable through an explicit filter.
-V3: Stock editing uses a revision value. A stale update returns 409 and the browser offers refresh; it never overwrites silently.
-V4: Available may become reserved or sold; reserved may become available or sold; sold may return to available for an explicit correction. Each change is audited.
-E1: An enquiry references an existing, unarchived vehicle; missing IDs return 404 and archived-stock requests return 409.
-E2: Follow-up date validation is explicit. A task can complete/reopen. Dashboard open/overdue counts agree with persisted tasks.
-U1: The browser has accessible forms, loading/error/empty states and one central API client. User text renders safely.
-U2: Two sessions observe shared stock state within five seconds using a documented connection/reconnection strategy.
-D1: The same application supports SQLite local development and PostgreSQL through DATABASE_URL. Versioned migrations run from documented commands.
-T1: Unit, real-database integration and browser workflow tests have separate commands. No failing test or empty required test suite is treated as success.
-R1: A clean checkout runs using documented commands; Compose starts app/database and retains records after container replacement.
-R2: Delivery runs only after checks pass; a post-deploy health/journey check records the deployed commit. Rollback is documented and exercised.
-O1: One important API journey emits bounded metrics, redacted logs and traces. An alert represents actual user impact.
-O2: A responder collects allowlisted, read-only evidence and proposes a structured action. It cannot execute arbitrary model-generated commands.
-A1: The extension pack demonstrates instructions, reusable procedure, specialist review, read-only MCP tool, guardrail and explicit permissions.
-S1: Actual deterministic scan results, human dispositions and operational evidence are retained. A markdown claim is not a scan result.
+## Expected workflows
 
-## Optional LLM acceptance
-L1: Model/provider/version are configured explicitly. Credentials remain outside Git.
-L2: Only approved stock facts are sent. Structured output is validated and unsupported claims rejected or flagged.
-L3: Timeout, unavailable provider and invalid responses leave core stock/enquiry functions usable.
-L4: Offline fixtures are clearly labelled; they are not called live model results.
-L5: Fixed evaluation examples include missing facts, malicious text and false vehicle claims. Human acceptance is required; no automatic publishing.
-This is a product enhancement, not an explicit final-rubric requirement.
+### Vehicle browsing
 
-## Access and data
-Local offline learning stays separate from the public app.
-Public demo: fictional data only; authenticated demo sessions if implementing collaboration. Public mutating demo access must have rate limits and reset/abuse controls before hosting.
-MCP returns aggregate stock data, not customer messages. Agents have no production write credentials. Do not commit .env, runtime databases or raw sensitive logs.
+The landing page shows selected reference listings and compact browsing links. Visitors search/filter the catalogue, switch thumbnail/list layout and open a vehicle detail page. Details show price context, availability and credited illustrative photos. Contact details are not invented when none have been supplied.
 
-## Target architecture
-React + TypeScript + Vite → central API client → OpenAPI-defined FastAPI/Pydantic routes → SQLAlchemy → SQLite or PostgreSQL.
-Alembic migrations; uv/locked dependencies; pytest; Vitest/Testing Library; Playwright; Docker Compose; GitHub Actions.
-OpenTelemetry → Collector → Prometheus/Loki/Tempo → Grafana.
-Official Python MCP SDK and a bounded evidence responder.
-React, Alembic and test-library choices are project decisions; the rubric does not mandate all of them.
-Before adding dependencies verify official compatibility and lock versions.
+The read-only catalogue includes at most 100 non-archived listings marked internally for demonstration, excluding operational test makes. Responses contain listing fields and credited illustrative photo metadata, not staff notes, customer records, accounts or audit events. Photo delivery repeats that publication check.
 
-## Non-goals
-Marketplace publishing, payment processing, HPI/valuation, real customers, multi-tenant SaaS, autonomous production fixes, unrestricted tools, model training or RAG.
-Selected personal development hosting: Vercel and Neon PostgreSQL, protected by Vercel authorization and staff authentication. Photos currently persist in the database; R2 remains planned. No paid provisioning until authorised.
+### Staff stock management
 
-## Definition of done
-Demonstrated acceptance checks; public deployment evidence; successful hosted CI/CD; source-to-module map; actual reviewed AI-use journal; extension demo; security/operations artifacts; truthful README and exact evaluation commit.
-The current official project rubric was rechecked on 25 October 2026: https://github.com/DataTalksClub/ai-dev-tools-zoomcamp/blob/main/project/README.md. It has 12 criteria worth 24 points and requires three peer reviews. Course source review is recorded separately in the private companion; it is not evidence of implementation or learner mastery. This target specification is not a grade guarantee. Actual implemented status is in docs/tasks.md and docs/verification.md.
+Staff sign in to their own account, add a vehicle, inspect its detail/gallery and edit its information or availability. Prices are integer pence. Status is available, reserved or sold. Images are decoded, bounded, metadata-stripped and re-encoded before storage. Uploaded JPEG/PNG/WebP files are limited to 2 MiB each and twelve photos per vehicle. A cover photo can be selected.
+
+An edit includes the revision originally opened. The server applies the change only if the revision still matches; otherwise it returns 409 and the staff member refreshes/reviews the newer record. A material change and its audit event commit together.
+
+### Enquiry and next action
+
+Staff records a customer name and message against an existing active vehicle. Enquiry status is new, contacted or closed. The overview counts non-closed enquiries and identifies each enquiry's customer, vehicle, request and pending next action.
+
+An open enquiry without an incomplete follow-up says No next action scheduled. Clicking the count opens open enquiries; an enquiry number opens that exact record. Schedule follow-up carries the enquiry ID to the form. Staff chooses a due date and task note. The UK dealership date distinguishes overdue, due-today and upcoming tasks.
+
+Staff can complete/reopen a task. Task completion does not close the enquiry or send a reply. If the enquiry remains open with no other pending task, it appears as unscheduled again. Closed enquiries do not appear in overview attention.
+
+### Saved and simulated workflows
+
+Authenticated staff operations use the API and persistent database. Shared views poll every three seconds. Temporary customer/staff demos intercept business operations in per-tab memory and reset on refresh/end or expiry; they do not create cloud enquiries or staff sessions. These are distinct verification boundaries.
+
+## Data and backend behaviour
+
+Vehicle: ID, make/model, year, price_pence, approved facts, status, archived flag, revision and timestamps. Photos retain captions, credit, source/licence metadata, dimensions and processed image/thumbnail bytes.
+
+Enquiry: ID, vehicle foreign key, customer display name, bounded message, status, revision and timestamps. Follow-up: ID, enquiry foreign key, due date, note, completed flag, revision and timestamps.
+
+Foreign keys preserve relationships. Pydantic rejects unknown fields and invalid types/ranges. SQLAlchemy uses bound parameters. Individual passwords use salted scrypt hashes; only session-token hashes are stored. Session cookies are HttpOnly/SameSite and Secure on hosted HTTPS. Roles are enforced on the server; same-origin mutation guards apply to writes. The [OpenAPI contract](openapi.yaml) describes inputs, outputs and errors.
+
+## Core technical acceptance criteria
+
+| ID | Acceptance criterion | Verification route |
+|---|---|---|
+| V1 | Valid vehicle creation returns 201/ID; invalid values and unknown fields are rejected; values persist | tests/test_journey.py |
+| V2 | Active-stock search/filter/pagination work; archive access is explicit | tests/test_journey.py; staff stock UI |
+| V3 | A stale revision returns 409 without overwriting newer data | tests/test_journey.py; manual two-session evidence |
+| V4 | Valid status edits are saved with an actor/revision audit event | tests/test_journey.py |
+| P1 | Photo type/size/dimensions, metadata removal, quota, persistence and cover selection are checked | tests/test_photos.py |
+| E1 | Enquiries require an existing unarchived vehicle; missing IDs and archived conflicts are rejected | tests/test_journey.py |
+| E2 | Follow-up validation, complete/reopen and persisted counts agree | tests/test_journey.py |
+| E3 | Count/number links, unscheduled state, correct preselection, task completion and viewer controls work | frontend/src/workflow.test.tsx; README collage |
+| C1 | Public catalogue omits private/archived/test data and disallowed photos; staff APIs remain authenticated | tests/test_catalogue.py; anonymous hosted checks |
+| U1 | Forms and API client provide loading, error and empty states; user text is rendered safely | frontend tests; manual browser checks; full accessibility audit not completed |
+| U2 | Independent sessions observe changes within five seconds and stale edits fail | three-second polling; retained manual independent-session check |
+| D1 | Versioned migrations and the same app support SQLite/PostgreSQL; no migrations occur at request/build startup | Alembic; database/hosting tests; PostgreSQL CI |
+| T1 | One fail-fast command runs backend/frontend tests, build and limited source audit | scripts/verify.py; hosted CI output |
+| R1 | Compose runs app/PostgreSQL and retains records after app replacement | startup scripts; clean Compose HTTP journey in CI |
+| R2 | Exact-revision CI gates delivery; production promotion is explicit; compatible rollback/forward restoration is exercised | scripts/release_gate.py; scripts/promote.py; release/recovery evidence |
+| O1 | A key journey emits redacted metrics/logs/traces, collected/stored and correlated in a UI | local OTLP receiver; tests/test_operations.py; operations.md |
+| O2 | A real user-impact alert invokes a bounded responder; the same failed request recovers or escalates | isolated local fault/repair rehearsal; no LLM invocation |
+| A1 | Read-only MCP, reusable procedure, specialist definition and enforced policy have explicit permissions | extension pack; MCP/policy tests; independent specialist invocation not demonstrated |
+| S1 | Actual source/dependency scan findings and their disposition are retained with scope/limits | security/review.md; security JSON reports; limited scanner |
+
+## Implementation and delivery
+
+React/TypeScript/Vite → central API client → FastAPI/Pydantic → SQLAlchemy → SQLite locally or PostgreSQL on Neon. Alembic controls migrations. Database-backed photos avoid reliance on a serverless filesystem.
+
+Vercel hosts the built frontend and API. Main builds wait for trusted exact-revision CI; an operator advances production-release after checks. Development and production use separate Neon branches. Production browsing is public; staff records require app login. Development/previews remain Vercel-protected.
+
+Local OpenTelemetry exports feed a custom loopback SQLite collector/correlation UI. Prometheus, Loki, Tempo and Grafana are taught by the course but are not deployed here. The isolated responder performs one deterministic guarded repair, with no arbitrary command tool or hosted database access. See [architecture](docs/architecture.md), [operations](docs/operations.md) and [release controls](docs/release-recovery.md).
+
+## Deferred and excluded scope
+
+Deferred: live website enquiry delivery and its abuse controls; conversation/reply history; staff assignment; bulk upload; R2 migration; email/WhatsApp/SMS integrations; Grafana/LGTM deployment; independent specialist execution; an optional in-app LLM with separate provider/evaluation controls.
+
+Excluded: payments, marketplace publishing, vehicle-history/valuation claims, real customer operations, multi-tenant SaaS, model training/RAG and autonomous production repair. Public learning articles describe actual work; private lesson notes/transcripts and secrets stay outside Git.
+
+## Completion and assessment
+
+Implemented work requires source, runnable checks and actual evidence; targets do not count as demonstrations. The [public tracker](https://github.com/mohanoor-ai/dealer-desk/issues), [task record](docs/tasks.md) and [worked traceability example](docs/issue-traceability.md) connect acceptance criteria to execution.
+
+The [assessment evidence index](docs/assessment-evidence.md) maps the current project to the pinned course rubric. It is not a grade guarantee. Final course submission and three assigned peer reviews remain separate owner steps.

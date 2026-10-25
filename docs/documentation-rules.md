@@ -12,3 +12,7 @@ Agreed with the owner on 24 October 2026. Apply these when updating front pages,
 8. Do not claim a grade, user mastery, homework completion or past independent review without the relevant evidence. Public articles require owner review of personal reflections and publication scope.
 
 See diagrams.md for current/planned diagrams and screenshot policy; media/README.md for the current image provenance; verification.md for checked results.
+
+## Assessment and portfolio presentation
+
+Lead the README with author, concrete problem, expected behaviour, working URL and actual screenshots. Name implemented technologies and deployment platforms. Link the current specification, numbered acceptance criteria, public tracker, execution example, reproducible commands and actual verification. Keep detailed runbooks in modular documents. Separate taught tools from installed services, current behaviour from deferred scope, and one assistant’s responsibilities from independent agent execution. Preserve historical evidence with dates rather than rewriting it as current status.

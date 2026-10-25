@@ -1,26 +1,24 @@
 # System and workflow diagrams
 
-Documentation checkpoint: 25 October 2026. Staff architecture remains the b01d342 baseline; release and operations diagrams include verified changes through 30dad17. Mermaid source is editable in this file and the README; no external diagram service is required to edit it.
+Documentation checkpoint: 25 October 2026. Staff architecture remains the b01d342 baseline; release and operations diagrams include the verified release/recovery work; application interface/navigation evidence extends through 14f075b. Mermaid source is editable in this file and the README; no external diagram service is required to edit it.
 
-## Current: hosted staff architecture
+## Current: hosted application
 
 ```mermaid
 flowchart TB
-    Browser[Staff browser] --> Protection[Vercel Authentication: all deployments]
-    Protection --> Frontend[React static frontend on Vercel]
-    Frontend <-->|Same-origin requests and staff cookie| Backend[FastAPI on Vercel]
-    Backend --> Validation[Input validation and server role checks]
-    Validation --> ORM[SQLAlchemy]
-    ORM -->|TLS| Neon[(Neon PostgreSQL)]
-    Neon --- Business[Vehicles, enquiries and follow-ups]
-    Neon --- Accounts[Users and expiring session hashes]
-    Neon --- Audit[Revision and actor audit events]
-    Neon --- Images[Optimized image and thumbnail bytes]
+    Public[Production visitor] --> UI[React frontend on Vercel]
+    Dev[Development visitor] --> Gate[Vercel Authentication on development]
+    Gate --> UI
+    UI --> Catalogue[Read-only reference catalogue API]
+    UI --> Staff[Staff session and role checks]
+    Staff --> API[Stock, enquiries and follow-ups]
+    Catalogue --> DB[(Separate Neon branch per environment)]
+    API --> DB
+    DB --- Photos[Processed image bytes and credits]
+    DB --- Records[Vehicles, enquiries, tasks and audit records]
 ```
 
-Vercel access and staff authentication are separate checks. Session cookies are HttpOnly/SameSite and secure on hosted HTTPS. They are not exposed to frontend JavaScript. The browser receives photo bytes through authenticated API routes. The database connection stays server-side.
-
-The temporary Customer/Dealer demos intercept business operations inside the browser. They are separate from these persisted staff workflows; they create no authenticated guest account. Current local execution supports SQLite or Docker PostgreSQL. Cloudflare R2 is not implemented and is not drawn as an active dependency.
+Production browsing is public; customer records and mutations require staff app authentication. Development and previews retain Vercel protection. Catalogue responses exclude private records. Temporary browser demos are memory-only simulations outside this persisted path. R2 and Grafana/LGTM are not deployed. See architecture.md and environments.md for boundaries.
 
 ## Current: staff save and conflicting edits
 

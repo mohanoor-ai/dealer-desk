@@ -1,10 +1,10 @@
 # Task tracker
 
-Public tracker: https://github.com/mohanoor-ai/dealer-desk/issues. Issues 1–4 contain the current deployment, R2, showroom/demo and operational acceptance criteria. This table records the detailed local history; docs/verification.md records actual evidence.
+Public tracker: https://github.com/mohanoor-ai/dealer-desk/issues. Issues 1–5 contain deployment, R2, showroom/demo, operations and enquiry-action acceptance criteria. Issues 1, 4 and 5 are closed with evidence; 2 and 3 retain deferred scope. See issue-traceability.md for the worked execution example. Historical entries below describe their dated checkpoints; later verified updates supersede earlier pending states. This table records the detailed local history; docs/verification.md records actual evidence.
 
 | ID | Acceptance criteria | State |
 |---|---|---|
-| DEP01 | Vercel entrypoint and frontend build; no migrations at import/build; hosted startup rejects SQLite/missing TLS, secure cookies and bounded connections | Local checks and protected Vercel/Neon hosted journey verified; separate protected production release and cloud recovery verified |
+| DEP01 | Vercel entrypoint and frontend build; no migrations at import/build; hosted startup rejects SQLite/missing TLS, secure cookies and bounded connections | Local checks and protected Vercel/Neon hosted journey verified; separate production release and cloud recovery verified; production browsing is now public with staff login retained |
 | DEP02 | Tracked-source/history release audit, exclusion rules and deployment runbook; report blockers without claiming publication | Reviewed source published to new repository; private runtime files excluded |
 | J01 | Operator creates individual user; valid login works; invalid login and viewer writes fail; logout revokes session | API and temporary hosted sales login verified; owner confirmed manager login works; later Overview capture used the staff session |
 | J02 | Vehicle → enquiry → follow-up persists after app restart; completion updates dashboard | Verified on SQLite and PostgreSQL; browser reload verified |
@@ -14,10 +14,10 @@ Public tracker: https://github.com/mohanoor-ai/dealer-desk/issues. Issues 1–4 
 | J06 | Browser journey, roles, recovery and hosted CI/CD evidence | Hosted journey and CI verified; CI-gated CD, container recovery and protected cloud rollback/forward restoration verified |
 | J07 | Current rubric operations/alert/responder evidence; safe extensions | Local OTLP collection/correlation, actual alert, bounded deterministic repair, backup lab and read-only MCP verified |
 | J08 | Release archive, offline companion, public/private inventory and final submission | Source/companion packaging and final revision bundle prepared separately; owner submission and three peer reviews remain |
-| UX01 | Separate overview, stock, enquiries, follow-ups and linkable vehicle-detail pages; browser Back works | Implemented; see verification.md for passed checks and pending browser/PostgreSQL checks |
-| UX02 | Licensed stock illustrations with visible credits; no illustration represented as the actual stock vehicle | Implemented; see verification.md for passed checks and pending browser/PostgreSQL checks |
-| UX03 | Staff can upload multiple JPEG/PNG/WebP photos, browse a gallery and choose a cover; viewers cannot upload | Implemented; see verification.md for passed checks and pending browser/PostgreSQL checks |
-| UX04 | Photos survive restart on SQLite/PostgreSQL; size/type/dimension limits, EXIF stripping and conflict checks verified | Implemented; see verification.md for passed checks and pending browser/PostgreSQL checks |
+| UX01 | Separate overview, stock, enquiries, follow-ups and linkable vehicle-detail pages; browser Back works | Implemented; verification.md distinguishes completed local, PostgreSQL and browser checks from remaining test coverage |
+| UX02 | Licensed stock illustrations with visible credits; no illustration represented as the actual stock vehicle | Implemented; verification.md distinguishes completed local, PostgreSQL and browser checks from remaining test coverage |
+| UX03 | Staff can upload multiple JPEG/PNG/WebP photos, browse a gallery and choose a cover; viewers cannot upload | Implemented; verification.md distinguishes completed local, PostgreSQL and browser checks from remaining test coverage |
+| UX04 | Photos survive restart on SQLite/PostgreSQL; size/type/dimension limits, EXIF stripping and conflict checks verified | Implemented; verification.md distinguishes completed local, PostgreSQL and browser checks from remaining test coverage |
 
 ## Temporary browser demo — 24 October
 Acceptance: customer and dealer entry links; no registration or network business requests while demo is active; fictional per-tab data only; expire after 30 minutes; refresh/end/reset discard data; customer cannot change stock; bounded records and text; uploads disabled in this first sandbox; staff login unchanged. This is a browser simulation, not a shared live database integration. Public Vercel protection stays enabled.
@@ -54,3 +54,6 @@ Acceptance: Open enquiries links to non-closed records; overview names customer/
 Owner refinement: clicking the enquiry count opens open enquiries; clicking an individual enquiry number opens that exact enquiry from Overview, enquiry cards, vehicle-linked enquiries and follow-up tasks.
 
 Owner wording refinement: ordinary example customer names/messages, no fictional/deployment labels in normal records; one site-level demonstration notice and reference-price/photo disclosures retained. Only known test fixtures renamed/relinked, unused operational test cars archived without deletion, and private before-images retained. Catalogue markers remain internal.
+
+## Assessment documentation reconciliation — 25 October
+Acceptance: README presents problem, expected behaviour, stack/platforms, setup/tests, AI-assisted process and evidence; product specification describes current behaviour and numbered acceptance criteria with deferred scope separate; architecture/process reflect public production and tested release/recovery; issue #5 traceability links owner report, execution, code, tests, CI and deployment; observability distinguishes the implemented local collector/UI from the taught Grafana/LGTM stack. Preserve dated verification history and screenshot provenance. Check links, wording consistency and source audit; no application, database or hosting change.

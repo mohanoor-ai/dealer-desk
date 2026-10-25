@@ -38,3 +38,7 @@ The stored dashboard proves collection/storage/viewing locally. It is not Grafan
 ## Verification
 
 tests/test_operations.py sends real OTLP signals to a real loopback collector and checks collection, correlation, invalid payloads, egress restrictions and data-preserving guardrails. tests/test_mcp.py exercises actual stdio MCP initialization, tool discovery, a read-only call and denial of an unknown write tool. CI also runs the complete HTTP fault/repair rehearsal and independent restore.
+
+## Course alignment
+
+[Module 4](https://github.com/DataTalksClub/ai-dev-tools-zoomcamp/blob/main/04-devops/01-devops-and-observability-for-ai-built-apps.md) teaches OpenTelemetry with a Collector, Prometheus, Loki, Tempo and Grafana, and notes that products are replaceable. Dealer Desk implements collection/storage/correlation with its custom local receiver/UI instead. The [final rubric](https://github.com/DataTalksClub/ai-dev-tools-zoomcamp/blob/main/project/README.md) evaluates correlated metrics/traces/logs collected, stored and viewable in a UI, plus alert and responder behaviour. These are evidence mappings, not a grade guarantee. The deterministic responder differs from the module’s headless coding-agent example; no model/configuration or independent review is invented. Grafana/LGTM, a hosted telemetry service and LLM-assisted response remain unimplemented.

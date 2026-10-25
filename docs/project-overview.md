@@ -1,27 +1,27 @@
-# Dealer Desk — project overview
+# Project overview
 
 Author: [Mohammed Sheikh-Noor](https://github.com/mohanoor-ai).
 
-Dealer Desk helps staff at one dealership keep vehicle availability, enquiries and the next follow-up action together. It replaces disconnected stock and task lists with a shared persistent workspace.
+Dealer Desk connects vehicle availability, customer enquiries and follow-up work for one dealership. Staff can identify an enquiry without a next action, open the record directly and schedule the correct follow-up. Persistent records and revision checks support shared staff use.
 
-## Current implementation
+## Current scope
 
-- Staff accounts with viewer, sales and manager permissions enforced by the API.
-- Vehicle search, filters, detail pages, photo galleries and bounded photo uploads.
-- Enquiries linked to stock, with follow-up scheduling and completion.
-- Database persistence, revision checks for conflicting edits and an audit trail.
-- React/TypeScript frontend, FastAPI backend, SQLAlchemy and Alembic; SQLite locally or PostgreSQL, including Neon for hosting.
+Visitors browse a read-only reference catalogue and vehicle photos. Staff uses individual accounts with viewer/sales/manager roles to manage stock, enquiries and tasks. The overview distinguishes open enquiries from pending follow-ups; completing a task does not close the enquiry.
 
-## Links and review access
+React/TypeScript/Vite connects to FastAPI/Pydantic, SQLAlchemy and Alembic. SQLite supports local development; hosted records/images use Neon PostgreSQL. Vercel hosts the frontend/API. Main CI gates development delivery; production promotion is explicit and uses a separate Neon branch. Compatible release rollback/forward restoration has been tested.
 
-- [Hosted development app](https://dealer-desk-dev.vercel.app/): Vercel authorization followed by a provisioned staff login.
-- [Repository](https://github.com/mohanoor-ai/dealer-desk).
-- [Setup instructions](../README.md#start-with-docker).
-- [Verification and limitations](verification.md).
-- [Current and planned diagrams](diagrams.md).
+The local operations lab collects/correlates OpenTelemetry signals in a custom SQLite-backed UI, demonstrates a user-impact alert and a deterministic bounded repair, and tests an independent SQLite restore. It does not deploy Grafana/LGTM or invoke an LLM responder. Read-only MCP and reusable procedure/policy artifacts are demonstrated; no independent specialist invocation is claimed.
 
-Temporary browser demos use fictional data in per-tab memory. They do not demonstrate shared database persistence. Use fictional records when reviewing the persistent staff application too. Credentials must be supplied privately, never committed here.
+## Review route
 
-## Remaining work
+- [Public website](https://dealer-desk-prod.vercel.app/): reference browsing without Vercel login; staff management requires an individual app account.
+- [Development](https://dealer-desk-dev.vercel.app/): Vercel-protected.
+- [Product specification](../product-spec.md), [setup](../README.md#run-locally) and [tests](testing.md).
+- [Issue #5 execution example](issue-traceability.md), [assessment evidence](assessment-evidence.md) and [actual verification](verification.md).
+- [Page map](site-map.md), [architecture](architecture.md) and [editable diagrams](diagrams.md).
 
-Independent staff-session conflict/refresh, exact-commit CI gating, clean CI Compose startup, image rollback/forward recovery, local correlated operational signals, a real deterministic alert/repair exercise and the read-only MCP extension are verified. Separate protected production promotion, compatible cloud rollback and forward restoration are verified. No LLM diagnosis or independently invoked specialist is claimed. R2 storage and a public customer showroom are planned. The evidence index maps the release to the rubric; submission and the required peer reviews remain separate owner steps.
+Demonstration listings use reference prices/photos and are not offers for sale. Browser demos keep temporary per-tab records and do not write to the saved staff database. No real customer data or credentials belong in public documentation.
+
+## Deferred scope and remaining assessment steps
+
+Live website enquiry delivery, conversation/reply history, assignment, bulk upload, R2 and messaging integrations remain proposed. Production monitoring and independent specialist execution are not demonstrated. Local Docker Desktop remains unavailable; hosted CI verifies clean Compose and recovery. Submission requires student sign-in and the exact final commit; three assigned peer reviews follow. The documentation maps evidence and limitations rather than promising a grade.

@@ -7,13 +7,13 @@ Official requirements checked against course revision [de41e409](https://github.
 | Criterion | Evidence in this repository | Limitations |
 |---|---|---|
 | Problem description | README; project-overview.md | One dealership, fictional review data |
-| Product specification | product-spec.md; tasks.md; public issues 1–4; process.md tracker-use examples | Targets and incomplete work remain explicitly labelled |
+| Product specification | product-spec.md; tasks.md; public issues; issue-traceability.md worked issue #5 | Targets and incomplete work remain explicitly labelled |
 | Agent team specification | team.md; process.md | Responsibilities are defined; no independent specialist or fictitious handoff claimed |
 | Context management | AGENTS.md links modular architecture, team, process, testing, security and AI-use docs | Instructions do not prove all features completed |
 | Application | Connected staff interface/API/database; verification.md; screenshot and capture provenance | CI clean Compose/HTTP journey and manual independent browser-session conflict/refresh check passed; not an automated cross-engine suite |
-| Testing | `uv run python -m scripts.verify`; tests/ and frontend tests; evidence/submission-core-checks.txt | Core command covers local SQLite and frontend; PostgreSQL and real browsers are separate |
+| Testing | `uv run python -m scripts.verify`; tests/ and frontend tests; evidence/enquiry-core-checks.txt; final CI 40215259023 | Single core command covers SQLite/backend/frontend/build/audit; PostgreSQL and Compose are additional CI stages; manual browser evidence is separate |
 | Containerization | Dockerfile; docker-compose.yml; start.ps1; start.sh; earlier replacement/persistence evidence | Local Docker engine remains unavailable; hosted CI clean Compose, replacement, image rollback and forward recovery passed |
-| Deployment | deployment-vercel.md; hosted journey/redeployment evidence; media/dealer-overview.png with source commit | Protected Vercel development and isolated production deployments; production health and persisted staff journey verified; no unrestricted showroom claimed |
+| Deployment | deployment-vercel.md; hosted journey/redeployment evidence; media/dealer-overview.png with source commit | Public read-only production catalogue, protected staff APIs and separate protected development; live website enquiries remain deferred |
 | CI/CD | .github/workflows/ci.yml; hosted workflow history; Vercel Git deployment evidence | Hosted exact-commit build gate verified; image rollback/forward recovery passed; separate manual production release, compatible cloud rollback and forward restoration passed |
 | Observability | backend/telemetry.py; ops/collector.py; operations.md; real correlation screenshot | Local OTLP collector, SQLite storage and correlation UI demonstrated; no production telemetry service claimed |
 | Alerting | Three failed authenticated stock reads triggered StockReadUnavailable; incident-rehearsal.json | Isolated local rehearsal, not a production alert service |
@@ -30,3 +30,9 @@ The agent extension pack is separate module scope, not a thirteenth scoring row 
 5. Read verification.md for observations tied to actual commits, environments and known limits.
 
 Do not send real customer records or secrets to the assistant, article drafts or course submission. The final evaluated revision is supplied in the course form after the last checks; it is not embedded here because that would change the revision itself.
+
+## Current verification checkpoint
+
+Application revision [14f075b](https://github.com/mohanoor-ai/dealer-desk/commit/14f075b938b1cc4a3812edaea87c6d12d7b7f6b7) passed [CI 40215259023](https://github.com/mohanoor-ai/dealer-desk/actions/runs/40215259023): 38 backend tests, 14 frontend tests and all additional database/container/recovery stages. The retained local enquiry-core transcript precedes the final editor regression and contains 13 frontend tests; this is not a contradictory final CI count. Production health matched 14f075b. Later documentation commits can be evaluated separately through Actions.
+
+OpenTelemetry collection/storage/correlation is implemented through the custom local receiver/UI. Prometheus, Loki, Tempo and Grafana are not deployed; the deterministic responder is not the module’s headless LLM example. Independent specialist invocation, automated cross-engine browser testing, managed production monitoring and a full accessibility audit are not claimed. Current scope and numbered acceptance criteria are in product-spec.md. The report maps evidence and gaps rather than assigning points.
