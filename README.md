@@ -6,7 +6,7 @@ Dealer Desk is a web application for one car dealership. It keeps vehicle availa
 
 [Public website](https://dealer-desk-prod.vercel.app/) · [Source code](https://github.com/mohanoor-ai/dealer-desk) · [Task tracker](https://github.com/mohanoor-ai/dealer-desk/issues)
 
-[Problem](#problem-description) · [Specification](#product-specification) · [Technology](#technology-and-deployment) · [Workflow](#workflow-in-practice) · [Setup](#run-locally) · [Tests](#tests-and-verification) · [Operations](#observability-and-incident-response) · [Project evidence](#project-evidence) · [Issues](#issue-tracker)
+[Problem](#problem-description) · [Specification](#product-specification) · [Technology](#technology-and-deployment) · [Workflow](#workflow-in-practice) · [Setup](#run-locally) · [Tests](#tests-and-verification) · [Operations](#observability-and-incident-response) · [Issues](#issue-tracker)
 
 ## Problem description
 
@@ -45,7 +45,7 @@ The implemented scope is one dealership with a read-only customer catalogue and 
 | Delivery | Successful exact-revision CI before deployment; explicit production promotion and verified compatible recovery |
 | Operations | Collected/correlated request signals, a user-impact alert and a bounded response with recovery checks |
 
-Tasks move from acceptance criteria through implementation, verification and release. Mohammed Sheikh-Noor defines scope and reviews behaviour; the coding assistant implements changes, runs checks and records results. Engineering and verification were performed within one assistant workflow.
+Tasks move from acceptance criteria through implementation, verification and release. Mohammed Sheikh-Noor defines scope and reviews behaviour; the coding assistant implements changes, runs checks and records results. Engineering and verification were performed within one assistant workflow. Project instructions reference modular specification, architecture, process, testing and security documents.
 
 Supporting specifications and records:
 
@@ -68,7 +68,7 @@ Supporting specifications and records:
 | Staff access | Individual accounts, hashed passwords, expiring server sessions, backend role checks |
 | Images | Pillow processing; bounded image/thumbnail bytes stored in the database |
 | Tests | pytest; Vitest and React Testing Library; separate PostgreSQL/container/browser checks |
-| Containers and delivery | Docker Compose; GitHub Actions; exact-revision CI gate; manual production promotion |
+| Containers and delivery | [Docker Compose](docker-compose.yml); [GitHub Actions](.github/workflows/ci.yml); exact-revision CI gate; manual production promotion |
 | Local operations | OpenTelemetry, OTLP HTTP/protobuf, custom loopback SQLite collector and correlation UI |
 | Agent extensions | Read-only MCP stdio tool, reusable verification procedure, specialist definition and enforced response policy |
 
@@ -163,61 +163,11 @@ The verified application revision [14f075b](https://github.com/mohanoor-ai/deale
 
 - Request metrics, structured logs and traces.
 - Signal collection, storage and a correlation dashboard.
-- Stock-read failure alert.
-- Bounded incident response and recovery verification.
+- Stock-read failure alert after three consecutive failed requests.
+- Bounded deterministic response and recovery verification.
 - Backup and restore checks.
 
 [View operations and incident-response details →](docs/operations.md)
-
-## Project evidence
-
-### Problem Description
-
-The [problem description](#problem-description) explains the dealership problem, customer/staff functionality and expected behaviour.
-
-### Product Specification
-
-The [specification](product-spec.md) defines scope and numbered acceptance criteria. The [public tracker](https://github.com/mohanoor-ai/dealer-desk/issues) and [issue #5 example](docs/issue-traceability.md) connect those criteria to actual execution.
-
-### Agent Team Specification
-
-[Responsibilities](docs/team.md) and the [execution process](docs/process.md) identify the owner and coding assistant's roles. Engineering and verification were performed within one assistant workflow; independent specialist execution is not claimed.
-
-### Context Management
-
-[AGENTS.md](AGENTS.md) directs work through modular specification, architecture, process, testing and security documents. The [AI-use record](docs/ai-use.md) describes actual assistance and corrections.
-
-### Application
-
-The [public website](https://dealer-desk-prod.vercel.app/) provides vehicle browsing. Authenticated staff pages connect stock, enquiries and follow-ups to persistent storage. [Workflow captures](#workflow-in-practice) and [local setup](#run-locally) show how to inspect it.
-
-### Testing
-
-One [verification command](#tests-and-verification) runs backend/frontend tests, build and the limited source audit. The verified application revision passed 38 backend and 14 frontend tests; [CI](https://github.com/mohanoor-ai/dealer-desk/actions/runs/40215259023) adds PostgreSQL, container and recovery checks.
-
-### Containerization
-
-[Docker Compose](docker-compose.yml) runs the application and PostgreSQL. The [startup commands](#run-locally) provision local access, and CI verifies clean startup and record persistence after app replacement. The local Docker engine limitation is recorded in [verification](docs/verification.md).
-
-### Deployment
-
-[Vercel and Neon](docs/environments.md) host separate development/production environments. Production browsing is public; staff records require app login. [Deployment verification](docs/verification.md) retains observed revisions and access checks.
-
-### CI/CD
-
-[GitHub Actions](.github/workflows/ci.yml) checks main pushes and pull requests. An exact-revision gate controls development builds; production promotion is explicit. [Release/recovery evidence](docs/release-recovery.md) records compatible rollback and forward restoration.
-
-### Observability
-
-OpenTelemetry request metrics, traces and structured logs are collected, stored and correlated in a custom local UI. [Operations details](docs/operations.md) describe the signal boundaries; Grafana/LGTM and managed production monitoring are not deployed.
-
-### Alerting on User Impact
-
-Three failed authenticated stock reads trigger StockReadUnavailable in the isolated rehearsal. The [incident report](docs/evidence/incident-rehearsal.json) records the failures, response and recovery.
-
-### On-Call Agent
-
-An alert invokes a deterministic policy responder that repairs only the known local fault and rechecks the same request. [Implementation and limits](docs/operations.md) describe the guardrails; LLM diagnosis and autonomous production repair are not implemented.
 
 ## Issue tracker
 
@@ -235,7 +185,7 @@ Status checked 25 October 2026. Open/closed is the tracker state; the scope colu
 
 ## Current limits and deferred work
 
-Live website enquiries, conversation/reply history, staff assignment, bulk upload, R2 migration, messaging integrations and an in-app LLM are deferred. Archive/restore and manager audit endpoints exist, but dedicated interface controls remain incomplete. The login limiter is process-local; a public-write service requires a separate abuse-control review.
+Live website enquiries, conversation/reply history, staff assignment, bulk upload, R2 migration, messaging integrations, Grafana/LGTM, managed production monitoring and an in-app LLM are deferred. Archive/restore and manager audit endpoints exist, but dedicated interface controls remain incomplete. The login limiter is process-local; a public-write service requires a separate abuse-control review.
 
 Only demonstration data is used here. Keep credentials, `.env`, databases, backups and exports outside Git. Private learning notes and raw lesson transcripts are separate local deliverables. This personal hosted project is not a claim of readiness for real customer operations. [Security boundaries](docs/security.md).
 
@@ -244,3 +194,11 @@ Only demonstration data is used here. Keep credentials, `.env`, databases, backu
 [Building Dealer Desk](docs/articles/01-building-dealer-desk.md) · [From the browser to saved records](docs/articles/02-browser-to-saved-records.md) · [Testing release and recovery](docs/articles/03-testing-release-and-recovery.md).
 
 These technical articles describe actual decisions and checks, with AI assistance disclosed. The [article index](docs/articles/README.md) collects them. Private notes and transcripts are not part of the public app.
+
+## Telemetry dashboard
+
+![Telemetry dashboard correlating request traces, structured logs and sampled metric exemplars.](docs/evidence/operations-correlation.png)
+
+Captured 25 October 2026 during a local loopback rehearsal using demonstration records. The capture came from the working-tree operations implementation based on [3298b5f](https://github.com/mohanoor-ai/dealer-desk/commit/3298b5f076568db3f2d4c48f530f8106ac4cc4bc); its displayed service version is not an immutable build attestation.
+
+[View telemetry, alert and recovery details →](docs/operations.md)

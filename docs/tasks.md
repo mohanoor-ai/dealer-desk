@@ -63,3 +63,6 @@ Owner-approved acceptance: Problem description contains The problem, System func
 
 ## README project evidence and issue summary — 25 October
 Acceptance: add Project evidence with the twelve exact criterion titles, concise factual summaries and evidence links; no scores or course-labelled heading. Add a linked issue table that distinguishes GitHub open/closed state from implementation/deferred scope, based on current public tracker checks. Keep a full-list link and preserve existing reading order. Documentation-only.
+
+## Final README consolidation — 25 October
+Owner-approved acceptance: remove repeated Project evidence section; preserve unique context/CI/alert/responder details in existing sections; retain Product specification links and issue table/full-list link; remove Course alignment from operations.md; place the existing actual telemetry screenshot at the end of README with date, environment and accurate working-tree source qualification. Check links/rendering and refresh submission candidate. Documentation only.
