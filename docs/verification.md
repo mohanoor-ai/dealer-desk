@@ -213,3 +213,6 @@ Vite's local source allowlist and both build ignores were restricted to the appr
 
 
 Article wording correction: at the owner's request removed the Prepared with AI assistance metadata sentence and the project-progress/DataTalks.Club/Alexey footer from all fourteen posts. Each retains author/date, hashtags and one official AI Dev Tools Zoomcamp link. Removed the matching index sentence; repository AI-use records remain separate. Updated per-post regressions verify the removed strings are absent and the course link is correct. Frontend tests: 19 passed; TypeScript/Vite build passed. README remains unchanged. The preceding article release passed all CI stages and reached production; the wording follow-up is released and checked separately before updating submission URLs.
+
+
+Removed the homepage article-promotion block and Learning in public links from customer footer/mobile navigation at the owner’s request. Direct index/detail URLs and all fourteen submitted article links remain functional. README unchanged. Frontend suite: 19 passed; TypeScript/Vite build passed. No database or article content change. Gated hosted checks follow publication.

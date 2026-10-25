@@ -76,7 +76,7 @@ Foreign keys preserve relationships. Pydantic rejects unknown fields and invalid
 
 ## Public project journal
 
-Visitors can read fourteen authored project articles without staff login, reached from the homepage footer and mobile navigation. Article links are relative to the app origin and sources/images ship with the build. Markdown remains readable in the repository; private notes/transcripts are excluded. Each post identifies its author/date and course hashtag.
+Visitors can read fourteen authored project articles without staff login, available through direct public URLs. Article links are relative to the app origin and sources/images ship with the build. Markdown remains readable in the repository; private notes/transcripts are excluded. Each post identifies its author/date and course hashtag.
 
 ## Implementation and delivery
 
