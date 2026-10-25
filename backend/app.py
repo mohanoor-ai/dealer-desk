@@ -363,7 +363,8 @@ def create_app(database_url=None):
     @app.get('/api/catalogue')
     def catalogue(db=Depends(database)):
         rows = db.scalars(select(Vehicle).where(Vehicle.archived.is_(False),
-            Vehicle.model.endswith('(sample)')).order_by(Vehicle.id).limit(100))
+            Vehicle.model.endswith('(sample)'),
+            Vehicle.make.notin_(['Deployment', 'Demo Motors'])).order_by(Vehicle.id).limit(100))
         items = []
         for vehicle in rows:
             photos = [photo_dict(p) for p in vehicle.photos if p.illustrative and p.credit and p.license]
@@ -376,7 +377,7 @@ def create_app(database_url=None):
     def catalogue_photo(photo_id: int, thumbnail: bool = False, db=Depends(database)):
         photo = find(db, VehiclePhoto, photo_id)
         vehicle = find(db, Vehicle, photo.vehicle_id)
-        if (vehicle.archived or not vehicle.model.endswith('(sample)') or
+        if (vehicle.archived or vehicle.make in ('Deployment', 'Demo Motors') or not vehicle.model.endswith('(sample)') or
                 not photo.illustrative or not photo.credit or not photo.license):
             raise HTTPException(404, 'Sample illustration not found.')
         return Response(photo.thumbnail if thumbnail else photo.content, media_type='image/jpeg',

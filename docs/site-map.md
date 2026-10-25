@@ -22,7 +22,7 @@ All pages share warm white surfaces, forest green controls, stencil identity, fo
 
 ## Data and access
 
-`GET /api/catalogue` reads at most 100 non-archived vehicles whose model ends in `(sample)`. It returns only ID, make, model, year, reference price, status and credited illustrative photo metadata. No staff notes, accounts, enquiries, tasks, revisions or audit records are included. Catalogue image delivery applies the same sample/archived/illustration checks. Staff APIs and private photos still require authentication. The sample suffix acts as the explicit showcase boundary for this release; it is not a general publishing system for real stock.
+`GET /api/catalogue` reads at most 100 non-archived vehicles whose model ends in `(sample)`, excluding the known `Deployment` and `Demo Motors` operational test makes. It returns only ID, make, model, year, reference price, status and credited illustrative photo metadata. No staff notes, accounts, enquiries, tasks, revisions or audit records are included. Catalogue image delivery applies the same sample/archived/illustration checks. Staff APIs and private photos still require authentication. The sample suffix acts as the explicit showcase boundary for this release; it is not a general publishing system for real stock.
 
 Vercel Authentication remains enabled across hosted deployments. This is a customer-style interface inside the protected assessment deployment, not unrestricted public access. No website enquiry delivery, bulk uploader, mailbox, SMS or WhatsApp integration was added.
 
