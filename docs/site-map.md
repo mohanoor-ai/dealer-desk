@@ -27,3 +27,5 @@ All pages share warm white surfaces, forest green controls, stencil identity, fo
 At the owner’s request on 25 October, production uses Standard Protection: the production website is public, while preview deployments remain protected. Staff APIs still require individual app authentication. Anonymous homepage/catalogue reads returned 200; anonymous staff stock/enquiry/task reads returned 401. No website enquiry delivery, bulk uploader, mailbox, SMS or WhatsApp integration was added.
 
 The ten imported comparison listings are samples with historical reference prices, not actual offers. The two operational test vehicles stay outside the catalogue. The Roadster hero is AI-generated concept art, not stock photography, an official product image or proof of a flying vehicle's availability. Header mark is original editable SVG.
+
+Enquiry navigation: #/enquiries?status=open lists non-closed records; #/enquiries?enquiry=ID opens one enquiry; #/follow-ups?enquiry=ID shows its tasks and preselects it in scheduling. Overview labels missing next actions explicitly. Customer-facing wording uses ordinary example names; catalogue markers remain internal.

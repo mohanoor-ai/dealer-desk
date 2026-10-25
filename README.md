@@ -6,15 +6,19 @@ By [Mohammed Sheikh-Noor](https://github.com/mohanoor-ai).
 
 Dealer Desk is a web application for a single car dealership to manage vehicle stock, customer enquiries and follow-up tasks in one place. Staff sign in with role-based permissions, and records are saved in a shared database. The application uses React, TypeScript, FastAPI and PostgreSQL, with a development deployment on Vercel and Neon. Viewers can read; sales staff can update workflows; managers can inspect the audit history.
 
-[Open the app](https://dealer-desk-dev.vercel.app/) Â· [Source code](https://github.com/mohanoor-ai/dealer-desk) Â· [Project overview](docs/project-overview.md)
+[Open the website](https://dealer-desk-prod.vercel.app/) · [Source code](https://github.com/mohanoor-ai/dealer-desk) · [Project overview](docs/project-overview.md)
 
 The hosted development app currently requires Vercel authorization and an individually provisioned staff account. It is not yet an unrestricted public demo. Reviewers can also run it locally using the instructions below.
 
 The aim is to keep vehicle availability, customer conversations and the next action together, instead of tracking them in separate lists.
 
-![Dealer Desk staff Overview showing stock, enquiry and follow-up totals, recent stock and next actions. All records are fictional.](docs/media/dealer-overview.png)
+![Dealer Desk overview showing ten vehicles, two open enquiries and their missing next actions.](docs/media/dealer-overview.png)
 
-Actual protected [Vercel deployment](https://dealer-desk-dev.vercel.app/#/overview), captured 24 October 2026 from application commit [b01d342](https://github.com/mohanoor-ai/dealer-desk/commit/b01d3427787b6abb70eae16ba8656ce104a2457b). The saved test workspace contains one sample vehicle, one open enquiry and no open follow-ups. Figures and empty states are unaltered. [Capture details and photo credit](docs/media/README.md).
+Actual staff UI captured 25 October 2026 from application code [0b1aff9](https://github.com/mohanoor-ai/dealer-desk/commit/0b1aff92713137a20f8007f212068c347cb4dd6d), using a copied local database and demonstration records. Ten vehicles, two open enquiries and zero pending follow-ups are shown. [Capture details and photo credits](docs/media/README.md).
+
+![Four actual screens showing Alex Morgan’s enquiry, the overview attention list, a linked follow-up and its completion.](docs/media/enquiry-workflow.png)
+
+Alex asks whether the Ford Puma is available to view. Staff opens enquiry #2, schedules an availability check and completes that internal task. The enquiry remains open and returns to “No next action scheduled” until staff decides the next step. These are saved API/database operations, not the browser-memory demo. No customer reply was sent. [Workflow evidence](docs/verification.md).
 
 The updated site has a sample-stock landing page, catalogue, detail pages and a separate staff workspace. See [page structure and access boundaries](docs/site-map.md).
 
