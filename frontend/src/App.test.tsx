@@ -4,7 +4,7 @@ import App from './App';
 import {poundsToPence,request} from './api';
 import {endDemo} from './demo';
 
-beforeEach(()=>vi.stubGlobal('fetch',vi.fn()));
+beforeEach(()=>{window.location.hash='/stock';vi.stubGlobal('fetch',vi.fn());});
 afterEach(()=>{cleanup();endDemo();vi.unstubAllGlobals();});
 function reply(data:unknown,status=200){return {ok:status>=200&&status<300,status,json:async()=>data};}
 
@@ -41,7 +41,8 @@ test('viewer gets useful empty state without write controls',async()=>{
 test('customer demo starts without login and ends back at staff sign-in',async()=>{
   vi.mocked(fetch).mockResolvedValue(reply({error:{message:'Please sign in.'}},401) as Response);
   render(<App/>);
-  fireEvent.click(await screen.findByRole('button',{name:'Customer demo'}));
+  fireEvent.click(await screen.findByRole('button',{name:'Try demo'}));
+  fireEvent.click(screen.getByRole('button',{name:'Explore customer demo'}));
   expect(await screen.findByRole('heading',{name:'Try a vehicle enquiry'})).toBeInTheDocument();
   expect((await screen.findAllByText(/Ford Puma/)).length).toBeGreaterThan(0);
   fireEvent.click(screen.getByRole('link',{name:'View Nissan Qashqai'}));
@@ -53,7 +54,17 @@ test('customer demo starts without login and ends back at staff sign-in',async()
   fireEvent.change(screen.getByLabelText('Message'),{target:{value:'Sample test drive'}});
   fireEvent.click(screen.getByRole('button',{name:'Save enquiry'}));
   expect(await screen.findByText('Saved successfully.')).toBeInTheDocument();
-  expect(fetch).toHaveBeenCalledTimes(1);
+  expect(vi.mocked(fetch).mock.calls.every(([url])=>String(url).includes('/auth/me'))).toBe(true);
   fireEvent.click(screen.getByRole('button',{name:'End demo'}));
   expect(await screen.findByLabelText('Password')).toBeInTheDocument();
 });
+
+ test('home separates catalogue and staff entry from optional demo choices',async()=>{
+ window.location.hash='/home';
+ vi.mocked(fetch).mockImplementation(async(input)=>String(input).includes('/catalogue')?reply({items:[]}) as Response:reply({error:{message:'Please sign in.'}},401) as Response);
+ render(<App/>);
+ expect(await screen.findByRole('heading',{name:'Find your next car.'})).toBeInTheDocument();
+ expect(screen.queryByLabelText('Password')).not.toBeInTheDocument();
+ expect(screen.queryByRole('button',{name:'Explore customer demo'})).not.toBeInTheDocument();
+ expect(screen.getAllByRole('link',{name:/Staff sign in/}).every(a=>a.getAttribute('href')==='#/login')).toBe(true);
+ });

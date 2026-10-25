@@ -359,6 +359,29 @@ def create_app(database_url=None):
     def audit_history(offset: int = Query(0, ge=0), limit: int = Query(50, ge=1, le=100), user=Depends(manager), db=Depends(database)):
         return page(db, AuditEvent, [], offset, limit)
 
+    # Read-only showcase: only explicitly labelled sample stock and licensed illustrations.
+    @app.get('/api/catalogue')
+    def catalogue(db=Depends(database)):
+        rows = db.scalars(select(Vehicle).where(Vehicle.archived.is_(False),
+            Vehicle.model.endswith('(sample)')).order_by(Vehicle.id).limit(100))
+        items = []
+        for vehicle in rows:
+            photos = [photo_dict(p) for p in vehicle.photos if p.illustrative and p.credit and p.license]
+            items.append({'id': vehicle.id, 'make': vehicle.make, 'model': vehicle.model,
+                'year': vehicle.year, 'price_pence': vehicle.price_pence,
+                'status': vehicle.status, 'photos': photos})
+        return {'items': items}
+
+    @app.get('/api/catalogue/photos/{photo_id}')
+    def catalogue_photo(photo_id: int, thumbnail: bool = False, db=Depends(database)):
+        photo = find(db, VehiclePhoto, photo_id)
+        vehicle = find(db, Vehicle, photo.vehicle_id)
+        if (vehicle.archived or not vehicle.model.endswith('(sample)') or
+                not photo.illustrative or not photo.credit or not photo.license):
+            raise HTTPException(404, 'Sample illustration not found.')
+        return Response(photo.thumbnail if thumbnail else photo.content, media_type='image/jpeg',
+                        headers={'Cache-Control': 'no-store'})
+
     @app.get('/api/vehicles/{vehicle_id}/photos', response_model=list[s.PhotoOutput])
     def photos(vehicle_id: int, user=Depends(signed_in), db=Depends(database)):
         find(db, Vehicle, vehicle_id)
@@ -423,14 +446,14 @@ def create_app(database_url=None):
     def frontend_script(filename: str):
         # A browser may retain an older HTML document after a deploy removes its
         # hashed bundle. Recover only that narrow case, never redirect APIs.
-        if not re.fullmatch(r'index-[A-Za-z0-9_-]{6,40}\.(js|css)', filename):
+        if not re.fullmatch(r'(index-[A-Za-z0-9_-]{6,40}\.(js|css)|roadster-concept-[A-Za-z0-9_-]{6,40}\.png)', filename):
             raise HTTPException(404, 'Asset not found.')
         for directory in (ROOT / 'public' / 'assets', built_frontend / 'assets'):
             asset = directory / filename
             if asset.is_file():
-                media_type = 'text/css' if filename.endswith('.css') else 'application/javascript'
+                media_type = 'image/png' if filename.endswith('.png') else ('text/css' if filename.endswith('.css') else 'application/javascript')
                 return FileResponse(asset, media_type=media_type)
-        if filename.endswith('.css'):
+        if not filename.endswith('.js'):
             raise HTTPException(404, 'Asset not found.')
         release = os.environ.get('VERCEL_GIT_COMMIT_SHA', 'current')
         script = ('const url=new URL(window.location.href);'

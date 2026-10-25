@@ -14,6 +14,8 @@ The aim is to keep vehicle availability, customer conversations and the next act
 
 Actual protected [Vercel deployment](https://dealer-desk-dev.vercel.app/#/overview), captured 24 October 2026 from application commit [b01d342](https://github.com/mohanoor-ai/dealer-desk/commit/b01d3427787b6abb70eae16ba8656ce104a2457b). The saved test workspace contains one sample vehicle, one open enquiry and no open follow-ups. Figures and empty states are unaltered. [Capture details and photo credit](docs/media/README.md).
 
+The updated site has a sample-stock landing page, catalogue, detail pages and a separate staff workspace. See [page structure and access boundaries](docs/site-map.md).
+
 ## Current architecture
 
 ```mermaid

@@ -16,7 +16,7 @@ def describe_api(app):
         for method, operation in operations.items():
             if method not in ('get','post','patch','put','delete'):
                 continue
-            if path.startswith('/api/') and path not in ('/api/auth/login','/api/auth/logout'):
+            if path.startswith('/api/') and not path.startswith('/api/catalogue') and path not in ('/api/auth/login','/api/auth/logout'):
                 operation['security'] = [{'sessionCookie':[]}]
             if method in ('post','patch','put','delete'):
                 operation.setdefault('parameters', []).append({

@@ -28,6 +28,7 @@ function VehicleImage({vehicle}:{vehicle:Vehicle}) {
 }
 
 export function StockPage({snapshot,loading,canWrite,onAdd}:{snapshot:Snapshot;loading:boolean;canWrite:boolean;onAdd:()=>void}) {
+  const [view,setView]=useState<'thumbnail'|'list'>('thumbnail');
   const [query,setQuery]=useState(''),[status,setStatus]=useState('all'),[make,setMake]=useState('all'),[sort,setSort]=useState('recent');
   const makes=[...new Set(snapshot.vehicles.map(vehicle=>vehicle.make))].sort();
   const visible=snapshot.vehicles.filter(vehicle=>vehicleName(vehicle.make,vehicle.model).toLowerCase().includes(query.toLowerCase())&&
@@ -43,9 +44,9 @@ export function StockPage({snapshot,loading,canWrite,onAdd}:{snapshot:Snapshot;l
       <label>Stock status<select value={status} onChange={event=>setStatus(event.target.value)}><option value="all">All statuses</option>{['available','reserved','sold'].map(state=><option key={state}>{state}</option>)}</select></label>
       <label>Sort by<select value={sort} onChange={event=>setSort(event.target.value)}><option value="recent">Recently added</option><option value="price-up">Price: low to high</option><option value="price-down">Price: high to low</option><option value="name">Make and model</option></select></label>
     </section>
-    <div className="results-line"><p><strong>{visible.length}</strong> {visible.length===1?'vehicle':'vehicles'}{query||make!=='all'||status!=='all'?' matching your filters':' in stock'}</p><span>Sample records are clearly labelled.</span></div>
+    <div className="results-line"><p><strong>{visible.length}</strong> {visible.length===1?'vehicle':'vehicles'}{query||make!=='all'||status!=='all'?' matching your filters':' in stock'}</p><div className="view-switch" aria-label="Stock layout"><button aria-pressed={view==='thumbnail'} className={view==='thumbnail'?'':'secondary'} onClick={()=>setView('thumbnail')}>▦ Thumbnail</button><button aria-pressed={view==='list'} className={view==='list'?'':'secondary'} onClick={()=>setView('list')}>☷ List</button></div></div>
     {loading&&!snapshot.vehicles.length?<div role="status" className="empty">Loading your stock…</div>:!visible.length?<div className="empty"><h2>{snapshot.vehicles.length?'No matching vehicles':'Your stock starts here'}</h2><p>{snapshot.vehicles.length?'Try another make, model or status.':'Add your first vehicle to start managing stock.'}</p>{snapshot.vehicles.length>0&&<button className="secondary" onClick={()=>{setQuery('');setMake('all');setStatus('all');}}>Clear filters</button>}</div>:
-      <div className="vehicle-grid">{visible.map(vehicle=><article className="vehicle-card" key={vehicle.id}>
+      <div className={`vehicle-grid ${view==='list'?'stock-list':''}`}>{visible.map(vehicle=><article className="vehicle-card" key={vehicle.id}>
         <a className="vehicle-photo-link" href={`#/vehicles/${vehicle.id}`} aria-label={`View ${vehicleName(vehicle.make,vehicle.model)}`}><VehicleImage vehicle={vehicle}/><span className={`badge ${vehicle.status}`}>{vehicle.status}</span><span className="photo-count">▧ {vehicle.photo_count||0}</span>{vehicle.cover_photo?.illustrative&&<span className="card-illustration">Stock illustration</span>}</a>
         <div className="vehicle-card-body"><div className="vehicle-reference"><span>{vehicle.year}</span><span>STOCK #{String(vehicle.id).padStart(3,'0')}</span></div><h2><a href={`#/vehicles/${vehicle.id}`}>{vehicleName(vehicle.make,vehicle.model)}</a></h2><div className="card-price"><strong>{money(vehicle.price_pence)}</strong>{vehicle.model.includes('(sample)')&&<span>Sample stock · reference price</span>}</div><a className="view-link" href={`#/vehicles/${vehicle.id}`}>View vehicle <span aria-hidden="true">↗</span></a>{vehicle.cover_photo&&<PhotoCredit photo={vehicle.cover_photo}/>}</div>
       </article>)}</div>}

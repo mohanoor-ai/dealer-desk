@@ -11,3 +11,5 @@ Review exposed a real error: the first cache-recovery route intercepted CSS and 
 The owner reported creating the manager account and confirmed that login worked. The assistant independently verified a temporary hosted sales workflow and later viewed the staff Overview. These are distinct sources of evidence. Public verification records do not contain passwords or connection strings.
 
 The owner reviewed direction and UI through the working app and supplied approvals for service access. No independent specialist audit, completed agent extension pack, autonomous incident response, personal learning mastery or final grade is claimed. Reading generated notes does not prove understanding. See verification.md for actual checks and limitations.
+
+25 October interface revision: assistant implemented owner-approved landing/mockup design, generated the labelled Roadster concept asset, authored original SVG header mark, and checked sample catalogue access boundaries and desktop browser flow. Vehicle reference photographs retain their existing credits. No independent design reviewer or production-car image provenance is claimed.
