@@ -52,5 +52,6 @@ export function readPhoto(file:File):Promise<string> {
 // Keep the internal showcase marker out of staff-facing form values.
 export function modelForSave(value:string,original?:string){
   const clean=value.trim().replace(/\s*\(sample\)$/i,'').trim();
+  if(!clean)throw new Error('Enter a model name.');
   return original?.endsWith(' (sample)')?`${clean} (sample)`:value.trim();
 }

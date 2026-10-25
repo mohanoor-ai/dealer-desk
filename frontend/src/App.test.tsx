@@ -73,4 +73,5 @@ test('customer demo starts without login and ends back at staff sign-in',async()
  expect(modelForSave('Puma Titanium','Puma (sample)')).toBe('Puma Titanium (sample)');
  expect(modelForSave('Puma (sample)','Puma (sample)')).toBe('Puma (sample)');
  expect(modelForSave(' Golf Life ','Golf')).toBe('Golf Life');
+ expect(()=>modelForSave('   ','Puma (sample)')).toThrow('Enter a model name.');
  });
