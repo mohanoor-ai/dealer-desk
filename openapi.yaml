@@ -1740,8 +1740,321 @@ paths:
                 $ref: '#/components/schemas/ApiError'
       security:
       - sessionCookie: []
+  /api/catalogue/enquiries:
+    post:
+      summary: Website Enquiry
+      operationId: website_enquiry_api_catalogue_enquiries_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublicEnquiry'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnquiryReceipt'
+        '422':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '401':
+          description: Sign-in required or invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: Permission or same-origin check failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Record not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '409':
+          description: Stale revision or workflow conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '503':
+          description: Storage unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      parameters:
+      - name: X-Requested-With
+        in: header
+        required: true
+        schema:
+          type: string
+          const: DealerDesk
+        description: Same-origin mutation guard; cross-site requests are rejected.
+  /api/enquiries/{enquiry_id}/reply:
+    post:
+      summary: Reply
+      operationId: reply_api_enquiries__enquiry_id__reply_post
+      parameters:
+      - name: enquiry_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Enquiry Id
+      - name: X-Requested-With
+        in: header
+        required: true
+        schema:
+          type: string
+          const: DealerDesk
+        description: Same-origin mutation guard; cross-site requests are rejected.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReplyConfirmation'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnquiryOutput'
+        '422':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '401':
+          description: Sign-in required or invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: Permission or same-origin check failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Record not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '409':
+          description: Stale revision or workflow conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '503':
+          description: Storage unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      security:
+      - sessionCookie: []
+  /api/enquiries/{enquiry_id}/contact:
+    post:
+      summary: Contact
+      operationId: contact_api_enquiries__enquiry_id__contact_post
+      parameters:
+      - name: enquiry_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Enquiry Id
+      - name: X-Requested-With
+        in: header
+        required: true
+        schema:
+          type: string
+          const: DealerDesk
+        description: Same-origin mutation guard; cross-site requests are rejected.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactOutcome'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnquiryOutput'
+        '422':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '401':
+          description: Sign-in required or invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: Permission or same-origin check failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Record not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '409':
+          description: Stale revision or workflow conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '503':
+          description: Storage unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      security:
+      - sessionCookie: []
+  /api/enquiries/{enquiry_id}/close:
+    post:
+      summary: Close
+      operationId: close_api_enquiries__enquiry_id__close_post
+      parameters:
+      - name: enquiry_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Enquiry Id
+      - name: X-Requested-With
+        in: header
+        required: true
+        schema:
+          type: string
+          const: DealerDesk
+        description: Same-origin mutation guard; cross-site requests are rejected.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactOutcome'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EnquiryOutput'
+        '422':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '401':
+          description: Sign-in required or invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: Permission or same-origin check failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Record not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '409':
+          description: Stale revision or workflow conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '503':
+          description: Storage unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      security:
+      - sessionCookie: []
 components:
   schemas:
+    ContactOutcome:
+      properties:
+        revision:
+          type: integer
+          minimum: 1.0
+          title: Revision
+        outcome:
+          type: string
+          maxLength: 300
+          minLength: 1
+          title: Outcome
+        follow_up:
+          anyOf:
+          - $ref: '#/components/schemas/FollowUpPlan'
+          - type: 'null'
+      additionalProperties: false
+      type: object
+      required:
+      - revision
+      - outcome
+      title: ContactOutcome
     CoverSelection:
       properties:
         revision:
@@ -1789,9 +2102,48 @@ components:
     EnquiryCreate:
       properties:
         vehicle_id:
-          type: integer
-          minimum: 1.0
+          anyOf:
+          - type: integer
+            minimum: 1.0
+          - type: 'null'
           title: Vehicle Id
+        source:
+          type: string
+          enum:
+          - Website
+          - Phone
+          - Email
+          - WhatsApp
+          - SMS
+          - Walk-in
+          - Other
+          title: Source
+          default: Other
+        request_type:
+          type: string
+          enum:
+          - Check availability
+          - Arrange a viewing
+          - Book a test drive
+          - Vehicle details
+          - Request a callback
+          - Other
+          title: Request Type
+          default: Other
+        email:
+          type: string
+          maxLength: 254
+          title: Email
+          default: ''
+        phone:
+          type: string
+          maxLength: 40
+          title: Phone
+          default: ''
+        follow_up:
+          anyOf:
+          - $ref: '#/components/schemas/FollowUpPlan'
+          - type: 'null'
         customer:
           type: string
           maxLength: 80
@@ -1805,7 +2157,6 @@ components:
       additionalProperties: false
       type: object
       required:
-      - vehicle_id
       - customer
       - message
       title: EnquiryCreate
@@ -1831,9 +2182,48 @@ components:
     EnquiryOutput:
       properties:
         vehicle_id:
-          type: integer
-          minimum: 1.0
+          anyOf:
+          - type: integer
+            minimum: 1.0
+          - type: 'null'
           title: Vehicle Id
+        source:
+          type: string
+          enum:
+          - Website
+          - Phone
+          - Email
+          - WhatsApp
+          - SMS
+          - Walk-in
+          - Other
+          title: Source
+          default: Other
+        request_type:
+          type: string
+          enum:
+          - Check availability
+          - Arrange a viewing
+          - Book a test drive
+          - Vehicle details
+          - Request a callback
+          - Other
+          title: Request Type
+          default: Other
+        email:
+          type: string
+          maxLength: 254
+          title: Email
+          default: ''
+        phone:
+          type: string
+          maxLength: 40
+          title: Phone
+          default: ''
+        follow_up:
+          anyOf:
+          - $ref: '#/components/schemas/FollowUpPlan'
+          - type: 'null'
         customer:
           type: string
           maxLength: 80
@@ -1858,6 +2248,16 @@ components:
           type: string
           format: date-time
           title: Updated At
+        activity:
+          items:
+            additionalProperties: true
+            type: object
+          type: array
+          title: Activity
+        closure_reason:
+          type: string
+          title: Closure Reason
+          default: ''
         status:
           type: string
           enum:
@@ -1868,7 +2268,6 @@ components:
       additionalProperties: false
       type: object
       required:
-      - vehicle_id
       - customer
       - message
       - id
@@ -1877,6 +2276,32 @@ components:
       - updated_at
       - status
       title: EnquiryOutput
+    EnquiryReceipt:
+      properties:
+        reference:
+          type: integer
+          title: Reference
+      type: object
+      required:
+      - reference
+      title: EnquiryReceipt
+    FollowUpPlan:
+      properties:
+        due_date:
+          type: string
+          format: date
+          title: Due Date
+        note:
+          type: string
+          maxLength: 300
+          minLength: 1
+          title: Note
+      additionalProperties: false
+      type: object
+      required:
+      - due_date
+      - note
+      title: FollowUpPlan
     HTTPValidationError:
       properties:
         detail:
@@ -2091,6 +2516,98 @@ components:
       - photo
       - vehicle_revision
       title: PhotoSaved
+    PublicEnquiry:
+      properties:
+        vehicle_id:
+          anyOf:
+          - type: integer
+            minimum: 1.0
+          - type: 'null'
+          title: Vehicle Id
+        source:
+          type: string
+          const: Website
+          title: Source
+          default: Website
+        request_type:
+          type: string
+          enum:
+          - Check availability
+          - Arrange a viewing
+          - Book a test drive
+          - Vehicle details
+          - Request a callback
+          - Other
+          title: Request Type
+          default: Other
+        email:
+          type: string
+          maxLength: 254
+          minLength: 3
+          title: Email
+        phone:
+          type: string
+          maxLength: 40
+          title: Phone
+          default: ''
+        follow_up:
+          type: 'null'
+          title: Follow Up
+        customer:
+          type: string
+          maxLength: 80
+          minLength: 1
+          title: Customer
+        message:
+          type: string
+          maxLength: 1000
+          minLength: 1
+          title: Message
+        submission_key:
+          type: string
+          pattern: ^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$
+          title: Submission Key
+      additionalProperties: false
+      type: object
+      required:
+      - email
+      - customer
+      - message
+      - submission_key
+      title: PublicEnquiry
+    ReplyConfirmation:
+      properties:
+        revision:
+          type: integer
+          minimum: 1.0
+          title: Revision
+        subject:
+          type: string
+          maxLength: 160
+          minLength: 1
+          pattern: ^[^\r\n]+$
+          title: Subject
+        body:
+          type: string
+          maxLength: 2000
+          minLength: 1
+          title: Body
+        confirmed:
+          type: boolean
+          const: true
+          title: Confirmed
+        follow_up:
+          anyOf:
+          - $ref: '#/components/schemas/FollowUpPlan'
+          - type: 'null'
+      additionalProperties: false
+      type: object
+      required:
+      - revision
+      - subject
+      - body
+      - confirmed
+      title: ReplyConfirmation
     TaskCreate:
       properties:
         enquiry_id:

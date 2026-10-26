@@ -14,7 +14,7 @@ A single dealership needs a shared record of vehicle availability, customer enqu
 | Manager | Sales capabilities plus manager-only audit access |
 | Operator | Provision staff accounts and run authorized migrations/releases through documented commands |
 
-The deployment contains demonstration records and historical reference prices. It does not accept real customer enquiries through the public website. No shared staff password is published.
+The hosted deployment contains demonstration records and historical reference prices; its website enquiry delivery remains disabled. The 26 October local source supports saved website enquiries and the staff workflow described below, pending release review. No shared staff password is published.
 
 ## Expected workflows
 
@@ -32,11 +32,11 @@ An edit includes the revision originally opened. The server applies the change o
 
 ### Enquiry and next action
 
-Staff records a customer name and message against an existing active vehicle. Enquiry status is new, contacted or closed. The overview counts non-closed enquiries and identifies each enquiry's customer, vehicle, request and pending next action.
+Staff records source, request type, customer name, contact details and message against an existing active vehicle or as a general enquiry. Customers open a vehicle-specific popup from Send an enquiry, with no vehicle choice unless they explicitly select a different/general query. Request categories suggest editable staff next actions. Website submissions set source Website and return a minimal saved reference; the hosted write route remains disabled. Enquiry status is new, contacted or closed. The overview counts non-closed enquiries and identifies each enquiry's customer, vehicle, request and pending next action.
 
 An open enquiry without an incomplete follow-up says No next action scheduled. Clicking the count opens open enquiries; an enquiry number opens that exact record. Schedule follow-up carries the enquiry ID to the form. Staff chooses a due date and task note. The UK dealership date distinguishes overdue, due-today and upcoming tasks.
 
-Staff can complete/reopen a task. Task completion does not close the enquiry or send a reply. If the enquiry remains open with no other pending task, it appears as unscheduled again. Closed enquiries do not appear in overview attention.
+Staff can record a manually confirmed email reply or contact outcome, with actual actor/time/activity. Opening a mailto draft does not change status or prove sending. Optional follow-up fields create the enquiry/reply and task atomically. Closing requires an outcome and no pending tasks. Staff can complete/reopen a task. Task completion does not close the enquiry or send a reply. If the enquiry remains open with no other pending task, it appears as unscheduled again. Closed enquiries do not appear in overview attention.
 
 ### Saved and simulated workflows
 
@@ -46,7 +46,7 @@ Authenticated staff operations use the API and persistent database. Shared views
 
 Vehicle: ID, make/model, year, price_pence, approved facts, status, archived flag, revision and timestamps. Photos retain captions, credit, source/licence metadata, dimensions and processed image/thumbnail bytes.
 
-Enquiry: ID, vehicle foreign key, customer display name, bounded message, status, revision and timestamps. Follow-up: ID, enquiry foreign key, due date, note, completed flag, revision and timestamps.
+Enquiry: ID, optional vehicle foreign key, source, request type, customer display name, email/phone, bounded message, status, bounded activity, closure outcome, private submission key, revision and timestamps. Follow-up: ID, enquiry foreign key, due date, note, completed flag, revision and timestamps.
 
 Foreign keys preserve relationships. Pydantic rejects unknown fields and invalid types/ranges. SQLAlchemy uses bound parameters. Individual passwords use salted scrypt hashes; only session-token hashes are stored. Session cookies are HttpOnly/SameSite and Secure on hosted HTTPS. Roles are enforced on the server; same-origin mutation guards apply to writes. The [OpenAPI contract](openapi.yaml) describes inputs, outputs and errors.
 
@@ -59,7 +59,7 @@ Foreign keys preserve relationships. Pydantic rejects unknown fields and invalid
 | V3 | A stale revision returns 409 without overwriting newer data | tests/test_journey.py; manual two-session evidence |
 | V4 | Valid status edits are saved with an actor/revision audit event | tests/test_journey.py |
 | P1 | Photo type/size/dimensions, metadata removal, quota, persistence and cover selection are checked | tests/test_photos.py |
-| E1 | Enquiries require an existing unarchived vehicle; missing IDs and archived conflicts are rejected | tests/test_journey.py |
+| E1 | Enquiries reference an existing unarchived vehicle or explicitly represent a general enquiry; invalid IDs and archived conflicts are rejected | tests/test_journey.py |
 | E2 | Follow-up validation, complete/reopen and persisted counts agree | tests/test_journey.py |
 | E3 | Count/number links, unscheduled state, correct preselection, task completion and viewer controls work | frontend/src/workflow.test.tsx; README collage |
 | C1 | Public catalogue omits private/archived/test data and disallowed photos; staff APIs remain authenticated | tests/test_catalogue.py; anonymous hosted checks |
@@ -90,7 +90,7 @@ Local OpenTelemetry exports feed a custom loopback SQLite collector/correlation 
 
 ## Deferred and excluded scope
 
-Deferred: live website enquiry delivery and its abuse controls; conversation/reply history; staff assignment; bulk upload; R2 migration; email/WhatsApp/SMS integrations; Grafana/LGTM deployment; independent specialist execution; an optional in-app LLM with separate provider/evaluation controls.
+Local saved workflow awaiting release: website submission with local abuse bounds, staff-confirmed reply/contact history and optional atomic follow-up (see docs/local-enquiry-demo.md). Hosted delivery and shared abuse controls remain deferred; incoming reply synchronisation remains deferred; staff assignment; bulk upload; R2 migration; email/WhatsApp/SMS integrations; Grafana/LGTM deployment; independent specialist execution; an optional in-app LLM with separate provider/evaluation controls.
 
 Excluded: payments, marketplace publishing, vehicle-history/valuation claims, real customer operations, multi-tenant SaaS, model training/RAG and autonomous production repair. Public learning articles describe actual work; private lesson notes/transcripts and secrets stay outside Git.
 

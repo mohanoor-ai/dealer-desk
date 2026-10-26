@@ -23,6 +23,7 @@ from backend.database import build_engine, session_factory
 from backend.models import User, LoginSession, Vehicle, Enquiry, Task, AuditEvent, VehiclePhoto, now
 from backend.photos import prepare_photo, MAX_PHOTOS
 from backend.contract import describe_api
+from backend.enquiry_workflow import create_enquiry, register_workflow
 from backend.config import secure_cookies
 from backend.telemetry import Telemetry
 
@@ -33,7 +34,7 @@ def dealer_today():
     return datetime.now(ZoneInfo(os.environ.get('DEALER_TIMEZONE', 'Europe/London'))).date()
 
 def record_dict(record):
-    result = {column.key: getattr(record, column.key) for column in record.__table__.columns}
+    result = {column.key: getattr(record, column.key) for column in record.__table__.columns if column.key != 'submission_key'}
     if isinstance(record, Vehicle):
         result['photo_count'] = len(record.photos)
         cover = next((photo for photo in record.photos if photo.is_cover), None)
@@ -287,14 +288,13 @@ def create_app(database_url=None):
 
     @app.post('/api/enquiries', status_code=201, response_model=s.EnquiryOutput)
     def add_enquiry(body: s.EnquiryCreate, user=Depends(can_write), db=Depends(database)):
-        vehicle = find(db, Vehicle, body.vehicle_id)
-        if vehicle.archived:
-            raise HTTPException(409, 'Restore this vehicle before recording an enquiry.')
-        return save_new(db, Enquiry, body.model_dump(), 'enquiry', user)
+        return record_dict(create_enquiry(db,body,user,dealer_today()))
 
     @app.patch('/api/enquiries/{enquiry_id}', response_model=s.EnquiryOutput)
     def edit_enquiry(enquiry_id: int, body: s.EnquiryEdit, user=Depends(can_write), db=Depends(database)):
         record = find(db, Enquiry, enquiry_id)
+        if body.status == 'closed':
+            raise HTTPException(422, 'Use Close enquiry and record an outcome.')
         if record.status == 'closed' and body.status == 'new':
             raise HTTPException(409, 'Reopen a closed enquiry as contacted first.')
         return save_edit(db, Enquiry, enquiry_id, body, 'enquiry', user)
@@ -318,6 +318,9 @@ def create_app(database_url=None):
 
     @app.post('/api/tasks', status_code=201, response_model=s.TaskOutput)
     def add_task(body: s.TaskCreate, user=Depends(can_write), db=Depends(database)):
+        # Serialize task insertion with enquiry closure on SQLite and PostgreSQL.
+        db.execute(update(Enquiry).where(Enquiry.id==body.enquiry_id).values(updated_at=Enquiry.updated_at))
+        db.expire_all()
         enquiry = find(db, Enquiry, body.enquiry_id)
         if enquiry.status == 'closed':
             raise HTTPException(409, 'Reopen this enquiry before scheduling a follow-up.')
@@ -328,6 +331,8 @@ def create_app(database_url=None):
     @app.patch('/api/tasks/{task_id}', response_model=s.TaskOutput)
     def edit_task(task_id: int, body: s.TaskEdit, user=Depends(can_write), db=Depends(database)):
         record = find(db, Task, task_id)
+        db.execute(update(Enquiry).where(Enquiry.id==record.enquiry_id).values(updated_at=Enquiry.updated_at))
+        db.expire_all()
         enquiry = find(db, Enquiry, record.enquiry_id)
         if body.due_date is not None and body.due_date < dealer_today():
             raise HTTPException(422, 'Choose today or a future date.')
@@ -440,6 +445,8 @@ def create_app(database_url=None):
         audit(db,'vehicle',find(db,Vehicle,vehicle_id),'photo_cover_changed',user)
         db.commit()
         return {'photo':photo_dict(find(db,VehiclePhoto,photo_id)),'vehicle_revision':body.revision+1}
+
+    register_workflow(app,database,can_write,dealer_today,record_dict)
 
     built_frontend = ROOT / 'frontend' / 'dist'
 

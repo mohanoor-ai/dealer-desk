@@ -41,10 +41,57 @@ class VehicleEdit(Edit):
     status: Status | None = None
     archived: Annotated[bool, Field(strict=True)] | None = None
 
+EnquirySource = Literal['Website','Phone','Email','WhatsApp','SMS','Walk-in','Other']
+RequestType = Literal['Check availability','Arrange a viewing','Book a test drive','Vehicle details','Request a callback','Other']
+
+class FollowUpPlan(Input):
+    due_date: date
+    note: str = Field(min_length=1, max_length=300)
+
 class EnquiryCreate(Input):
-    vehicle_id: Revision
+    vehicle_id: Revision | None = None
+    source: EnquirySource = 'Other'
+    request_type: RequestType = 'Other'
+    email: str = Field(default='', max_length=254)
+    phone: str = Field(default='', max_length=40)
+    follow_up: FollowUpPlan | None = None
+
+    @field_validator('email')
+    @classmethod
+    def valid_email(cls, value):
+        import re
+        if value and not re.fullmatch(r"[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+", value):
+            raise ValueError('Enter a valid email address.')
+        return value
+
+    @model_validator(mode='after')
+    def callback_number(self):
+        if self.request_type == 'Request a callback' and not self.phone:
+            raise ValueError('Enter a phone number for a callback.')
+        return self
     customer: str = Field(min_length=1, max_length=80)
     message: str = Field(min_length=1, max_length=1000)
+
+class PublicEnquiry(EnquiryCreate):
+    email: str = Field(min_length=3, max_length=254)
+    source: Literal['Website'] = 'Website'
+    follow_up: None = None
+    submission_key: str = Field(pattern=r'^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$')
+
+class EnquiryReceipt(BaseModel):
+    reference: int
+
+class ReplyConfirmation(Input):
+    revision: Revision
+    subject: str = Field(min_length=1, max_length=160, pattern=r'^[^\r\n]+$')
+    body: str = Field(min_length=1, max_length=2000)
+    confirmed: Literal[True]
+    follow_up: FollowUpPlan | None = None
+
+class ContactOutcome(Input):
+    revision: Revision
+    outcome: str = Field(min_length=1, max_length=300)
+    follow_up: FollowUpPlan | None = None
 
 class EnquiryEdit(Edit):
     status: Literal['new', 'contacted', 'closed']
@@ -88,6 +135,8 @@ class VehicleOutput(RecordOutput, VehicleCreate):
     cover_photo: PhotoOutput | None = None
 
 class EnquiryOutput(RecordOutput, EnquiryCreate):
+    activity: list[dict] = Field(default_factory=list)
+    closure_reason: str = ''
     status: Literal['new', 'contacted', 'closed']
 
 class TaskOutput(RecordOutput, TaskCreate):

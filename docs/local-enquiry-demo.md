@@ -1,31 +1,49 @@
-# Local enquiry workflow preview
+# Local customer and staff enquiry workflow
 
-This is an opt-in local prototype, not the hosted enquiry pipeline. All enquiries, reply confirmations and tasks stay in the current browser tab. Refresh, reset, end or 30-minute expiry discards them. Switching between the customer and staff views preserves them without extending expiry. No new database tables, public submission endpoint or email service have been added.
+Updated 26 October 2026. This supersedes the earlier demo-only prototype. The whole local app now supports this workflow using its database and normal staff sessions. The optional demo uses the same interface with temporary in-tab records. These changes have not been pushed, deployed or applied to Neon.
 
-## Open and test
+## Customer: saved local workflow
 
-1. Open http://127.0.0.1:8810/#/login and choose **Try staff demo**. If an older demo is already running, open the link in a new tab so its temporary edits are preserved.
-2. Choose **Switch to customer website view**. Open a vehicle if desired, then complete the enquiry form with Alex Morgan, alex@example.com and “Can I view the Ford Puma on Saturday?” The source is fixed to Website. Choose **Submit website enquiry**. Confirm that the receipt shows the actual enquiry number.
-3. Choose **Switch to staff view**. The same enquiry appears in the queue with source Website, customer details, linked vehicle, New status and received activity.
-4. Enter a reply subject and message. **Open in email app** creates a mailto draft in the device's configured email application; it does not automatically send, record or verify an email. The enquiry remains New. For a real send test, use your own email address when creating the enquiry. Do not send mail to the example address.
-5. After sending, return and check **I sent this email**, then choose **Record sent email**. For a simulation only, manually confirming exercises the same temporary transition but must not be represented as a delivered message. The activity says Email marked as sent, with the staff-demo identity, timestamp and entered reply. The enquiry becomes Contacted. The email app may change the draft; this prototype cannot read those changes or verify delivery.
-6. Choose **Schedule follow-up**. The enquiry is preselected. Set a date and “Check availability and confirm Saturday viewing time”, then save. Return to Enquiries or Overview to see the next action.
-7. Try closing with a written outcome while that task is still open: the prototype rejects closure and keeps the enquiry open. Complete the task in Follow-ups, return to the enquiry and close it with an outcome such as “Viewing confirmed; no further action needed”. Confirm Closed and the closing activity. Completing the task alone does not close the enquiry.
-8. Under **Record enquiry**, select Phone, Email, WhatsApp, SMS, Walk-in, Website or Other and enter another conversation. These are source labels only; there are no messaging integrations. Filter the staff queue by source to find it.
-9. Reset the demo to clear the enquiries, replies and tasks. A new demo starts with the current public vehicle/photo snapshot.
+1. Open http://127.0.0.1:8810/#/catalogue and select a car.
+2. Choose **Send an enquiry**. No enquiry fields appear before that button is selected. The modal shows the selected vehicle as fixed context.
+3. To change the vehicle or make a general enquiry, explicitly select **Enquire about a different vehicle or make a general enquiry**. Otherwise there is no vehicle dropdown.
+4. Choose availability, viewing, test drive, vehicle details, callback or Other. Enter name, email and message; callback also requires a phone number.
+5. Submit. The source is assigned Website and success is shown only after the save returns the actual reference. A submission key prevents a retry from creating a second record. Keep that reference for staff review. There is no automatic email confirmation.
 
-## Rebuild this local preview
+## Staff: saved local workflow
 
-With the existing dependencies installed, build the frontend from the repository root in PowerShell:
+Sign in with an individually provisioned local staff account. Cloud staff passwords/accounts have not been copied into the local database. To create an account, use the existing interactive CLI against this exact preview database in PowerShell; enter the password privately when prompted:
 
 ```powershell
-$env:VITE_ENQUIRY_DEMO='true'
-npm --prefix frontend run build
-Remove-Item Env:VITE_ENQUIRY_DEMO
+$env:DATABASE_URL='sqlite:///data/login-preview-20261026.sqlite3'
+$env:APP_ENV='development'
+.venv/Scripts/python.exe -m scripts.create_user local-manager --role manager
 ```
 
-Run the existing FastAPI app on loopback port 8810 using a separately migrated local SQLite database. The browser feature also checks for localhost or 127.0.0.1. Default builds disable the prototype. No flag is added to Vercel and no hosted database is changed.
+1. Sign in at http://127.0.0.1:8810/#/login. The dashboard shows received enquiries needing a response, contacted enquiries, pending actions, closed enquiries and overdue/today/upcoming task counts. These are existing statuses plus tasks, not invented delivery states.
+2. Open Enquiries or follow the dashboard enquiry number. Review source, request, contact details, vehicle and suggested action.
+3. Prepare an email reply and choose **Open in email app**. This opens a mailto draft in the device's configured mail application. It cannot send automatically, verify delivery or read changes made in the mail app. For a real send test, use your own email address when creating the enquiry; never send to the example address.
+4. After sending, confirm **I sent this email**. Optionally tick **Schedule a follow-up**, edit the suggested action and set the date. **Record sent email** saves the confirmation, the entered reply, actual staff username/time and any selected task in one transaction. The enquiry becomes Contacted.
+5. For calls or other conversations, use **Contact outcome** and **Record contact**. The optional follow-up checkbox works there too. Source records where the enquiry arrived; it is separate from the response method and does not connect messaging services.
+6. Under **Record enquiry**, select the source and request type. Optional **Schedule a follow-up** creates the linked task atomically with the enquiry.
+7. Complete the action under Follow-ups. Completing it does not close the enquiry. Close with a written outcome once no pending tasks remain. A stale revision or failed task validation must not save a partial reply or task.
+8. Reload or sign in again to verify these records persist. Viewers can read the queue/activity but cannot record replies, tasks or enquiries.
 
-The current local preview database contains ten copies of public listing fields and their public, credited photo bytes. It contains no copied private accounts or customer records. Its filename is data/login-preview-20261026.sqlite3 and it remains ignored by Git.
+## Temporary walkthrough without an account
 
-Tests are in frontend/src/DemoEnquiries.test.tsx. Browser-only demo actions pass through the central API client's existing in-memory interception. Their /api/demo paths are not server endpoints and cannot be used as a production integration contract.
+1. Choose **Try staff demo** beneath login. It opens the dashboard.
+2. Switch to customer website view, select a car and use its enquiry popup.
+3. Submit, close the receipt popup, switch back to staff and follow the dashboard enquiry link.
+4. Exercise reply/contact, optional follow-up and outcome/closure. These records stay in this tab and disappear on refresh, reset, end or expiry. They never write to the staff database.
+
+A manual sent confirmation in a simulation is not proof of an actual delivered email. Automated checks exercise that transition without sending email or launching an external mail app.
+
+## Scope, migration and verification
+
+The ordinary frontend build now includes the workflow; no VITE_ENQUIRY_DEMO flag is required. The local server serves frontend/dist. The separately migrated preview database contains ten public listings and credited photos; it is not a copy of private production records. Backups are ignored by Git.
+
+Migration 20261026_enquiry_workflow preserves existing record IDs and task references, adds source/request/contact/activity fields and permits a null vehicle for a general enquiry. Historical sources/requests become Other rather than being guessed. SQLite batch migration checks foreign keys and preserves status/revision constraints. Destructive downgrade is refused; use a tested backup restore if the schema must be reversed. Do not promote this migration using the previous compatible-code-rollback assumption.
+
+Website submission returns only a reference, checks published vehicles, enforces same-origin writes and uses a bounded process-wide limiter (30 attempts per 15 minutes). It is explicitly disabled in hosted environments pending separate release approval and shared abuse-control review. Authenticated APIs retain server-side roles and revision checks. Private customer and reply text is excluded from catalogue, audit events and operational logs.
+
+Backend checks: tests/test_enquiry_workflow.py and tests/test_workflow_migration.py. UI checks: frontend/src/DemoEnquiries.test.tsx and App.test.tsx. No external email, SMS or WhatsApp integration has been added.

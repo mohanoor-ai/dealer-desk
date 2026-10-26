@@ -212,7 +212,7 @@ Status checked 25 October 2026. Open/closed is the tracker state; the scope colu
 
 ## Current limits and deferred work
 
-Live website enquiries, conversation/reply history, staff assignment, bulk upload, R2 migration, messaging integrations, Grafana/LGTM, managed production monitoring and an in-app LLM are deferred. Archive/restore and manager audit endpoints exist, but dedicated interface controls remain incomplete. The login limiter is process-local; a public-write service requires a separate abuse-control review.
+The hosted release does not accept website enquiries. The 26 October local source adds saved website enquiries, staff-confirmed reply/contact history and optional follow-ups; see the [local workflow and testing guide](docs/local-enquiry-demo.md). Hosted release approval, shared public-write abuse controls, incoming reply synchronisation, staff assignment, bulk upload, R2 migration, messaging integrations, Grafana/LGTM, managed production monitoring and an in-app LLM remain future work. Archive/restore and manager audit endpoints exist, but dedicated interface controls remain incomplete. The login limiter is process-local; a public-write service requires a separate abuse-control review.
 
 Only demonstration data is used here. Keep credentials, `.env`, databases, backups and exports outside Git. 
 ## Telemetry dashboard

@@ -7,13 +7,25 @@ let state:Snapshot|null=null;
 let role:DemoRole='customer';
 let expires=0;
 export class DemoError extends Error {}
-export const enquiryPrototypeEnabled=import.meta.env.VITE_ENQUIRY_DEMO==='true'&&['127.0.0.1','localhost'].includes(window.location.hostname);
 export const enquirySources=['Website','Phone','Email','WhatsApp','SMS','Walk-in','Other'] as const;
 export type DemoActivity={kind:string;at:string;actor:string;subject?:string;body?:string;outcome?:string};
-export type PipelineEnquiry=import('./types').Enquiry&{source?:string;email?:string;phone?:string;activity?:DemoActivity[];closure_reason?:string};
+export type PipelineEnquiry=import('./types').Enquiry;
 export function switchDemoRole(next:DemoRole){
   if(!state||Date.now()>=expires)throw new DemoError('Start a new demo.');
   role=next;
+}
+function validatePlan(value:unknown):{note:string;due_date:string}|null{
+  if(value==null)return null;
+  const p=value as Record<string,unknown>;
+  const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/London',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
+  const part=(key:string)=>parts.find(p=>p.type===key)?.value;const today=`${part('year')}-${part('month')}-${part('day')}`;
+  if(typeof p.note!=='string'||!p.note.trim()||p.note.length>300||typeof p.due_date!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(p.due_date)||Number.isNaN(Date.parse(p.due_date))||p.due_date<today)throw new DemoError('Enter an action and today or a future date.');
+  if((state?.tasks.length||0)>=50)throw new DemoError('Demo limit reached.');
+  return {note:p.note,due_date:p.due_date};
+}
+function addPlannedTask(enquiry_id:number,plan:{note:string;due_date:string}|null){
+  if(!state||!plan)return;
+  const stamp=new Date().toISOString();state.tasks.push({id:Math.max(0,...state.tasks.map(t=>t.id))+1,enquiry_id,...plan,completed:false,revision:1,created_at:stamp,updated_at:stamp});
 }
 export function demoActive(){return state!==null;}
 export function endDemo(){state=null;expires=0;pictures.clear();}
@@ -32,21 +44,28 @@ export function startDemo(next:DemoRole,seed:DemoVehicleSeed[]){
 export function demoRequest(path:string,method:string,data?:unknown):unknown {
   if(!state)throw new DemoError('Start a new demo.');
   if(Date.now()>=expires)throw new DemoError('Your demo has expired. End it and start a new demo.');
-  if(path==='/api/demo/enquiries'&&method==='POST'&&enquiryPrototypeEnabled){
+  const publicSubmission=path==='/api/catalogue/enquiries';
+  const pipelineCreate=publicSubmission||(path==='/api/enquiries'&&Object.prototype.hasOwnProperty.call(data||{},'source'));
+  if(pipelineCreate&&method==='POST'){
     const f=data as Record<string,unknown>;
     const text=(key:string,max:number)=>{const v=f[key];if(typeof v!=='string'||v.length>max)throw new DemoError('Check the enquiry details.');return v.trim();};
     const customer=text('customer',80),message=text('message',1000),email=text('email',254),phone=text('phone',40);
-    const source=role==='customer'?'Website':text('source',20);
+    const source=publicSubmission||role==='customer'?'Website':text('source',20);
+    const requestType=typeof f.request_type==='string'?f.request_type:'Other';
+    if(!['Check availability','Arrange a viewing','Book a test drive','Vehicle details','Request a callback','Other'].includes(requestType))throw new DemoError('Choose a request type.');
+    if(requestType==='Request a callback'&&!phone)throw new DemoError('Enter a phone number for a callback.');
+    const plan=validatePlan(f.follow_up);
+    if(publicSubmission&&plan)throw new DemoError('Only staff can schedule follow-ups.');
     if(!customer||!message||!enquirySources.includes(source as typeof enquirySources[number]))throw new DemoError('Enter a name, message and enquiry source.');
     if((role==='customer'||email)&&(!/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(email)||/[\r\n]/.test(email)))throw new DemoError('Enter a valid email address.');
-    if(!state.vehicles.some(v=>v.id===f.vehicle_id&&!v.archived))throw new DemoError('Choose an existing vehicle.');
+    if(f.vehicle_id!==null&&!state.vehicles.some(v=>v.id===f.vehicle_id&&!v.archived))throw new DemoError('Choose an existing vehicle.');
     if(state.enquiries.length>=50)throw new DemoError('Demo limit reached. Reset the demo to continue.');
     const at=new Date().toISOString();
-    const row:PipelineEnquiry={id:Math.max(0,...state.enquiries.map(e=>e.id))+1,vehicle_id:Number(f.vehicle_id),customer,message,email,phone,source,status:'new',revision:1,created_at:at,updated_at:at,activity:[{kind:'Enquiry received',at,actor:role==='customer'?'Customer website':'Staff demo'}]};
-    state.enquiries.push(row);return structuredClone(row);
+    const row:PipelineEnquiry={id:Math.max(0,...state.enquiries.map(e=>e.id))+1,vehicle_id:f.vehicle_id===null?null:Number(f.vehicle_id),customer,message,email,phone,source,request_type:requestType,status:'new',revision:1,created_at:at,updated_at:at,activity:[{kind:'Enquiry received',at,actor:role==='customer'?'Customer website':'Staff demo'}]};
+    state.enquiries.push(row);addPlannedTask(row.id,plan);return publicSubmission?{reference:row.id}:structuredClone(row);
   }
-  const action=/^\/api\/demo\/enquiries\/(\d+)\/(reply|close)$/.exec(path);
-  if(action&&method==='POST'&&enquiryPrototypeEnabled){
+  const action=/^\/api\/enquiries\/(\d+)\/(reply|close|contact)$/.exec(path);
+  if(action&&method==='POST'){
     if(role!=='dealer')throw new DemoError('Staff access required.');
     const row=state.enquiries.find(e=>e.id===Number(action[1])) as PipelineEnquiry|undefined;
     if(!row)throw new DemoError('Record not found.');
@@ -54,16 +73,21 @@ export function demoRequest(path:string,method:string,data?:unknown):unknown {
     if(f.revision!==row.revision)throw new DemoError('Record changed. Refresh and try again.');
     if(row.status==='closed')throw new DemoError('This enquiry is closed.');
     if((row.activity?.length||0)>=100)throw new DemoError('Activity limit reached. Reset the demo.');
+    const plan=validatePlan(f.follow_up);
     const at=new Date().toISOString();
     if(action[2]==='reply'){
       if(f.confirmed!==true||!row.email||typeof f.subject!=='string'||!f.subject.trim()||f.subject.length>160||/[\r\n]/.test(f.subject)||typeof f.body!=='string'||!f.body.trim()||f.body.length>2000)throw new DemoError('Enter a subject and reply, then confirm you sent the email.');
       row.activity=[...(row.activity||[]),{kind:'Email marked as sent',actor:'Staff demo',at,subject:f.subject,body:f.body}];row.status='contacted';
+    }else if(action[2]==='contact'){
+      if(typeof f.outcome!=='string'||!f.outcome.trim()||f.outcome.length>300)throw new DemoError('Record the contact outcome.');
+      row.activity=[...(row.activity||[]),{kind:'Contact recorded',actor:'Staff demo',at,outcome:f.outcome}];row.status='contacted';
     }else{
+      if(plan)throw new DemoError('A closed enquiry cannot have a new follow-up.');
       if(typeof f.outcome!=='string'||!f.outcome.trim()||f.outcome.length>300)throw new DemoError('Record the outcome before closing.');
       if(state.tasks.some(t=>t.enquiry_id===row.id&&!t.completed))throw new DemoError('Complete pending follow-ups before closing this enquiry.');
       row.closure_reason=f.outcome.trim();row.status='closed';row.activity=[...(row.activity||[]),{kind:'Enquiry closed',actor:'Staff demo',at,outcome:row.closure_reason}];
     }
-    row.revision++;row.updated_at=at;return structuredClone(row);
+    addPlannedTask(row.id,plan);row.revision++;row.updated_at=at;return structuredClone(row);
   }
   const match=/^\/api\/(vehicles|enquiries|tasks)(?:\/(\d+))?(\/photos)?(?:\?.*)?$/.exec(path);
   if(!match)throw new DemoError('This operation is unavailable in the browser demo.');
@@ -90,7 +114,7 @@ export function demoRequest(path:string,method:string,data?:unknown):unknown {
     rows.push(created);return structuredClone(created);
   }
   if(method!=='PATCH'||!row)throw new DemoError('Record not found.');
-  if(enquiryPrototypeEnabled&&collection==='enquiries'&&row.source)throw new DemoError('Use the reply or close actions for this enquiry.');
+  if(collection==='enquiries'&&row.source)throw new DemoError('Use the reply or close actions for this enquiry.');
   if(fields.revision!==row.revision)throw new DemoError('Record changed. Refresh and try again.');
   delete fields.id;delete fields.created_at;
   Object.assign(row,fields,{revision:Number(row.revision)+1,updated_at:new Date().toISOString()});

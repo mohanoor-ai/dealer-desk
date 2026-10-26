@@ -28,7 +28,14 @@ class Vehicle(Record, Base):
 
 class Enquiry(Record, Base):
     __tablename__ = 'enquiries_v2'
-    vehicle_id: Mapped[int] = mapped_column(ForeignKey('vehicles_v2.id'), nullable=False, index=True)
+    vehicle_id: Mapped[int | None] = mapped_column(ForeignKey('vehicles_v2.id'), nullable=True, index=True)
+    source: Mapped[str] = mapped_column(String(20), default='Other', nullable=False)
+    request_type: Mapped[str] = mapped_column(String(30), default='Other', nullable=False)
+    email: Mapped[str] = mapped_column(String(254), default='', nullable=False)
+    phone: Mapped[str] = mapped_column(String(40), default='', nullable=False)
+    activity: Mapped[list] = mapped_column(JSON, default=list, nullable=False)
+    closure_reason: Mapped[str] = mapped_column(String(300), default='', nullable=False)
+    submission_key: Mapped[str | None] = mapped_column(String(36), unique=True, nullable=True)
     customer: Mapped[str] = mapped_column(String(80), nullable=False)
     message: Mapped[str] = mapped_column(String(1000), nullable=False)
     status: Mapped[str] = mapped_column(String(12), default='new', nullable=False)

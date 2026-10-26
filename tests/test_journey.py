@@ -71,7 +71,7 @@ def test_closed_enquiry_and_date_rules(signed_client):
     fields = {'enquiry_id':enquiry['id'],'due_date':(dealer_today()-timedelta(days=1)).isoformat()}
     assert client.post('/api/tasks', json=fields).status_code == 422
     assert client.post('/api/tasks', json={**fields,'due_date':'not-a-date'}).status_code == 422
-    assert client.patch(f"/api/enquiries/{enquiry['id']}", json={'revision':1,'status':'closed'}).status_code == 200
+    assert client.post(f"/api/enquiries/{enquiry['id']}/close", json={'revision':1,'outcome':'Request resolved'}).status_code == 200
     assert client.post('/api/tasks', json={**fields,'due_date':dealer_today().isoformat()}).status_code == 409
     assert client.get('/api/dashboard').json()['open_enquiries'] == 0
 
