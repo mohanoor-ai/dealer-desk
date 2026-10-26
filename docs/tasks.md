@@ -94,3 +94,7 @@ Owner approved the reduced 560px functionality diagram. Replace only the tall fr
 
 ## Local/cloud running summary and deployment how-to — 25 October
 Owner acceptance: link Vercel/Neon in README, summarize hosted and local running near the project introduction, and expand the existing runbook into actionable independent-account setup. Cover fork-specific trusted CI identity, private TLS connections, migration/account provisioning, separate dev/prod projects and branches, exact-revision release, smoke checks and empty-database limits. Keep cloud availability distinct from reproducibility. Documentation only; no new service, credential, database or production modification. Validate code/official-reference alignment, links and exact-commit CI, then align the submitted revision.
+
+## Staff demo entry — 26 October 2026
+
+Owner request: make read/write demo access clear and place entry under staff login. Acceptance: direct staff-demo button beneath sign-in; describe temporary vehicle/enquiry/follow-up edits, no account needed, reset on refresh/end; retain current isolated memory-only writes, current public catalogue bootstrap, expiry and photo-upload restrictions. No production promotion without approval.

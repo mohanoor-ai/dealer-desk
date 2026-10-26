@@ -82,3 +82,16 @@ test('failed public catalogue loading leaves demo inactive with a recoverable er
  expect(await screen.findByRole('alert')).toHaveTextContent('Listings unavailable');
  expect(screen.queryByRole('button',{name:'End demo'})).not.toBeInTheDocument();expect(screen.getByRole('button',{name:'Explore staff demo'})).toBeEnabled();
 });
+
+
+test('staff demo is available beneath login without submitting credentials',async()=>{
+ vi.mocked(fetch).mockImplementation(async(input)=>String(input)==='/api/catalogue'?reply({items:[{id:1,make:'Ford',model:'Puma',year:2026,price_pence:2714500,status:'available'}]}) as Response:reply({error:{message:'Please sign in.'}},401) as Response);
+ render(<App/>);
+ const entry=await screen.findByRole('button',{name:'Try staff demo'});
+ expect(entry.closest('form')).toContainElement(screen.getByRole('button',{name:'Sign in'}));
+ expect(entry).toHaveAttribute('type','button');
+ fireEvent.click(entry);
+ expect(await screen.findByRole('button',{name:'End demo'})).toBeInTheDocument();
+ expect(await screen.findByRole('link',{name:'Enquiries'})).toBeInTheDocument();
+ expect(vi.mocked(fetch).mock.calls.every(([url])=>String(url).includes('/auth/me')||String(url)==='/api/catalogue')).toBe(true);
+});
