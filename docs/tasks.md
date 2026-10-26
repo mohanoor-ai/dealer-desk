@@ -98,3 +98,7 @@ Owner acceptance: link Vercel/Neon in README, summarize hosted and local running
 ## Staff demo entry — 26 October 2026
 
 Owner request: make read/write demo access clear and place entry under staff login. Acceptance: direct staff-demo button beneath sign-in; describe temporary vehicle/enquiry/follow-up edits, no account needed, reset on refresh/end; retain current isolated memory-only writes, current public catalogue bootstrap, expiry and photo-upload restrictions. No production promotion without approval.
+
+## Local enquiry pipeline prototype — 26 October 2026
+
+Owner-authorized local demo only. Acceptance: manually recorded enquiries require a source; website enquiries set Website automatically and validate name/email/message/vehicle; keep customer and staff views in one temporary session; source/contact details visible; reply uses encoded mailto and never marks sent on opening; explicit staff confirmation records immutable activity and Contacted state; follow-up links use existing tasks; closure records outcome and rejects pending tasks; reset/expiry clear all prototype records. Gate UI to explicit local build flag and loopback hostname. No production API/schema/database/deployment change. Test validation, role isolation, no business network writes, reply confirmation, closure and UI journey.

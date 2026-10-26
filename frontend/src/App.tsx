@@ -6,7 +6,8 @@ import {useRoute} from './navigation';
 import {StockPage,OverviewPage,VehiclePage,EnquiriesPage,FollowUpsPage,Heading} from './Pages';
 import {VehicleForm} from './WorkForms';
 import CustomerDemo from './CustomerDemo';
-import {startDemo,endDemo,type DemoRole,type DemoVehicleSeed} from './demo';
+import DemoEnquiries from './DemoEnquiries';
+import {startDemo,endDemo,type DemoRole,type DemoVehicleSeed,enquiryPrototypeEnabled,switchDemoRole} from './demo';
 import './style.css';
 import './pages.css';
 import Storefront,{Brand} from './Storefront';
@@ -48,6 +49,9 @@ export default function App(){
       setUser({id:0,username:`${role==='dealer'?'Dealer':'Customer'} demo`,role:role==='dealer'?'sales':'viewer'});
       window.location.hash='/stock';
     }catch(error){showError(error);}finally{setDemoStarting(false);}
+  }
+  function switchDemoView(){
+    try{const next=demo==='customer'?'dealer':'customer';switchDemoRole(next);setDemo(next);setUser({id:0,username:next==='dealer'?'Staff demo':'Customer demo',role:next==='dealer'?'sales':'viewer'});setError('');setNotice('');window.location.hash=next==='dealer'?'/enquiries':'/stock';}catch(error){showError(error);}
   }
   function closeDemo(){endDemo();setDemo(null);setDemoExpiry(0);setUser(null);setSnapshot(empty);setEditing(null);setError('');setNotice('');window.location.hash='/login';}
   useEffect(()=>{
@@ -125,16 +129,16 @@ export default function App(){
       <MobileNavigation items={mobileItems} routeKey={window.location.hash} staff={staffView} onLogout={user?logout:undefined} onTryDemo={publicPage||!user?()=>setDemoChooser(true):undefined}/>
     </header>
     <main id="main">
-      {demo&&<section className="banner" aria-label="Temporary demo"><strong>{demo==='dealer'?'Dealer':'Customer'} demo</strong> · Ends at {new Date(demoExpiry).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}. Changes stay in this tab and reset when the demo ends or the page reloads. Photo uploads require a staff account. <button className="secondary" onClick={()=>openDemo(demo)}>Reset demo</button> <button className="secondary" onClick={closeDemo}>End demo</button></section>}
+      {demo&&<section className="banner" aria-label="Temporary demo"><strong>{demo==='dealer'?'Dealer':'Customer'} demo</strong> · Ends at {new Date(demoExpiry).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}. Changes stay in this tab and reset when the demo ends or the page reloads. Photo uploads require a staff account. <button className="secondary" onClick={()=>openDemo(demo)}>Reset demo</button> <button className="secondary" onClick={closeDemo}>End demo</button>{enquiryPrototypeEnabled&&<> <button className="secondary" onClick={switchDemoView}>{demo==='dealer'?'Switch to customer website view':'Switch to staff view'}</button><p>Local enquiry workflow preview. Switching views keeps this tab’s records. External email sending is manual.</p></>}</section>}
       {!demo&&notice&& !user&&<p role="status">{notice}</p>}
       {error&&!editing&&<div role="alert" className="error">{error} {user&&<button className="secondary" onClick={()=>{setError('');refresh();}}>Refresh records</button>}</div>}
       {publicPage?(route.page==='learning'?<LearningPublic slug={route.articleSlug}/>:<Storefront page={route.page} id={route.id}/>):checking?<p role="status">Checking your session…</p>:!user?
         <section className="login"><div><p className="eyebrow">A CLEARER WORKING DAY</p><h1>Know your stock.<br/>Keep your promises.</h1><p>Stock, enquiries and the next follow-up.<br/>Together in one place.</p><div className="login-note">Your dealership workspace.</div></div><form className="panel login-form" onSubmit={login}><h2>Welcome back</h2><p>Sign in with your individual account.</p><label>Username<input name="username" autoComplete="username" required maxLength={80}/></label><label>Password<input name="password" type="password" autoComplete="current-password" required maxLength={128}/></label><button disabled={saving}>{saving?'Signing in…':'Sign in'}</button><small>Ask your dealership administrator for an account.</small><div className="login-demo"><button type="button" className="text-button" disabled={demoStarting} onClick={()=>openDemo('dealer')}>{demoStarting?'Loading demo…':'Try staff demo'}</button><p>No account needed. Add or edit vehicles, record enquiries and manage follow-ups. Changes stay in this tab and reset on refresh or when the demo ends.</p></div></form></section>:
         <><div role="status" className={`global-notice ${notice?'has-notice':''}`}>{notice}</div>{user.role==='viewer'&&!demo&&<p className="banner">You have read-only access. Contact a manager to request changes.</p>}
-          {demo==='customer'?<CustomerDemo snapshot={snapshot} vehicle={route.page==='vehicle'?vehicle:undefined} loading={loading} saving={saving} change={change}/>:<>
+          {demo==='customer'?<CustomerDemo snapshot={snapshot} vehicle={route.page==='vehicle'?vehicle:undefined} loading={loading} saving={saving} change={change} refresh={refresh}/>:<>
           {route.page==='stock'&&<StockPage snapshot={snapshot} loading={loading} canWrite={canWrite} onAdd={onAdd}/>}
           {route.page==='overview'&&<OverviewPage snapshot={snapshot} canWrite={canWrite} onAdd={onAdd}/>}
-          {route.page==='enquiries'&&<EnquiriesPage snapshot={snapshot} canWrite={canWrite} saving={saving} change={change} preferredVehicle={preferredVehicle} initialFilter={route.filter} selectedEnquiry={route.enquiryId}/>}
+          {route.page==='enquiries'&&(demo&&enquiryPrototypeEnabled?<DemoEnquiries snapshot={snapshot} selectedEnquiry={route.enquiryId} onSaved={refresh}/>:<EnquiriesPage snapshot={snapshot} canWrite={canWrite} saving={saving} change={change} preferredVehicle={preferredVehicle} initialFilter={route.filter} selectedEnquiry={route.enquiryId}/>)}
           {route.page==='follow-ups'&&<FollowUpsPage snapshot={snapshot} canWrite={canWrite} saving={saving} change={change} enquiryId={route.enquiryId}/>}
           {route.page==='vehicle'&&(vehicle?<VehiclePage vehicle={vehicle} snapshot={snapshot} canWrite={canWrite} saving={saving} change={change} refresh={refresh} onEdit={()=>{setError('');setEditing({...vehicle});}} onEnquire={()=>{setPreferredVehicle(vehicle.id);window.location.hash='/enquiries';}}/>:<div className="empty"><h1>{loading?'Loading vehicle…':'Vehicle not found'}</h1><p>It may have been archived or removed from active stock.</p><a href="#/stock">Return to stock</a></div>)}
           {route.page==='new'&&(canWrite?<><Heading eyebrow="YOUR INVENTORY / NEW VEHICLE" title="Add to your stock." description="Start with the essentials. You can add photos on the vehicle page."/><section className="panel new-vehicle-panel"><VehicleForm vehicle={null} saving={saving} onSave={saveVehicle} onCancel={()=>{window.location.hash='/stock';}}/></section></>:<div className="empty">Your account has read-only access.</div>)}
