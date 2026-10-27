@@ -43,7 +43,7 @@ jobs:
           set -o pipefail
           uv run python -m scripts.verify 2>&1 | tee core-verification.txt
       - name: PostgreSQL integration regression
-        run: uv run python -m pytest tests/test_auth.py tests/test_journey.py tests/test_photos.py
+        run: uv run python -m pytest tests/test_auth.py tests/test_journey.py tests/test_photos.py tests/test_customers.py tests/test_enquiry_workflow.py tests/test_leads.py
         env:
           TEST_DATABASE_URL: postgresql+psycopg://dealer@127.0.0.1:5432/dealer_test
       - run: docker build -t dealer-desk:ci .
