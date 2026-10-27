@@ -2032,6 +2032,769 @@ paths:
                 $ref: '#/components/schemas/ApiError'
       security:
       - sessionCookie: []
+  /api/customer/register:
+    post:
+      summary: Register
+      operationId: register_api_customer_register_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Registration'
+        required: true
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '401':
+          description: Sign-in required or invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: Permission or same-origin check failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Record not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '409':
+          description: Stale revision or workflow conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '503':
+          description: Storage unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      parameters:
+      - name: X-Requested-With
+        in: header
+        required: true
+        schema:
+          type: string
+          const: DealerDesk
+        description: Same-origin mutation guard; cross-site requests are rejected.
+  /api/customer/recovery:
+    post:
+      summary: Recovery
+      operationId: recovery_api_customer_recovery_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Email'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '401':
+          description: Sign-in required or invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: Permission or same-origin check failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Record not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '409':
+          description: Stale revision or workflow conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '503':
+          description: Storage unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      parameters:
+      - name: X-Requested-With
+        in: header
+        required: true
+        schema:
+          type: string
+          const: DealerDesk
+        description: Same-origin mutation guard; cross-site requests are rejected.
+  /api/customer/verify:
+    post:
+      summary: Verify
+      operationId: verify_api_customer_verify_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Token'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '401':
+          description: Sign-in required or invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: Permission or same-origin check failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Record not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '409':
+          description: Stale revision or workflow conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '503':
+          description: Storage unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      parameters:
+      - name: X-Requested-With
+        in: header
+        required: true
+        schema:
+          type: string
+          const: DealerDesk
+        description: Same-origin mutation guard; cross-site requests are rejected.
+  /api/customer/reset:
+    post:
+      summary: Reset
+      operationId: reset_api_customer_reset_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reset'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '401':
+          description: Sign-in required or invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: Permission or same-origin check failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Record not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '409':
+          description: Stale revision or workflow conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '503':
+          description: Storage unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      parameters:
+      - name: X-Requested-With
+        in: header
+        required: true
+        schema:
+          type: string
+          const: DealerDesk
+        description: Same-origin mutation guard; cross-site requests are rejected.
+  /api/customer/login:
+    post:
+      summary: Login
+      operationId: login_api_customer_login_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Credentials'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '401':
+          description: Sign-in required or invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: Permission or same-origin check failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Record not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '409':
+          description: Stale revision or workflow conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '503':
+          description: Storage unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      parameters:
+      - name: X-Requested-With
+        in: header
+        required: true
+        schema:
+          type: string
+          const: DealerDesk
+        description: Same-origin mutation guard; cross-site requests are rejected.
+  /api/customer/me:
+    get:
+      summary: Me
+      operationId: me_api_customer_me_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: Sign-in required or invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: Permission or same-origin check failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Record not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '409':
+          description: Stale revision or workflow conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '422':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '503':
+          description: Storage unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      security:
+      - customerCookie: []
+  /api/customer/logout:
+    post:
+      summary: Logout
+      operationId: logout_api_customer_logout_post
+      responses:
+        '204':
+          description: Successful Response
+        '401':
+          description: Sign-in required or invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: Permission or same-origin check failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Record not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '409':
+          description: Stale revision or workflow conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '422':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '503':
+          description: Storage unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      parameters:
+      - name: X-Requested-With
+        in: header
+        required: true
+        schema:
+          type: string
+          const: DealerDesk
+        description: Same-origin mutation guard; cross-site requests are rejected.
+  /api/customer/enquiries:
+    get:
+      summary: Enquiries
+      operationId: enquiries_api_customer_enquiries_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: Sign-in required or invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: Permission or same-origin check failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Record not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '409':
+          description: Stale revision or workflow conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '422':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '503':
+          description: Storage unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      security:
+      - customerCookie: []
+  /api/customer/enquiries/{ident}/messages:
+    get:
+      summary: Customer Messages
+      operationId: customer_messages_api_customer_enquiries__ident__messages_get
+      parameters:
+      - name: ident
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Ident
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '401':
+          description: Sign-in required or invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: Permission or same-origin check failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Record not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '409':
+          description: Stale revision or workflow conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '503':
+          description: Storage unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      security:
+      - customerCookie: []
+    post:
+      summary: Customer Message
+      operationId: customer_message_api_customer_enquiries__ident__messages_post
+      parameters:
+      - name: ident
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Ident
+      - name: X-Requested-With
+        in: header
+        required: true
+        schema:
+          type: string
+          const: DealerDesk
+        description: Same-origin mutation guard; cross-site requests are rejected.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Message'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '401':
+          description: Sign-in required or invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: Permission or same-origin check failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Record not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '409':
+          description: Stale revision or workflow conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '503':
+          description: Storage unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      security:
+      - customerCookie: []
+  /api/enquiries/{ident}/messages:
+    get:
+      summary: Staff Messages
+      operationId: staff_messages_api_enquiries__ident__messages_get
+      parameters:
+      - name: ident
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Ident
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '401':
+          description: Sign-in required or invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: Permission or same-origin check failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Record not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '409':
+          description: Stale revision or workflow conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '503':
+          description: Storage unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      security:
+      - sessionCookie: []
+    post:
+      summary: Staff Message
+      operationId: staff_message_api_enquiries__ident__messages_post
+      parameters:
+      - name: ident
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Ident
+      - name: X-Requested-With
+        in: header
+        required: true
+        schema:
+          type: string
+          const: DealerDesk
+        description: Same-origin mutation guard; cross-site requests are rejected.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Message'
+      responses:
+        '201':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '401':
+          description: Sign-in required or invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: Permission or same-origin check failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Record not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '409':
+          description: Stale revision or workflow conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '503':
+          description: Storage unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      security:
+      - sessionCookie: []
 components:
   schemas:
     ContactOutcome:
@@ -2066,6 +2829,24 @@ components:
       required:
       - revision
       title: CoverSelection
+    Credentials:
+      properties:
+        email:
+          type: string
+          maxLength: 254
+          minLength: 3
+          title: Email
+        password:
+          type: string
+          maxLength: 128
+          minLength: 12
+          title: Password
+      additionalProperties: false
+      type: object
+      required:
+      - email
+      - password
+      title: Credentials
     Dashboard:
       properties:
         available:
@@ -2099,6 +2880,18 @@ components:
       - open_tasks
       - overdue_tasks
       title: Dashboard
+    Email:
+      properties:
+        email:
+          type: string
+          maxLength: 254
+          minLength: 3
+          title: Email
+      additionalProperties: false
+      type: object
+      required:
+      - email
+      title: Email
     EnquiryCreate:
       properties:
         vehicle_id:
@@ -2248,6 +3041,10 @@ components:
           type: string
           format: date-time
           title: Updated At
+        customer_linked:
+          type: boolean
+          title: Customer Linked
+          default: false
         activity:
           items:
             additionalProperties: true
@@ -2329,6 +3126,18 @@ components:
       - username
       - password
       title: Login
+    Message:
+      properties:
+        body:
+          type: string
+          maxLength: 2000
+          minLength: 1
+          title: Body
+      additionalProperties: false
+      type: object
+      required:
+      - body
+      title: Message
     Page_EnquiryOutput_:
       properties:
         items:
@@ -2575,6 +3384,30 @@ components:
       - message
       - submission_key
       title: PublicEnquiry
+    Registration:
+      properties:
+        email:
+          type: string
+          maxLength: 254
+          minLength: 3
+          title: Email
+        password:
+          type: string
+          maxLength: 128
+          minLength: 12
+          title: Password
+        name:
+          type: string
+          maxLength: 80
+          minLength: 1
+          title: Name
+      additionalProperties: false
+      type: object
+      required:
+      - email
+      - password
+      - name
+      title: Registration
     ReplyConfirmation:
       properties:
         revision:
@@ -2608,6 +3441,29 @@ components:
       - body
       - confirmed
       title: ReplyConfirmation
+    Reset:
+      properties:
+        token:
+          type: string
+          maxLength: 100
+          minLength: 30
+          title: Token
+        purpose:
+          type: string
+          const: reset
+          title: Purpose
+          default: reset
+        password:
+          type: string
+          maxLength: 128
+          minLength: 12
+          title: Password
+      additionalProperties: false
+      type: object
+      required:
+      - token
+      - password
+      title: Reset
     TaskCreate:
       properties:
         enquiry_id:
@@ -2700,6 +3556,25 @@ components:
       - updated_at
       - completed
       title: TaskOutput
+    Token:
+      properties:
+        token:
+          type: string
+          maxLength: 100
+          minLength: 30
+          title: Token
+        purpose:
+          type: string
+          enum:
+          - verify
+          - reset
+          title: Purpose
+          default: verify
+      additionalProperties: false
+      type: object
+      required:
+      - token
+      title: Token
     UserOutput:
       properties:
         id:
@@ -2957,3 +3832,8 @@ components:
       in: cookie
       name: dealer_session
       description: HttpOnly eight-hour session issued by login; logout revokes.
+    customerCookie:
+      type: apiKey
+      in: cookie
+      name: dealer_customer_session
+      description: Separate verified customer session, eight hours.

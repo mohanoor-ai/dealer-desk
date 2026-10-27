@@ -7,13 +7,15 @@ import {StockPage,OverviewPage,VehiclePage,FollowUpsPage,Heading} from './Pages'
 import {VehicleForm} from './WorkForms';
 import CustomerDemo from './CustomerDemo';
 import DemoEnquiries from './DemoEnquiries';
-import {startDemo,endDemo,type DemoRole,type DemoVehicleSeed,switchDemoRole} from './demo';
+import {startDemo,endDemo,type DemoRole,type DemoVehicleSeed,switchDemoRole,restoreDemo,clearSavedDemo} from './demo';
 import './style.css';
 import './pages.css';
 import Storefront,{Brand} from './Storefront';
 import './site.css';
 import MobileNavigation from './MobileNavigation';
 import LearningPublic from './LearningPublic';
+import CustomerAccount from './CustomerAccount';
+import {CookieChoices,PolicyLinks,PolicyPage} from './BrowsingTools';
 
 type User={id:number;username:string;role:'viewer'|'sales'|'manager'};
 const empty:Snapshot={vehicles:[],enquiries:[],tasks:[]};
@@ -21,14 +23,15 @@ const navigation=[['overview','Overview','◈'],['stock','Vehicle stock','◇'],
 
 export default function App(){
   const route=useRoute();
-  const [user,setUser]=useState<User|null>(null);
-  const [demo,setDemo]=useState<DemoRole|null>(null);
-  const [demoExpiry,setDemoExpiry]=useState(0);
+  const [restored]=useState(()=>restoreDemo());
+  const [user,setUser]=useState<User|null>(restored?{id:0,username:restored.role==='dealer'?'Staff demo':'Customer demo',role:restored.role==='dealer'?'sales':'viewer'}:null);
+  const [demo,setDemo]=useState<DemoRole|null>(restored?.role||null);
+  const [demoExpiry,setDemoExpiry]=useState(restored?.expires||0);
   const [demoChooser,setDemoChooser]=useState(false);
   const [demoStarting,setDemoStarting]=useState(false);
-  const demoSeed=useRef<DemoVehicleSeed[]>([]);
-  const publicPage=!demo&&['learning','home','catalogue','catalogue-detail','contact','privacy'].includes(route.page);
-  const [checking,setChecking]=useState(true);
+  const demoSeed=useRef<DemoVehicleSeed[]>(restored?.seed||[]);
+  const publicPage=!demo&&['learning','home','catalogue','catalogue-detail','contact','privacy','cookies','terms','account','compare','viewed'].includes(route.page);
+  const [checking,setChecking]=useState(!restored);
   const [snapshot,setSnapshot]=useState(empty);
   const [loading,setLoading]=useState(false);
   const [saving,setSaving]=useState(false);
@@ -44,11 +47,11 @@ export default function App(){
     setDemoStarting(true);setError('');
     try{
       const seed=demo?demoSeed.current:(await request<{items:DemoVehicleSeed[]}>('/api/catalogue')).items;
-      const expiry=startDemo(role,seed);demoSeed.current=structuredClone(seed);
+      const expiry=startDemo(role,seed,true);demoSeed.current=structuredClone(seed);
       setDemoChooser(false);setDemoExpiry(expiry);setDemo(role);setSnapshot(empty);setNotice('');setEditing(null);
       setUser({id:0,username:`${role==='dealer'?'Dealer':'Customer'} demo`,role:role==='dealer'?'sales':'viewer'});
       window.location.hash=role==='dealer'?'/overview':'/stock';
-    }catch(error){showError(error);}finally{setDemoStarting(false);}
+    }catch(error){if(demo)closeDemo();showError(error);}finally{setDemoStarting(false);}
   }
   function switchDemoView(){
     try{const next=demo==='customer'?'dealer':'customer';switchDemoRole(next);setDemo(next);setUser({id:0,username:next==='dealer'?'Staff demo':'Customer demo',role:next==='dealer'?'sales':'viewer'});setError('');setNotice('');window.location.hash=next==='dealer'?'/overview':'/stock';}catch(error){showError(error);}
@@ -56,7 +59,7 @@ export default function App(){
   function closeDemo(){endDemo();setDemo(null);setDemoExpiry(0);setUser(null);setSnapshot(empty);setEditing(null);setError('');setNotice('');window.location.hash='/login';}
   useEffect(()=>{
     if(!demo)return;
-    const timer=setTimeout(()=>{closeDemo();setNotice('Your temporary demo ended. Start another whenever you like.');},Math.max(0,demoExpiry-Date.now()));
+    const timer=setTimeout(()=>{closeDemo();setNotice('Demo session ended. Your saved demo records remain on this browser.');},Math.max(0,demoExpiry-Date.now()));
     return ()=>clearTimeout(timer);
   },[demo,demoExpiry]);
 
@@ -70,6 +73,7 @@ export default function App(){
     finally{setLoading(false);}
   }
   useEffect(()=>{
+    if(restored)return;
     let active=true;
     request<User>('/api/auth/me').then(value=>{if(active&&!demo)setUser(value);})
       .catch(error=>{if(active&&!(error instanceof ApiError&&error.status===401))showError(error);})
@@ -118,24 +122,24 @@ export default function App(){
   const vehicle=snapshot.vehicles.find(vehicle=>vehicle.id===route.id);
   const onAdd=()=>{window.location.hash='/vehicles/new';};
   const staffView=!!user&&!publicPage;
-  const mobileItems=staffView?navigation.filter(([page])=>demo!=='customer'||page==='stock').map(([page,label])=>({label,href:`#/${page}`,current:route.page===page||(page==='stock'&&['vehicle','new'].includes(route.page))})):[{label:'Home',href:'#/home',current:route.page==='home'},{label:'Vehicles',href:'#/catalogue',current:['catalogue','catalogue-detail'].includes(route.page)},{label:'Contact',href:'#/contact',current:route.page==='contact'},{label:user?'Staff workspace':'Staff sign in',href:user?'#/overview':'#/login',current:route.page==='login'},{label:'Privacy',href:'#/privacy',current:route.page==='privacy'}];
+  const mobileItems=staffView?navigation.filter(([page])=>demo!=='customer'||page==='stock').map(([page,label])=>({label,href:`#/${page}`,current:route.page===page||(page==='stock'&&['vehicle','new'].includes(route.page))})):[{label:'Home',href:'#/home',current:route.page==='home'},{label:'Vehicles',href:'#/catalogue',current:['catalogue','catalogue-detail'].includes(route.page)},{label:'Contact',href:'#/contact',current:route.page==='contact'},{label:user?'Staff workspace':'Staff sign in',href:user?'#/overview':'#/login',current:route.page==='login'},{label:'My enquiries',href:'#/account',current:route.page==='account'},{label:'Compare',href:'#/compare',current:route.page==='compare'},{label:'Recently viewed',href:'#/viewed',current:route.page==='viewed'},{label:'Privacy',href:'#/privacy',current:route.page==='privacy'},{label:'Cookies',href:'#/cookies',current:route.page==='cookies'},{label:'Terms',href:'#/terms',current:route.page==='terms'}];
   useEffect(()=>{if(demoChooser){const choices=document.getElementById('demo-choices');choices?.scrollIntoView?.({block:'start',behavior:'smooth'});choices?.focus();}},[demoChooser]);
 
   return <>
     <a className="skip" href="#main">Skip to content</a>
     <div className="sample-notice">Demonstration website · Vehicles and prices shown for illustration.</div>
     <header className={publicPage||!user?'public-header':'workspace-header'}><a className="brand" href="#/home" aria-label="Dealer Desk home" onClick={()=>{if(demo)closeDemo();}}><Brand/></a>
-      {publicPage||!user?<nav aria-label="Website navigation"><a href="#/catalogue" aria-current={route.page==='catalogue'?'page':undefined}>Vehicles</a><a href="#/contact" aria-current={route.page==='contact'?'page':undefined}>Contact</a><a className="staff-entry" href={user?'#/overview':'#/login'}>{user?'Staff workspace ↗':'Staff sign in ↗'}</a></nav>:<><nav aria-label="Main navigation">{navigation.filter(([page])=>demo!=='customer'||page==='stock').map(([page,label,icon])=><a key={page} href={`#/${page}`} className={(route.page===page||(page==='stock'&&['vehicle','new'].includes(route.page)))?'active':''} aria-current={(route.page===page||(page==='stock'&&route.page==='vehicle'))?'page':undefined}><span aria-hidden="true">{icon}</span>{label}</a>)}</nav><div className="account"><span>{user.username}<small>{user.role}</small></span><button className="secondary" onClick={logout}>Sign out</button></div></>}
+      {publicPage||!user?<nav aria-label="Website navigation"><a href="#/catalogue" aria-current={route.page==='catalogue'?'page':undefined}>Vehicles</a><a href="#/contact" aria-current={route.page==='contact'?'page':undefined}>Contact</a><a href="#/account">My enquiries</a><a className="staff-entry" href={user?'#/overview':'#/login'}>{user?'Staff workspace ↗':'Staff sign in ↗'}</a></nav>:<><nav aria-label="Main navigation">{navigation.filter(([page])=>demo!=='customer'||page==='stock').map(([page,label,icon])=><a key={page} href={`#/${page}`} className={(route.page===page||(page==='stock'&&['vehicle','new'].includes(route.page)))?'active':''} aria-current={(route.page===page||(page==='stock'&&route.page==='vehicle'))?'page':undefined}><span aria-hidden="true">{icon}</span>{label}</a>)}</nav><div className="account"><span>{user.username}<small>{user.role}</small></span><button className="secondary" onClick={logout}>Sign out</button></div></>}
       <MobileNavigation items={mobileItems} routeKey={window.location.hash} staff={staffView} onLogout={user?logout:undefined} onTryDemo={publicPage||!user?()=>setDemoChooser(true):undefined}/>
     </header>
     <main id="main">
-      {demo&&<section className="banner" aria-label="Temporary demo"><strong>{demo==='dealer'?'Dealer':'Customer'} demo</strong> · Ends at {new Date(demoExpiry).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}. Changes stay in this tab and reset when the demo ends or the page reloads. Photo uploads require a staff account. <button className="secondary" onClick={()=>openDemo(demo)}>Reset demo</button> <button className="secondary" onClick={closeDemo}>End demo</button>{<> <button className="secondary" onClick={switchDemoView}>{demo==='dealer'?'Switch to customer website view':'Switch to staff view'}</button><p>Local enquiry workflow preview. Switching views keeps this tab’s records. External email sending is manual.</p></>}</section>}
+      {demo&&<section className="banner" aria-label="Temporary demo"><strong>{demo==='dealer'?'Dealer':'Customer'} demo</strong> · Ends at {new Date(demoExpiry).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}. Demo records are saved on this browser and shared by customer and staff views. Ending a session keeps them; Reset demo clears them. Photo uploads require a staff account. <button className="secondary" onClick={()=>{clearSavedDemo();openDemo(demo);}}>Reset demo</button> <button className="secondary" onClick={closeDemo}>End demo</button>{<> <button className="secondary" onClick={switchDemoView}>{demo==='dealer'?'Switch to customer website view':'Switch to staff view'}</button><p>Shared saved demo. Use test details. External email sending is manual.</p></>}</section>}
       {!demo&&notice&& !user&&<p role="status">{notice}</p>}
       {error&&!editing&&<div role="alert" className="error">{error} {user&&<button className="secondary" onClick={()=>{setError('');refresh();}}>Refresh records</button>}</div>}
-      {publicPage?(route.page==='learning'?<LearningPublic slug={route.articleSlug}/>:<Storefront page={route.page} id={route.id}/>):checking?<p role="status">Checking your session…</p>:!user?
-        <section className="login"><div><p className="eyebrow">A CLEARER WORKING DAY</p><h1>Know your stock.<br/>Keep your promises.</h1><p>Stock, enquiries and the next follow-up.<br/>Together in one place.</p><div className="login-note">Your dealership workspace.</div></div><form className="panel login-form" onSubmit={login}><h2>Welcome back</h2><p>Sign in with your individual account.</p><label>Username<input name="username" autoComplete="username" required maxLength={80}/></label><label>Password<input name="password" type="password" autoComplete="current-password" required maxLength={128}/></label><button disabled={saving}>{saving?'Signing in…':'Sign in'}</button><small>Ask your dealership administrator for an account.</small><div className="login-demo"><button type="button" className="text-button" disabled={demoStarting} onClick={()=>openDemo('dealer')}>{demoStarting?'Loading demo…':'Try staff demo'}</button><p>No account needed. Add or edit vehicles, record enquiries and manage follow-ups. Changes stay in this tab and reset on refresh or when the demo ends.</p></div></form></section>:
+      {['privacy','cookies','terms'].includes(route.page)?<PolicyPage page={route.page}/>:publicPage?(route.page==='learning'?<LearningPublic slug={route.articleSlug}/>:['privacy','cookies','terms'].includes(route.page)?<PolicyPage page={route.page}/>:route.page==='account'?<CustomerAccount/>:<Storefront page={route.page} id={route.id}/>):checking?<p role="status">Checking your session…</p>:!user?
+        <section className="login"><div><p className="eyebrow">A CLEARER WORKING DAY</p><h1>Know your stock.<br/>Keep your promises.</h1><p>Stock, enquiries and the next follow-up.<br/>Together in one place.</p><div className="login-note">Your dealership workspace.</div></div><form className="panel login-form" onSubmit={login}><h2>Welcome back</h2><p>Sign in with your individual account.</p><label>Username<input name="username" autoComplete="username" required maxLength={80}/></label><label>Password<input name="password" type="password" autoComplete="current-password" required maxLength={128}/></label><button disabled={saving}>{saving?'Signing in…':'Sign in'}</button><small>Ask your dealership administrator for an account.</small><div className="login-demo"><button type="button" className="text-button" disabled={demoStarting} onClick={()=>openDemo('dealer')}>{demoStarting?'Loading demo…':'Try staff demo'}</button><p>No account needed. Add or edit vehicles, record enquiries and manage follow-ups. This demo saves test records on this browser until reset.</p></div></form></section>:
         <><div role="status" className={`global-notice ${notice?'has-notice':''}`}>{notice}</div>{user.role==='viewer'&&!demo&&<p className="banner">You have read-only access. Contact a manager to request changes.</p>}
-          {demo==='customer'?<CustomerDemo snapshot={snapshot} vehicle={route.page==='vehicle'?vehicle:undefined} loading={loading} saving={saving} change={change} refresh={refresh}/>:<>
+          {demo==='customer'?<CustomerDemo snapshot={snapshot} vehicle={['vehicle','catalogue-detail'].includes(route.page)?vehicle:undefined} loading={loading} saving={saving} change={change} refresh={refresh}/>:<>
           {route.page==='stock'&&<StockPage snapshot={snapshot} loading={loading} canWrite={canWrite} onAdd={onAdd}/>}
           {route.page==='overview'&&<OverviewPage snapshot={snapshot} canWrite={canWrite} onAdd={onAdd}/>}
           {route.page==='enquiries'&&<DemoEnquiries snapshot={snapshot} selectedEnquiry={route.enquiryId} onSaved={refresh} canWrite={canWrite} initialFilter={route.filter} preferredVehicle={preferredVehicle}/>}
@@ -143,11 +147,12 @@ export default function App(){
           {route.page==='vehicle'&&(vehicle?<VehiclePage vehicle={vehicle} snapshot={snapshot} canWrite={canWrite} saving={saving} change={change} refresh={refresh} onEdit={()=>{setError('');setEditing({...vehicle});}} onEnquire={()=>{setPreferredVehicle(vehicle.id);window.location.hash='/enquiries';}}/>:<div className="empty"><h1>{loading?'Loading vehicle…':'Vehicle not found'}</h1><p>It may have been archived or removed from active stock.</p><a href="#/stock">Return to stock</a></div>)}
           {route.page==='new'&&(canWrite?<><Heading eyebrow="YOUR INVENTORY / NEW VEHICLE" title="Add to your stock." description="Start with the essentials. You can add photos on the vehicle page."/><section className="panel new-vehicle-panel"><VehicleForm vehicle={null} saving={saving} onSave={saveVehicle} onCancel={()=>{window.location.hash='/stock';}}/></section></>:<div className="empty">Your account has read-only access.</div>)}
           </>}
-          <footer className="workspace-footer"><span>Dealer Desk</span>Vehicle stock, enquiries and follow-ups.</footer>
+          <footer className="workspace-footer"><span>Dealer Desk</span>Vehicle stock, enquiries and follow-ups.<PolicyLinks/></footer>
         </>}
-      {(publicPage||!user)&&<footer className="public-footer"><span>Dealer Desk</span><a href="#/privacy">Privacy</a><a href={user?'#/overview':'#/login'}>{user?'Staff workspace':'Staff sign in'}</a><button className="text-button" onClick={()=>setDemoChooser(true)}>Try demo</button><small>Reference images are illustrative</small></footer>}
-      {demoChooser&&<section id="demo-choices" tabIndex={-1} className="panel demo-chooser" aria-label="Choose a demo"><h2>Try Dealer Desk</h2>{demoStarting&&<p role="status">Loading current vehicle listings…</p>}<p>Explore the workflow in this tab. Changes reset when you finish; enquiries are not sent.</p><button disabled={demoStarting} onClick={()=>openDemo('customer')}>Explore customer demo</button> <button className="secondary" disabled={demoStarting} onClick={()=>openDemo('dealer')}>Explore staff demo</button> <button className="secondary" onClick={()=>setDemoChooser(false)}>Close demo choices</button></section>}
+      {(publicPage||!user)&&<footer className="public-footer"><span>Dealer Desk</span><PolicyLinks/><a href={user?'#/overview':'#/login'}>{user?'Staff workspace':'Staff sign in'}</a><button className="text-button" onClick={()=>setDemoChooser(true)}>Try demo</button><small>Reference images are illustrative</small></footer>}
+      {demoChooser&&<section id="demo-choices" tabIndex={-1} className="panel demo-chooser" aria-label="Choose a demo"><h2>Try Dealer Desk</h2>{demoStarting&&<p role="status">Loading current vehicle listings…</p>}<p>Start or resume the shared saved demo on this browser. Use test details. Demo records never enter the dealership database.</p><button disabled={demoStarting} onClick={()=>openDemo('customer')}>Explore customer demo</button> <button className="secondary" disabled={demoStarting} onClick={()=>openDemo('dealer')}>Explore staff demo</button> <button className="secondary" onClick={()=>setDemoChooser(false)}>Close demo choices</button></section>}
       {editing&&<dialog ref={editDialog} className="upload-dialog" onCancel={event=>{if(saving)event.preventDefault();else setEditing(null);}} onClose={()=>setEditing(null)}><div className="section-heading"><h2>Edit vehicle</h2><button className="icon-button" disabled={saving} aria-label="Close vehicle editor" onClick={()=>setEditing(null)}>×</button></div>{error&&<p role="alert" className="error">{error}</p>}<VehicleForm vehicle={editing} saving={saving} onSave={saveVehicle} onCancel={()=>setEditing(null)}/></dialog>}
-    </main>
+      {demo&&['privacy','cookies','terms'].includes(route.page)&&<footer className="workspace-footer"><PolicyLinks/></footer>}
+    </main><CookieChoices/>
   </>;
 }

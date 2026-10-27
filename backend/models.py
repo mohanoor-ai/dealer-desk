@@ -29,6 +29,7 @@ class Vehicle(Record, Base):
 class Enquiry(Record, Base):
     __tablename__ = 'enquiries_v2'
     vehicle_id: Mapped[int | None] = mapped_column(ForeignKey('vehicles_v2.id'), nullable=True, index=True)
+    customer_account_id: Mapped[int | None] = mapped_column(ForeignKey('customer_accounts.id'),nullable=True,index=True)
     source: Mapped[str] = mapped_column(String(20), default='Other', nullable=False)
     request_type: Mapped[str] = mapped_column(String(30), default='Other', nullable=False)
     email: Mapped[str] = mapped_column(String(254), default='', nullable=False)
@@ -91,3 +92,32 @@ class VehiclePhoto(Base):
     content: Mapped[bytes] = deferred(mapped_column(LargeBinary, nullable=False))
     thumbnail: Mapped[bytes] = deferred(mapped_column(LargeBinary, nullable=False))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=now, nullable=False)
+
+class CustomerAccount(Base):
+    __tablename__='customer_accounts'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    email: Mapped[str] = mapped_column(String(254),unique=True,nullable=False)
+    name: Mapped[str] = mapped_column(String(80),nullable=False)
+    password_hash: Mapped[str] = mapped_column(String(256),nullable=False)
+    verified: Mapped[bool] = mapped_column(Boolean,default=False,nullable=False)
+
+class CustomerSession(Base):
+    __tablename__='customer_sessions'
+    token_hash: Mapped[str] = mapped_column(String(64),primary_key=True)
+    customer_id: Mapped[int] = mapped_column(ForeignKey('customer_accounts.id'),nullable=False,index=True)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),nullable=False)
+
+class CustomerToken(Base):
+    __tablename__='customer_tokens'
+    token_hash: Mapped[str] = mapped_column(String(64),primary_key=True)
+    customer_id: Mapped[int] = mapped_column(ForeignKey('customer_accounts.id'),nullable=False)
+    purpose: Mapped[str] = mapped_column(String(12),nullable=False)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),nullable=False)
+
+class EnquiryMessage(Base):
+    __tablename__='enquiry_messages'
+    id: Mapped[int] = mapped_column(primary_key=True)
+    enquiry_id: Mapped[int] = mapped_column(ForeignKey('enquiries_v2.id'),nullable=False,index=True)
+    author_role: Mapped[str] = mapped_column(String(12),nullable=False)
+    body: Mapped[str] = mapped_column(String(2000),nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),default=now,nullable=False)

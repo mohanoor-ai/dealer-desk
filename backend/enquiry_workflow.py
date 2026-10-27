@@ -29,7 +29,7 @@ def plan_task(db, enquiry, plan, actor, today):
                       action='created',actor_id=actor.id))
 
 
-def create_enquiry(db, body, actor, today, public=False):
+def create_enquiry(db, body, actor, today, public=False,customer=None):
     if body.vehicle_id is not None:
         vehicle = db.get(Vehicle,body.vehicle_id)
         if vehicle is None:
@@ -40,6 +40,7 @@ def create_enquiry(db, body, actor, today, public=False):
             raise HTTPException(404,'Vehicle not found.')
     fields = body.model_dump(exclude={'follow_up'})
     fields['activity'] = [event('Enquiry received','Customer website' if public else actor.username)]
+    if customer:fields['customer_account_id']=customer.id
     record = Enquiry(**fields)
     db.add(record)
     db.flush()
@@ -77,7 +78,11 @@ def register_workflow(app, database, can_write, today, serialize):
                 raise HTTPException(409,'This submission has already been used. Start a new enquiry.')
             return {'reference':existing.id}
         try:
-            row=create_enquiry(db,body,None,today(),public=True)
+            from backend.customer_portal import optional_customer
+            account=optional_customer(request,db)
+            if account and body.email.lower()!=account.email:
+                raise HTTPException(422,'Use the email address of your signed-in account.')
+            row=create_enquiry(db,body,None,today(),public=True,customer=account)
         except IntegrityError:
             db.rollback()
             raise HTTPException(409,'Submission already saved. Check before trying again.') from None

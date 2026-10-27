@@ -135,6 +135,7 @@ class VehicleOutput(RecordOutput, VehicleCreate):
     cover_photo: PhotoOutput | None = None
 
 class EnquiryOutput(RecordOutput, EnquiryCreate):
+    customer_linked: bool = False
     activity: list[dict] = Field(default_factory=list)
     closure_reason: str = ''
     status: Literal['new', 'contacted', 'closed']

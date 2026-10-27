@@ -7,6 +7,7 @@ def describe_api(app):
     components['securitySchemes'] = {
         'sessionCookie': {'type':'apiKey','in':'cookie','name':'dealer_session',
                           'description':'HttpOnly eight-hour session issued by login; logout revokes.'}}
+    components['securitySchemes']['customerCookie']={'type':'apiKey','in':'cookie','name':'dealer_customer_session','description':'Separate verified customer session, eight hours.'}
     components.setdefault('schemas', {})['ApiError'] = {
         'type':'object', 'required':['error'], 'additionalProperties':False,
         'properties':{'error':{'type':'object','required':['code','message','request_id'],
@@ -16,8 +17,10 @@ def describe_api(app):
         for method, operation in operations.items():
             if method not in ('get','post','patch','put','delete'):
                 continue
-            if path.startswith('/api/') and not path.startswith('/api/catalogue') and path not in ('/api/auth/login','/api/auth/logout'):
+            if path.startswith('/api/') and not path.startswith('/api/catalogue') and path not in ('/api/auth/login','/api/auth/logout') and not path.startswith('/api/customer/'):
                 operation['security'] = [{'sessionCookie':[]}]
+            if path.startswith('/api/customer/') and path not in ('/api/customer/register','/api/customer/login','/api/customer/logout','/api/customer/recovery','/api/customer/verify','/api/customer/reset'):
+                operation['security']=[{'customerCookie':[]}]
             if method in ('post','patch','put','delete'):
                 operation.setdefault('parameters', []).append({
                     'name':'X-Requested-With','in':'header','required':True,

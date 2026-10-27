@@ -12,7 +12,7 @@ Business relationships are Vehicle → Enquiry → Follow-up. Foreign keys prese
 
 ## Staff security and concurrency
 
-Operators provision individual users through an interactive CLI. Passwords use salted scrypt hashes. The database stores hashes of random eight-hour session tokens; the browser receives an HttpOnly/SameSite cookie with Secure enabled for hosted HTTPS. Logout revokes the session. Viewer reads; sales mutates stock/enquiries/tasks/photos; manager also accesses audit history. There is no public self-registration.
+Operators provision individual users through an interactive CLI. Passwords use salted scrypt hashes. The database stores hashes of random eight-hour session tokens; the browser receives an HttpOnly/SameSite cookie with Secure enabled for hosted HTTPS. Logout revokes the session. Viewer reads; sales mutates stock/enquiries/tasks/photos; manager also accesses audit history. Staff accounts have no public self-registration; separate local customer registration is described below.
 
 Backend permissions and same-origin mutation checks enforce access. Client button visibility is not an authorization boundary. A material edit atomically matches ID/revision, applies the new values and writes its audit event. A stale revision returns 409. Operational logs exclude customer messages and credentials.
 
@@ -22,7 +22,8 @@ Saved staff snapshots load from paginated APIs and poll every three seconds with
 
 The catalogue and staff pages share styling but use different data boundaries. Internal reference markers are hidden in vehicle labels/editor input and preserved when staff saves an existing reference model.
 
-Before a new customer/staff demo starts, the central API client reads only the public catalogue and copies its bounded public vehicle/photo fields into per-tab JavaScript memory. Demo business operations then have no network fallback. Public reference image bytes use the existing catalogue photo endpoint; photo metadata, edits, enquiries and tasks remain in memory. Reset restores the starting snapshot; ending and starting again reloads current public listings. They reset on refresh/end and reject operations after 30-minute expiry. No guest account, session cookie or browser storage is created. Background suspension can delay physical memory clearing until the tab resumes. Collections/text are bounded and photo uploads are unavailable in the simulation.
+When the saved demo is explicitly started, the central API client fetches the public catalogue if no dataset exists and seeds same-origin browser storage. Saved enquiries, tasks, vehicle edits, photo metadata and customer-visible messages are shared between its customer/staff views and open tabs. Active roles remain per-tab; refresh resumes an unexpired 30-minute session. End/sign-out retains the dataset, while explicit Reset clears it and restores the starting public snapshot. No business request falls through to the real API while demo mode is active. Images use the existing public photo endpoint; uploads remain unavailable. This is a device-local test simulation, with no customer authentication, database transactions or cross-device sharing. Normal customer accounts and saved business records use SQL and server authorization instead. See customer-continuity.md.
+
 
 ## Hosted environments and release
 
@@ -49,3 +50,9 @@ The 26 October source extends the normal customer and staff app, beyond the opti
 Normal staff sessions read sources/request types/contact details, use request-based editable next actions, and save staff-confirmed reply/contact/outcome activity. Create/reply plus optional follow-up commits atomically; enquiry revision checks reject stale actions. An enquiry row write lock serializes closure with task insertion/reopening. Closing requires an outcome and no pending tasks. Email uses encoded mailto drafts, not a delivery provider.
 
 Migration 20261026_enquiry_workflow preserves existing IDs/references, permits general enquiries without an invented vehicle, and adds bounded contact/activity fields and a unique private submission key. Source defaults to Other for historical rows. Code rollback across this schema change has not been verified and must not reuse the earlier compatible rollback claim. Only the separate local preview database has been backed up and migrated; Neon and production remain unchanged. The shared UI also operates on temporary demo records through the existing central API interception. See local-enquiry-demo.md for testing.
+
+## Local customer continuity — 27 October 2026
+
+Normal local customer accounts, hashed sessions/action tokens and owned enquiry conversations now use separate SQL tables and a separate cookie. Verification/recovery links are single-use and expiring; local preview links explicitly simulate email delivery and do not prove real inbox ownership. Hosted registration/recovery remains disabled. A verified local account claims only unowned matching-email enquiries; each customer list/thread request enforces ownership. Customer responses omit internal tasks/activity. Staff/customer in-account messages update response attention and persist independently of external email confirmations.
+
+The optional demo now shares test snapshots in same-origin local storage, with per-tab active roles and a 30-minute session. Data remains after refresh or ending a session until explicit reset/browser clearing. It does not use the customer SQL account tables or business network writes. This supersedes the earlier memory-only demo behaviour; it is not shared cloud storage or real authentication. Comparison is in-memory; viewed IDs persist only after the optional choice. Global policy pages describe these actual boundaries. See customer-continuity.md and review-sources.md.

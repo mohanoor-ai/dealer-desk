@@ -40,7 +40,7 @@ Staff can record a manually confirmed email reply or contact outcome, with actua
 
 ### Saved and simulated workflows
 
-Authenticated staff operations use the API and persistent database. Shared views poll every three seconds. Temporary customer/staff demos intercept business operations in per-tab memory and reset on refresh/end or expiry; they do not create cloud enquiries or staff sessions. These are distinct verification boundaries.
+Authenticated staff operations use the API and persistent database. Shared views poll every three seconds. The explicitly requested saved customer/staff demo intercepts business operations and shares test snapshots in browser local storage. Active role/session state is per tab, expires after 30 minutes and resumes after refresh; ending a session retains the dataset until reset. It does not create real customer accounts, cloud enquiries or staff sessions. These are distinct verification boundaries.
 
 ## Data and backend behaviour
 
@@ -99,3 +99,9 @@ Excluded: payments, marketplace publishing, vehicle-history/valuation claims, re
 Implemented work requires source, runnable checks and actual evidence; targets do not count as demonstrations. The [public tracker](https://github.com/mohanoor-ai/dealer-desk/issues), [task record](docs/tasks.md) and [worked traceability example](docs/issue-traceability.md) connect acceptance criteria to execution.
 
 The [assessment evidence index](docs/assessment-evidence.md) maps the current project to the pinned course rubric. It is not a grade guarantee. Final course submission and three assigned peer reviews remain separate owner steps.
+
+## Local customer continuity update — 27 October 2026
+
+Pending release, the normal local app adds separate customer registration/login, local verification/recovery previews and owner-checked enquiry conversations. Guest enquiries link only after verification with matching email; local previews simulate inbox verification, and hosted signup is disabled until a real delivery service is configured. Customers continue an existing thread after signing in. Staff in-account messages are distinct from manual email confirmations and internal notes.
+
+The receipt returns to the vehicle and offers viewed/browse links without Start another enquiry. A session reference prevents reopening the same car as a new form. Compare allows up to three vehicles using verified stored fields; stars appear only for dated publisher/model matches. Optional viewed history is off before consent. Privacy/Cookies/Terms are global. The demo is now a shared, persistent test dataset on the same browser until reset, with separate per-tab active roles; it remains separate from actual dealership data and customer accounts. See docs/customer-continuity.md.

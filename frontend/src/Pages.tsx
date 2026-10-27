@@ -1,6 +1,7 @@
 import {useState,useEffect} from 'react';
 import {attentionEnquiries,pendingTasks,taskTiming,dealershipDate} from './workflow';
 import type {Snapshot,Vehicle} from './types';
+import {CompareButton,ReviewStars} from './BrowsingTools';
 import {money,photoUrl} from './api';
 import {vehicleName} from './navigation';
 import PhotoGallery,{PhotoCredit} from './PhotoGallery';
@@ -49,7 +50,7 @@ export function StockPage({snapshot,loading,canWrite,onAdd}:{snapshot:Snapshot;l
     {loading&&!snapshot.vehicles.length?<div role="status" className="empty">Loading your stock…</div>:!visible.length?<div className="empty"><h2>{snapshot.vehicles.length?'No matching vehicles':'Your stock starts here'}</h2><p>{snapshot.vehicles.length?'Try another make, model or status.':'Add your first vehicle to start managing stock.'}</p>{snapshot.vehicles.length>0&&<button className="secondary" onClick={()=>{setQuery('');setMake('all');setStatus('all');}}>Clear filters</button>}</div>:
       <div className={`vehicle-grid ${view==='list'?'stock-list':''}`}>{visible.map(vehicle=><article className="vehicle-card" key={vehicle.id}>
         <a className="vehicle-photo-link" href={`#/vehicles/${vehicle.id}`} aria-label={`View ${vehicleName(vehicle.make,vehicle.model)}`}><VehicleImage vehicle={vehicle}/><span className={`badge ${vehicle.status}`}>{vehicle.status}</span><span className="photo-count">▧ {vehicle.photo_count||0}</span>{vehicle.cover_photo?.illustrative&&<span className="card-illustration">Stock illustration</span>}</a>
-        <div className="vehicle-card-body"><div className="vehicle-reference"><span>{vehicle.year}</span><span>STOCK #{String(vehicle.id).padStart(3,'0')}</span></div><h2><a href={`#/vehicles/${vehicle.id}`}>{vehicleName(vehicle.make,vehicle.model)}</a></h2><div className="card-price"><strong>{money(vehicle.price_pence)}</strong>{vehicle.model.includes('(sample)')&&<span>Reference price</span>}</div><a className="view-link" href={`#/vehicles/${vehicle.id}`}>View vehicle <span aria-hidden="true">↗</span></a>{vehicle.cover_photo&&<PhotoCredit photo={vehicle.cover_photo}/>}</div>
+        <div className="vehicle-card-body"><div className="vehicle-reference"><span>{vehicle.year}</span><span>STOCK #{String(vehicle.id).padStart(3,'0')}</span></div><h2><a href={`#/vehicles/${vehicle.id}`}>{vehicleName(vehicle.make,vehicle.model)}</a></h2><div className="card-price"><strong>{money(vehicle.price_pence)}</strong>{vehicle.model.includes('(sample)')&&<span>Reference price</span>}</div>{!canWrite&&<><ReviewStars make={vehicle.make} model={vehicle.model} year={vehicle.year}/><CompareButton id={vehicle.id}/></>}<a className="view-link" href={`#/vehicles/${vehicle.id}`}>View vehicle <span aria-hidden="true">↗</span></a>{vehicle.cover_photo&&<PhotoCredit photo={vehicle.cover_photo}/>}</div>
       </article>)}</div>}
   </>;
 }

@@ -2,6 +2,7 @@ import {useState,useEffect,useRef} from 'react';
 import type {FormEvent} from 'react';
 import type {Snapshot} from './types';
 import {request} from './api';
+import {Conversation} from './CustomerAccount';
 import {demoActive,enquirySources,type PipelineEnquiry} from './demo';
 import {vehicleName} from './navigation';
 import {requestTypes,suggestions} from './enquiryWorkflow';
@@ -18,8 +19,9 @@ export function FollowUpFields({suggestion}:{suggestion:string}){
 }
 function followUpFrom(form:FormData){return form.get('schedule_follow_up')?{note:String(form.get('follow_up_note')),due_date:String(form.get('follow_up_date'))}:null;}
 
-export function DemoEnquiryForm({snapshot,website=false,preferredVehicle=0,onSaved}:{snapshot:Snapshot;website?:boolean;preferredVehicle?:number;onSaved:()=>Promise<void>}){
-  const [busy,setBusy]=useState(false),[error,setError]=useState(''),[receipt,setReceipt]=useState(0);
+export function DemoEnquiryForm({snapshot,website=false,preferredVehicle=0,onSaved,onReturn}:{snapshot:Snapshot;website?:boolean;preferredVehicle?:number;onSaved:()=>Promise<void>;onReturn?:()=>void}){
+  const receiptKey=`dealer-receipt-${demoActive()?'demo':'saved'}-${preferredVehicle}`;
+  const [busy,setBusy]=useState(false),[error,setError]=useState(''),[receipt,setReceipt]=useState(()=>{if(!website)return 0;try{return Number(sessionStorage.getItem(receiptKey))||0}catch{return 0}});
   const [different,setDifferent]=useState(false),[category,setCategory]=useState<string>('Check availability');
   const submissionKey=useRef(crypto.randomUUID());
   const selected=snapshot.vehicles.find(v=>v.id===preferredVehicle);
@@ -29,12 +31,13 @@ export function DemoEnquiryForm({snapshot,website=false,preferredVehicle=0,onSav
       const value=data.get('vehicle_id');
       const fields={vehicle_id:value?Number(value):null,customer:String(data.get('customer')),email:String(data.get('email')),phone:String(data.get('phone')),request_type:category,message:String(data.get('message')),source:website?'Website':String(data.get('source'))};
       const row=await request<{id?:number;reference?:number}>(website?'/api/catalogue/enquiries':'/api/enquiries','POST',website?{...fields,submission_key:submissionKey.current}:{...fields,follow_up:followUpFrom(data)});
-      setReceipt(row.reference||row.id||0);await onSaved();
+      const ref=row.reference||row.id||0;setReceipt(ref);if(website){try{sessionStorage.setItem(receiptKey,String(ref))}catch{}}await onSaved();
     }catch(e){setError(e instanceof Error?e.message:'Could not save the enquiry.');}finally{setBusy(false);}
   }
-  if(receipt)return <div role="status"><h3>Enquiry #{receipt} received</h3><p>{website?'Your request has been saved for the dealership to review.':'The enquiry and any selected follow-up have been saved.'}</p>{demoActive()&&<p>Temporary demo: switch to staff view to respond.</p>}<button type="button" className="secondary" onClick={()=>{setReceipt(0);submissionKey.current=crypto.randomUUID();}}>Start another enquiry</button></div>;
+  if(receipt)return <div role="status"><h3>Enquiry #{receipt} received</h3><p>{website?(demoActive()?'Your request is saved in the shared demo staff queue.':'Your request has been saved for the dealership to review.'):'The enquiry and any selected follow-up have been saved.'}</p>{website?<><button type="button" onClick={onReturn}>Back to vehicle</button><p><a href="#/account" onClick={onReturn}>View or follow up this enquiry</a></p><p><a href="#/viewed" onClick={onReturn}>Recently viewed cars</a> · <a href="#/catalogue" onClick={onReturn}>Browse more vehicles</a></p></>:<button type="button" className="secondary" onClick={()=>{setReceipt(0);submissionKey.current=crypto.randomUUID();}}>Record another conversation</button>}</div>;
+
   return <form onSubmit={submit} className="pipeline-form">
-    {demoActive()&&<p>Temporary demo. Use test contact details; records stay in this tab.</p>}
+    {demoActive()&&<p>Saved demo. Use test contact details; records stay on this browser until reset.</p>}
     {error&&<p role="alert">{error}</p>}
     {website&&selected&&!different?<><p>Vehicle: <strong>{vehicleName(selected.make,selected.model)}</strong></p><input name="vehicle_id" type="hidden" value={selected.id}/></>:<label>Vehicle<select name="vehicle_id" defaultValue={preferredVehicle||''}><option value="">General enquiry</option>{snapshot.vehicles.map(v=><option key={v.id} value={v.id}>{vehicleName(v.make,v.model)}</option>)}</select></label>}
     {website&&selected&&<label className="check-label"><input type="checkbox" checked={different} onChange={e=>setDifferent(e.target.checked)}/> Enquire about a different vehicle or make a general enquiry</label>}
@@ -54,7 +57,7 @@ export function EnquiryDialog({snapshot,vehicleId,onSaved=async()=>{}}:{snapshot
   useEffect(()=>{if(open){if(dialog.current?.showModal)dialog.current.showModal();else dialog.current?.setAttribute('open','');}},[open]);
   function close(){setOpen(false);trigger.current?.focus();}
   useEffect(()=>{setOpen(false)},[vehicleId]);
-  return <><button ref={trigger} onClick={()=>setOpen(true)}>Send an enquiry</button>{open&&<dialog ref={dialog} className="upload-dialog enquiry-dialog" aria-labelledby="enquiry-popup-title" onCancel={close} onClose={close}><div className="section-heading"><h2 id="enquiry-popup-title">Send an enquiry</h2><button type="button" className="icon-button" aria-label="Close enquiry form" onClick={close}>×</button></div><DemoEnquiryForm snapshot={snapshot} website preferredVehicle={vehicleId} onSaved={onSaved}/></dialog>}</>;
+  return <><button ref={trigger} onClick={()=>setOpen(true)}>Send an enquiry</button>{open&&<dialog ref={dialog} className="upload-dialog enquiry-dialog" aria-labelledby="enquiry-popup-title" onCancel={close} onClose={close}><div className="section-heading"><h2 id="enquiry-popup-title">Send an enquiry</h2><button type="button" className="icon-button" aria-label="Close enquiry form" onClick={close}>×</button></div><DemoEnquiryForm snapshot={snapshot} website preferredVehicle={vehicleId} onSaved={onSaved} onReturn={close}/></dialog>}</>;
 }
 
 function ResponseActions({enquiry,onSaved,canWrite=true}:{enquiry:PipelineEnquiry;onSaved:()=>Promise<void>;canWrite?:boolean}){
@@ -105,7 +108,7 @@ export default function DemoEnquiries({snapshot,selectedEnquiry=0,onSaved,canWri
         <p>{e.message}</p>{e.email&&<p>Email: {e.email}</p>}{e.phone&&<p>Phone: {e.phone}</p>}
         <h4>Next action</h4>
         {snapshot.tasks.some(t=>t.enquiry_id===e.id&&!t.completed)?snapshot.tasks.filter(t=>t.enquiry_id===e.id&&!t.completed).map(t=><p key={t.id}>{t.note} · Due {t.due_date} · <a href={`#/follow-ups?enquiry=${e.id}`}>View follow-up</a></p>):<p>{e.status==='closed'?'Enquiry closed':'No next action scheduled'}</p>}
-        <ResponseActions enquiry={e} onSaved={onSaved} canWrite={canWrite}/>
+        {e.customer_linked&&<Conversation id={e.id} staff canWrite={canWrite} onSaved={onSaved}/>}<ResponseActions enquiry={e} onSaved={onSaved} canWrite={canWrite}/>
       </article>)}
     </section>{canWrite&&<section className="panel"><h2>Record enquiry</h2><DemoEnquiryForm snapshot={snapshot} preferredVehicle={preferredVehicle} onSaved={onSaved}/></section>}</div>
   </>;

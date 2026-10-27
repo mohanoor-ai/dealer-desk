@@ -15,3 +15,7 @@ Photo uploads require a staff account and are unavailable in the demonstration. 
 [AI Dev Tools Zoomcamp](https://github.com/DataTalksClub/ai-dev-tools-zoomcamp)
 
 #aidevtools #DataTalksClub #BuildInPublic #SoftwareEngineering
+
+## Update — 27 October 2026
+
+The local app now offers an explicitly requested persistent demo dataset shared between customer and staff views on the same browser. Test records survive refresh and ending a session until Reset demo clears them. This differs from the earlier memory-only behaviour described above. Normal local customer accounts and enquiry conversations use separate SQL tables, ownership checks and customer sessions; the demo does not establish real identity or inbox verification.

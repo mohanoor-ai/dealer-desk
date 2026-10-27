@@ -37,7 +37,7 @@ When vehicle stock, customer enquiries and follow-up tasks are kept in separate 
 - An open enquiry without an incomplete task is labelled No next action scheduled.
 - Scheduling from an enquiry selects the correct record. Completing a task does not close the enquiry or send a customer reply.
 - Backend validation and role checks reject invalid or unauthorized changes. A stale edit returns a conflict instead of overwriting newer data.
-- The public catalogue excludes customer records and internal notes. Optional browser demos reset their per-tab memory without writing to the staff database.
+- The public catalogue excludes customer records and internal notes. The saved browser demo shares test records between customer and staff views until reset, without writing to the staff database.
 
 Reference prices and photographs are illustrative, not offers for sale. Email, WhatsApp and SMS are not connected.
 
@@ -212,7 +212,7 @@ Status checked 25 October 2026. Open/closed is the tracker state; the scope colu
 
 ## Current limits and deferred work
 
-The hosted release does not accept website enquiries. The 26 October local source adds saved website enquiries, staff-confirmed reply/contact history and optional follow-ups; see the [local workflow and testing guide](docs/local-enquiry-demo.md). Hosted release approval, shared public-write abuse controls, incoming reply synchronisation, staff assignment, bulk upload, R2 migration, messaging integrations, Grafana/LGTM, managed production monitoring and an in-app LLM remain future work. Archive/restore and manager audit endpoints exist, but dedicated interface controls remain incomplete. The login limiter is process-local; a public-write service requires a separate abuse-control review.
+The hosted release does not accept website enquiries. The 26 October local source adds saved website enquiries, staff-confirmed reply/contact history and optional follow-ups; see the [local workflow and testing guide](docs/local-enquiry-demo.md) and [customer accounts, conversations and saved demo](docs/customer-continuity.md). Hosted release approval, shared public-write abuse controls, incoming reply synchronisation, staff assignment, bulk upload, R2 migration, messaging integrations, Grafana/LGTM, managed production monitoring and an in-app LLM remain future work. Archive/restore and manager audit endpoints exist, but dedicated interface controls remain incomplete. The login limiter is process-local; a public-write service requires a separate abuse-control review.
 
 Only demonstration data is used here. Keep credentials, `.env`, databases, backups and exports outside Git. 
 ## Telemetry dashboard

@@ -6,13 +6,23 @@ export type DemoRole='customer'|'dealer';
 let state:Snapshot|null=null;
 let role:DemoRole='customer';
 let expires=0;
+let persistent=false;
+let initialSeed:DemoVehicleSeed[]=[];
+let messages:Record<string,{id:number;author_role:string;body:string;created_at:string}[]>={};
+const SHARED='dealer-desk-demo-v2',ACTIVE='dealer-desk-demo-active-v2';
+function savedDemo(){try{const raw=localStorage.getItem(SHARED);if(!raw||raw.length>2000000)return null;const value=JSON.parse(raw);if(value.version!==2||!Array.isArray(value.state?.vehicles)||!Array.isArray(value.state?.enquiries)||!Array.isArray(value.state?.tasks)||value.state.vehicles.length>100||value.state.enquiries.length>50||value.state.tasks.length>50||!Array.isArray(value.seed)||!Array.isArray(value.pictures))return null;return value}catch{return null}}
+export function persistDemo(){if(!persistent||!state)return;try{const payload=JSON.stringify({version:2,state,pictures:[...pictures],seed:initialSeed,messages});if(payload.length>2000000)throw new Error('limit');localStorage.setItem(SHARED,payload);try{sessionStorage.setItem(ACTIVE,JSON.stringify({role,expires}));}catch{}}catch{throw new DemoError('Browser storage is full or unavailable. Clear the saved demo or enable storage.')}}
+export function syncDemo(){if(!persistent)return;const saved=savedDemo();if(saved){state=saved.state;pictures=new Map(saved.pictures);messages=saved.messages||{};initialSeed=saved.seed;}}
+export function restoreDemo():{role:DemoRole;expires:number;seed:DemoVehicleSeed[]}|null{try{const active=JSON.parse(sessionStorage.getItem(ACTIVE)||'null');if(!active||!['customer','dealer'].includes(active.role)||active.expires<=Date.now())return null;const saved=savedDemo();if(!saved)return null;persistent=true;role=active.role;expires=active.expires;syncDemo();return {role,expires,seed:initialSeed}}catch{return null}}
+export function clearSavedDemo(){localStorage.removeItem(SHARED);sessionStorage.removeItem(ACTIVE);for(const key of Object.keys(sessionStorage))if(key.startsWith('dealer-receipt-demo-'))sessionStorage.removeItem(key);messages={};persistent=false;}
+
 export class DemoError extends Error {}
 export const enquirySources=['Website','Phone','Email','WhatsApp','SMS','Walk-in','Other'] as const;
 export type DemoActivity={kind:string;at:string;actor:string;subject?:string;body?:string;outcome?:string};
 export type PipelineEnquiry=import('./types').Enquiry;
 export function switchDemoRole(next:DemoRole){
   if(!state||Date.now()>=expires)throw new DemoError('Start a new demo.');
-  role=next;
+  role=next;persistDemo();
 }
 function validatePlan(value:unknown):{note:string;due_date:string}|null{
   if(value==null)return null;
@@ -28,8 +38,11 @@ function addPlannedTask(enquiry_id:number,plan:{note:string;due_date:string}|nul
   const stamp=new Date().toISOString();state.tasks.push({id:Math.max(0,...state.tasks.map(t=>t.id))+1,enquiry_id,...plan,completed:false,revision:1,created_at:stamp,updated_at:stamp});
 }
 export function demoActive(){return state!==null;}
-export function endDemo(){state=null;expires=0;pictures.clear();}
-export function startDemo(next:DemoRole,seed:DemoVehicleSeed[]){
+export function endDemo(){state=null;expires=0;pictures.clear();persistent=false;messages={};try{sessionStorage.removeItem(ACTIVE);}catch{}}
+export function startDemo(next:DemoRole,seed:DemoVehicleSeed[],save=false){
+  persistent=save;initialSeed=structuredClone(seed);
+  if(save&&savedDemo()){role=next;expires=Date.now()+30*60*1000;syncDemo();try{persistDemo()}catch(e){endDemo();throw e}return expires;}
+  messages={};
   if(!seed.length)throw new DemoError('There are no public vehicles available for the demo. Please try again later.');
   role=next;expires=Date.now()+30*60*1000;
   const stamp=new Date().toISOString();
@@ -38,12 +51,35 @@ export function startDemo(next:DemoRole,seed:DemoVehicleSeed[]){
     const photos=pictures.get(car.id)||[],cover=photos.find(p=>p.is_cover)||photos[0];
     return {id:car.id,make:car.make,model:car.model,year:car.year,price_pence:car.price_pence,status:car.status,archived:false,approved_facts:['Reference vehicle. Price is illustrative.'],revision:1,created_at:stamp,updated_at:stamp,photo_count:photos.length,cover_photo_id:cover?.id||null,cover_photo:cover||null};
   }),enquiries:[],tasks:[]};
-  return expires;
+  try{persistDemo()}catch(e){endDemo();throw e}return expires;
 }
-// Deliberately has no fetch, browser storage, cookies or access to private dealership records.
+// Only explicitly persistent demo snapshots use browser storage. Never access private dealership records.
 export function demoRequest(path:string,method:string,data?:unknown):unknown {
   if(!state)throw new DemoError('Start a new demo.');
+  syncDemo();
   if(Date.now()>=expires)throw new DemoError('Your demo has expired. End it and start a new demo.');
+  if(path==='/api/customer/me'&&method==='GET'){
+    if(role!=='customer')throw new DemoError('Switch to customer view.');const profile=state.enquiries.find(e=>e.source==='Website');return {name:profile?profile.customer+' (customer demo)':'Customer demo',email:profile?.email||'customer@example.com'};
+  }
+  if(path==='/api/customer/enquiries'&&method==='GET'){
+    if(role!=='customer')throw new DemoError('Customer access required.');return {items:structuredClone(state.enquiries.filter(e=>e.source==='Website'))};
+  }
+  const conversation=/^\/api\/(customer\/)?enquiries\/(\d+)\/messages$/.exec(path);
+  if(conversation){
+    const customer=!!conversation[1];
+    if((customer&&role!=='customer')||(!customer&&role!=='dealer'))throw new DemoError('Switch to the correct view.');
+    const enquiry=state.enquiries.find(e=>e.id===Number(conversation[2]));
+    if(!enquiry||(customer&&enquiry.source!=='Website'))throw new DemoError('Enquiry not found.');
+    const thread=messages[String(enquiry.id)]||[];
+    if(method==='POST'){
+      const body=(data as {body?:unknown}).body;
+      if(typeof body!=='string'||!body.trim()||body.length>2000)throw new DemoError('Enter a message of up to 2000 characters.');
+      if(thread.length>=100)throw new DemoError('Conversation limit reached.');
+      thread.push({id:thread.length+1,author_role:customer?'customer':'staff',body:body.trim(),created_at:new Date().toISOString()});messages[String(enquiry.id)]=thread;
+      enquiry.status=customer?'new':'contacted';enquiry.closure_reason='';enquiry.revision++;enquiry.updated_at=new Date().toISOString();
+    }else if(method!=='GET')throw new DemoError('Operation unavailable.');
+    return {items:structuredClone(thread)};
+  }
   const publicSubmission=path==='/api/catalogue/enquiries';
   const pipelineCreate=publicSubmission||(path==='/api/enquiries'&&Object.prototype.hasOwnProperty.call(data||{},'source'));
   if(pipelineCreate&&method==='POST'){
@@ -61,7 +97,7 @@ export function demoRequest(path:string,method:string,data?:unknown):unknown {
     if(f.vehicle_id!==null&&!state.vehicles.some(v=>v.id===f.vehicle_id&&!v.archived))throw new DemoError('Choose an existing vehicle.');
     if(state.enquiries.length>=50)throw new DemoError('Demo limit reached. Reset the demo to continue.');
     const at=new Date().toISOString();
-    const row:PipelineEnquiry={id:Math.max(0,...state.enquiries.map(e=>e.id))+1,vehicle_id:f.vehicle_id===null?null:Number(f.vehicle_id),customer,message,email,phone,source,request_type:requestType,status:'new',revision:1,created_at:at,updated_at:at,activity:[{kind:'Enquiry received',at,actor:role==='customer'?'Customer website':'Staff demo'}]};
+    const row:PipelineEnquiry={id:Math.max(0,...state.enquiries.map(e=>e.id))+1,vehicle_id:f.vehicle_id===null?null:Number(f.vehicle_id),customer,message,email,phone,source,request_type:requestType,customer_linked:publicSubmission,status:'new',revision:1,created_at:at,updated_at:at,activity:[{kind:'Enquiry received',at,actor:role==='customer'?'Customer website':'Staff demo'}]};
     state.enquiries.push(row);addPlannedTask(row.id,plan);return publicSubmission?{reference:row.id}:structuredClone(row);
   }
   const action=/^\/api\/enquiries\/(\d+)\/(reply|close|contact)$/.exec(path);

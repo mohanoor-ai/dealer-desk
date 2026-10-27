@@ -20,3 +20,11 @@
 .pipeline-stages strong{display:block;margin-top:.5rem}
 .pipeline-dashboard{margin-bottom:1.5rem}
 @media(max-width:760px){.pipeline-stages{grid-template-columns:1fr 1fr}}
+
+.cookie-choices{position:fixed;bottom:1rem;left:1rem;right:1rem;z-index:1000;max-width:720px;box-shadow:0 4px 24px #0003}
+.cookie-choices h2{font-size:1.15rem}.cookie-choices p{font-size:.9rem}
+.review-stars{display:inline-block;color:#856000;letter-spacing:.12em;margin:.5rem .75rem .5rem 0}
+.comparison-scroll{overflow-x:auto}.comparison-scroll table{width:100%;border-collapse:collapse}.comparison-scroll td,.comparison-scroll th{padding:1rem;border-bottom:1px solid #d5ddd5;text-align:left;min-width:130px}
+.conversation{border:1px solid #d5ddd5;border-radius:10px;padding:1rem;margin:1rem 0}.conversation li{padding:.5rem 0;overflow-wrap:anywhere}
+.workspace-footer{flex-wrap:wrap}.workspace-footer nav{width:100%}.public-footer nav{display:inline-block}
+@media(max-width:760px){.cookie-choices{bottom:75px;max-height:65dvh;overflow:auto}}

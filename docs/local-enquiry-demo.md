@@ -1,3 +1,5 @@
+> Update 27 October 2026: the demo now saves and shares test records on this browser until reset. Customer accounts and in-account conversations are available in the normal local app. See [customer continuity](customer-continuity.md) for current testing, verification-preview limits and storage behaviour. Earlier temporary-demo instructions below describe the preceding implementation.
+
 # Local customer and staff enquiry workflow
 
 Updated 26 October 2026. This supersedes the earlier demo-only prototype. The whole local app now supports this workflow using its database and normal staff sessions. The optional demo uses the same interface with temporary in-tab records. These changes have not been pushed, deployed or applied to Neon.
