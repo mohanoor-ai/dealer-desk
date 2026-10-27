@@ -86,3 +86,15 @@ test('policy pages describe the actual local handling without claiming delivered
  rerender(<PolicyPage page="cookies"/>);expect(screen.getByRole('heading',{name:'Cookies and browser storage'})).toBeInTheDocument();
  rerender(<PolicyPage page="terms"/>);expect(screen.getByRole('heading',{name:'Terms of use'})).toBeInTheDocument();
 });
+
+
+test('hosted capability hides registration and recovery while retaining customer sign in',async()=>{
+ const {default:Account}=await import('./CustomerAccount');
+ window.location.hash='/account';
+ vi.stubGlobal('fetch',vi.fn(async(input)=>({ok:String(input)==='/api/catalogue/capabilities',status:String(input)==='/api/catalogue/capabilities'?200:401,json:async()=>String(input)==='/api/catalogue/capabilities'?{enquiries:true,customer_registration:false}:{error:{message:'Sign in'}}})));
+ render(<Account/>);
+ expect(await screen.findByText(/New customer accounts and password recovery are not available yet/)).toBeInTheDocument();
+ expect(screen.queryByRole('button',{name:'Register'})).not.toBeInTheDocument();
+ expect(screen.queryByRole('button',{name:'Forgot password'})).not.toBeInTheDocument();
+ expect(screen.getByRole('button',{name:'Sign in to my enquiries'})).toBeInTheDocument();
+});

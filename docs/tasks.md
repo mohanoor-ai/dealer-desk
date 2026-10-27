@@ -122,3 +122,5 @@ Owner requests required submission fields, optional promotions signup and lead g
 ## Authorized hosted release — 27 October 2026
 
 Owner requests publication of the current local work. Verify migrations against dedicated development then production with backups and preserved-record counts; expand actual PostgreSQL CI coverage to customer accounts, enquiries and leads; trust exact source CI before production promotion; do not expose local verification previews publicly. Customer email-provider decision requested separately. Retain old deployment/backup references and verify hosted access, persistent browser demo and relevant real staff paths. No paid plans or rewritten history.
+
+Hosted release prerequisite: replace process-local public enquiry/unsubscribe budgets with bounded atomic database windows shared across serverless instances, retain an explicit PUBLIC_ENQUIRIES_ENABLED switch, cap public JSON before parsing and hide unavailable hosted registration/recovery rather than exposing local email previews. This prepares safe publication irrespective of the pending email-provider choice.

@@ -125,3 +125,7 @@ Development/previews retain Vercel protection. At the owner's request, the produ
 The login limiter is process-local. Distributed throttling, public enquiry-write controls, background/idle polling optimization, managed telemetry and a hosted Neon restore drill remain outside the demonstrated deployment. Current polling is every three seconds. Photos remain database-backed; R2 is not configured. These limits do not justify inventing a connected integration or calling a real dealership deployment production-ready.
 
 Configuration reference used during setup: [Vercel FastAPI documentation](https://vercel.com/docs/frameworks/backend/fastapi). No service/plan changes are made by this documentation update.
+
+## Customer workflow release switches — 27 October 2026
+
+The newer customer/enquiry/lead migrations and public_write_windows table must be migrated explicitly before enabling the new release. PUBLIC_ENQUIRIES_ENABLED=true in the project environment enables bounded website enquiries and email-preference withdrawal; otherwise these hosted writes fail closed. Limits use atomic SQL windows shared across Vercel instances, rather than process memory. Customer registration/recovery remains disabled on hosted deployments until a real verification-delivery integration is configured; local email previews must never be exposed publicly. The public capabilities route reports this and the account screen hides unavailable registration/recovery controls. The saved customer/staff demo works independently in the browser.

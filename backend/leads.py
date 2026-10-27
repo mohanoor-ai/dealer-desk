@@ -1,12 +1,9 @@
 """Enquiry leads and recorded preferences, without a campaign delivery service."""
-from collections import deque
-from threading import Lock
-import time
 from fastapi import Depends,HTTPException,Query
 from sqlalchemy import select,func,String,cast
 from backend import schemas as s
 from backend.models import Enquiry,MarketingPreference,now
-from backend.config import hosted
+from backend.public_access import enquiries_enabled,public_budget
 
 CONSENT_VERSION='email-offers-v1'
 CONSENT_TEXT='Email me Dealer Desk vehicle updates and offers. Optional; unsubscribe at any time.'
@@ -37,7 +34,6 @@ def withdraw(db,email,source):
     db.commit()
 
 def register_leads(app,database,signed_in,can_write):
-    attempts=deque();lock=Lock()
     @app.get('/api/leads')
     def leads(offset:int=Query(0,ge=0),limit:int=Query(25,ge=1,le=100),user=Depends(signed_in),db=Depends(database)):
         # SQLite's portable concatenation is rendered by SQLAlchemy's string operator.
@@ -62,12 +58,8 @@ def register_leads(app,database,signed_in,can_write):
 
     @app.post('/api/catalogue/promotions/unsubscribe')
     def public_unsubscribe(body:Unsubscribe,db=Depends(database)):
-        if hosted():raise HTTPException(403,'Email preferences are not enabled on this deployment.')
-        with lock:
-            current=time.monotonic()
-            while attempts and attempts[0]<current-900:attempts.popleft()
-            if len(attempts)>=60:raise HTTPException(429,'Too many attempts. Try again later.')
-            attempts.append(current)
+        if not enquiries_enabled():raise HTTPException(403,'Email preferences are not enabled on this deployment.')
+        public_budget(db,'unsubscribe',60)
         # Only revokes a preference; never reveals whether an address was subscribed.
         withdraw(db,body.email,'Self-service withdrawal')
         return {'message':'Email promotions have been stopped for this address if it was subscribed.'}

@@ -130,3 +130,9 @@ class MarketingPreference(Base):
     consent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True),nullable=True)
     withdrawn_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True),nullable=True)
     history: Mapped[list] = mapped_column(JSON,default=list,nullable=False)
+
+class PublicWriteWindow(Base):
+    __tablename__='public_write_windows'
+    service: Mapped[str] = mapped_column(String(30),primary_key=True)
+    window: Mapped[int] = mapped_column(Integer,nullable=False)
+    count: Mapped[int] = mapped_column(Integer,nullable=False)

@@ -140,11 +140,12 @@ def create_app(database_url=None):
         request.state.request_id = uuid4().hex
         # Reject oversized bodies before JSON/base64 parsing, including chunked uploads.
         if request.method in ('POST', 'PUT', 'PATCH'):
+            public_body=request.url.path.startswith('/api/catalogue/')
             body = bytearray()
             async for chunk in request.stream():
                 body.extend(chunk)
-                if len(body) > 3_000_000:
-                    return JSONResponse({'error': {'code':'too_large','message':'Request is too large. Each photo must be 2 MB or smaller.',
+                if len(body) > (8000 if public_body else 3_000_000):
+                    return JSONResponse({'error': {'code':'too_large','message':'Request is too large.' if public_body else 'Request is too large. Each photo must be 2 MB or smaller.',
                         'request_id':request.state.request_id}},status_code=413)
             request._body = bytes(body)
         if request.method in ('POST', 'PUT', 'PATCH', 'DELETE'):

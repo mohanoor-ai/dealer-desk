@@ -1,15 +1,12 @@
 """Saved enquiry workflow; email actions record staff confirmation, not delivery."""
-from collections import deque
-from threading import Lock
 import json
-import time
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy import select, update
 from sqlalchemy.exc import IntegrityError
 
 from backend import schemas as s
-from backend.config import hosted
+from backend.public_access import enquiries_enabled,public_budget
 from backend.models import Enquiry, Vehicle, Task, AuditEvent, now
 
 
@@ -57,24 +54,21 @@ def create_enquiry(db, body, actor, today, public=False,customer=None):
 
 def register_workflow(app, database, can_write, today, serialize):
     router = APIRouter()
-    submissions = deque()
-    lock = Lock()
+
+    @router.get('/api/catalogue/capabilities')
+    def capabilities():
+        from backend.config import hosted
+        return {'enquiries':enquiries_enabled(),'customer_registration':not hosted()}
 
     @router.post('/api/catalogue/enquiries',status_code=201,response_model=s.EnquiryReceipt)
     def website_enquiry(body:s.PublicEnquiry,request:Request,db=Depends(database)):
         # This locally reviewed write path is not enabled for hosted deployments.
         # Shared abuse controls and release approval are needed before hosting it.
-        if hosted():
+        if not enquiries_enabled():
             raise HTTPException(403,'Website enquiries are not enabled on this deployment.')
         if len(json.dumps(body.model_dump(mode='json'))) > 6000:
             raise HTTPException(413,'Enquiry is too large.')
-        current = time.monotonic()
-        with lock:
-            while submissions and submissions[0] < current-900:
-                submissions.popleft()
-            if len(submissions) >= 30:
-                raise HTTPException(429,'Too many enquiries. Try again later.')
-            submissions.append(current)
+        public_budget(db,'enquiries',30)
         existing = db.scalar(select(Enquiry).where(Enquiry.submission_key==body.submission_key))
         if existing:
             fields=body.model_dump(exclude={'follow_up','submission_key'})

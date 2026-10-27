@@ -1740,6 +1740,58 @@ paths:
                 $ref: '#/components/schemas/ApiError'
       security:
       - sessionCookie: []
+  /api/catalogue/capabilities:
+    get:
+      summary: Capabilities
+      operationId: capabilities_api_catalogue_capabilities_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '401':
+          description: Sign-in required or invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: Permission or same-origin check failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Record not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '409':
+          description: Stale revision or workflow conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '422':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '503':
+          description: Storage unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
   /api/catalogue/enquiries:
     post:
       summary: Website Enquiry
