@@ -50,6 +50,7 @@ class FollowUpPlan(Input):
 
 class EnquiryCreate(Input):
     vehicle_id: Revision | None = None
+    promotions_opt_in: Annotated[bool,Field(strict=True)] = False
     source: EnquirySource = 'Other'
     request_type: RequestType = 'Other'
     email: str = Field(default='', max_length=254)
@@ -66,6 +67,8 @@ class EnquiryCreate(Input):
 
     @model_validator(mode='after')
     def callback_number(self):
+        if self.promotions_opt_in and not self.email:
+            raise ValueError('Enter an email address for promotions.')
         if self.request_type == 'Request a callback' and not self.phone:
             raise ValueError('Enter a phone number for a callback.')
         return self
@@ -73,6 +76,7 @@ class EnquiryCreate(Input):
     message: str = Field(min_length=1, max_length=1000)
 
 class PublicEnquiry(EnquiryCreate):
+    request_type: RequestType
     email: str = Field(min_length=3, max_length=254)
     source: Literal['Website'] = 'Website'
     follow_up: None = None

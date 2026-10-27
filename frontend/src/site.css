@@ -30,3 +30,5 @@
 @media(max-width:760px){.cookie-choices{bottom:75px;max-height:65dvh;overflow:auto}}
 
 .compact-actions{margin-top:.75rem}.compact-actions>label{max-width:340px}.compact-actions details{margin-top:1rem}.compact-actions summary,.record-enquiry>summary{cursor:pointer;font-weight:600}.enquiry-meta{font-size:.9rem;color:#53625b}.enquiry-next{font-size:.9rem}.compact-actions form{margin-top:1rem}.record-enquiry[open]>summary{margin-bottom:1rem}
+
+.pipeline-form label:has(> input:required)::before,.pipeline-form label:has(> select:required)::before,.pipeline-form label:has(> textarea:required)::before{content:"* ";color:#9a3426}.promotions-choice{border:1px solid #d5ddd5;padding:1rem;border-radius:8px;margin:1rem 0}.promotions-choice small{display:block;margin-top:.5rem}

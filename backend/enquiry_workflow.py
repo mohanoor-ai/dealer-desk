@@ -38,6 +38,8 @@ def create_enquiry(db, body, actor, today, public=False,customer=None):
             raise HTTPException(409,'Restore this vehicle before recording an enquiry.')
         if public and (not vehicle.model.endswith('(sample)') or vehicle.make in ('Deployment','Demo Motors')):
             raise HTTPException(404,'Vehicle not found.')
+    if body.promotions_opt_in and not public:
+        raise HTTPException(403,'Promotions consent must be given by the customer.')
     fields = body.model_dump(exclude={'follow_up'})
     fields['activity'] = [event('Enquiry received','Customer website' if public else actor.username)]
     if customer:fields['customer_account_id']=customer.id
@@ -46,6 +48,8 @@ def create_enquiry(db, body, actor, today, public=False,customer=None):
     db.flush()
     db.add(AuditEvent(entity='enquiry',entity_id=record.id,revision=record.revision,
                       action='created',actor_id=None if public else actor.id))
+    from backend.leads import record_opt_in
+    record_opt_in(db,record)
     plan_task(db,record,body.follow_up,actor,today)
     db.commit()
     return record

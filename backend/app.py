@@ -24,6 +24,7 @@ from backend.models import User, LoginSession, Vehicle, Enquiry, Task, AuditEven
 from backend.photos import prepare_photo, MAX_PHOTOS
 from backend.contract import describe_api
 from backend.customer_portal import register_customers
+from backend.leads import register_leads
 from backend.enquiry_workflow import create_enquiry, register_workflow
 from backend.config import secure_cookies
 from backend.telemetry import Telemetry
@@ -451,6 +452,7 @@ def create_app(database_url=None):
 
     register_workflow(app,database,can_write,dealer_today,record_dict)
     register_customers(app,database,signed_in,can_write)
+    register_leads(app,database,signed_in,can_write)
 
     built_frontend = ROOT / 'frontend' / 'dist'
 

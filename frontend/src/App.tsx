@@ -15,11 +15,12 @@ import './site.css';
 import MobileNavigation from './MobileNavigation';
 import LearningPublic from './LearningPublic';
 import CustomerAccount from './CustomerAccount';
+import Leads,{PromotionsPreferences} from './Leads';
 import {CookieChoices,PolicyLinks,PolicyPage} from './BrowsingTools';
 
 type User={id:number;username:string;role:'viewer'|'sales'|'manager'};
 const empty:Snapshot={vehicles:[],enquiries:[],tasks:[]};
-const navigation=[['overview','Overview','◈'],['stock','Vehicle stock','◇'],['enquiries','Enquiries','↗'],['follow-ups','Follow-ups','◷']];
+const navigation=[['overview','Overview','◈'],['stock','Vehicle stock','◇'],['enquiries','Enquiries','↗'],['leads','Leads','◎'],['follow-ups','Follow-ups','◷']];
 
 export default function App(){
   const route=useRoute();
@@ -30,7 +31,7 @@ export default function App(){
   const [demoChooser,setDemoChooser]=useState(false);
   const [demoStarting,setDemoStarting]=useState(false);
   const demoSeed=useRef<DemoVehicleSeed[]>(restored?.seed||[]);
-  const publicPage=!demo&&['learning','home','catalogue','catalogue-detail','contact','privacy','cookies','terms','account','compare','viewed'].includes(route.page);
+  const publicPage=!demo&&['learning','home','catalogue','catalogue-detail','contact','privacy','cookies','terms','account','compare','viewed','promotions'].includes(route.page);
   const [checking,setChecking]=useState(!restored);
   const [snapshot,setSnapshot]=useState(empty);
   const [loading,setLoading]=useState(false);
@@ -136,12 +137,13 @@ export default function App(){
       {demo&&<section className="banner" aria-label="Temporary demo"><strong>{demo==='dealer'?'Dealer':'Customer'} demo</strong> · Ends at {new Date(demoExpiry).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}. Demo records are saved on this browser and shared by customer and staff views. Ending a session keeps them; Reset demo clears them. Photo uploads require a staff account. <button className="secondary" onClick={()=>{clearSavedDemo();openDemo(demo);}}>Reset demo</button> <button className="secondary" onClick={closeDemo}>End demo</button>{<> <button className="secondary" onClick={switchDemoView}>{demo==='dealer'?'Switch to customer website view':'Switch to staff view'}</button><p>Shared saved demo. Use test details. External email sending is manual.</p></>}</section>}
       {!demo&&notice&& !user&&<p role="status">{notice}</p>}
       {error&&!editing&&<div role="alert" className="error">{error} {user&&<button className="secondary" onClick={()=>{setError('');refresh();}}>Refresh records</button>}</div>}
-      {['privacy','cookies','terms'].includes(route.page)?<PolicyPage page={route.page}/>:publicPage?(route.page==='learning'?<LearningPublic slug={route.articleSlug}/>:['privacy','cookies','terms'].includes(route.page)?<PolicyPage page={route.page}/>:route.page==='account'?<CustomerAccount/>:<Storefront page={route.page} id={route.id}/>):checking?<p role="status">Checking your session…</p>:!user?
+      {route.page==='promotions'?<PromotionsPreferences/>:['privacy','cookies','terms'].includes(route.page)?<PolicyPage page={route.page}/>:publicPage?(route.page==='learning'?<LearningPublic slug={route.articleSlug}/>:['privacy','cookies','terms'].includes(route.page)?<PolicyPage page={route.page}/>:route.page==='account'?<CustomerAccount/>:route.page==='promotions'?<PromotionsPreferences/>:<Storefront page={route.page} id={route.id}/>):checking?<p role="status">Checking your session…</p>:!user?
         <section className="login"><div><p className="eyebrow">A CLEARER WORKING DAY</p><h1>Know your stock.<br/>Keep your promises.</h1><p>Stock, enquiries and the next follow-up.<br/>Together in one place.</p><div className="login-note">Your dealership workspace.</div></div><form className="panel login-form" onSubmit={login}><h2>Welcome back</h2><p>Sign in with your individual account.</p><label>Username<input name="username" autoComplete="username" required maxLength={80}/></label><label>Password<input name="password" type="password" autoComplete="current-password" required maxLength={128}/></label><button disabled={saving}>{saving?'Signing in…':'Sign in'}</button><small>Ask your dealership administrator for an account.</small><div className="login-demo"><button type="button" className="text-button" disabled={demoStarting} onClick={()=>openDemo('dealer')}>{demoStarting?'Loading demo…':'Try staff demo'}</button><p>No account needed. Add or edit vehicles, record enquiries and manage follow-ups. This demo saves test records on this browser until reset.</p></div></form></section>:
         <><div role="status" className={`global-notice ${notice?'has-notice':''}`}>{notice}</div>{user.role==='viewer'&&!demo&&<p className="banner">You have read-only access. Contact a manager to request changes.</p>}
           {demo==='customer'?<CustomerDemo snapshot={snapshot} vehicle={['vehicle','catalogue-detail'].includes(route.page)?vehicle:undefined} loading={loading} saving={saving} change={change} refresh={refresh}/>:<>
           {route.page==='stock'&&<StockPage snapshot={snapshot} loading={loading} canWrite={canWrite} onAdd={onAdd}/>}
           {route.page==='overview'&&<OverviewPage snapshot={snapshot} canWrite={canWrite} onAdd={onAdd}/>}
+          {route.page==='leads'&&<Leads snapshot={snapshot} canWrite={canWrite} onSaved={refresh}/>}
           {route.page==='enquiries'&&<DemoEnquiries snapshot={snapshot} selectedEnquiry={route.enquiryId} onSaved={refresh} canWrite={canWrite} initialFilter={route.filter} preferredVehicle={preferredVehicle}/>}
           {route.page==='follow-ups'&&<FollowUpsPage snapshot={snapshot} canWrite={canWrite} saving={saving} change={change} enquiryId={route.enquiryId}/>}
           {route.page==='vehicle'&&(vehicle?<VehiclePage vehicle={vehicle} snapshot={snapshot} canWrite={canWrite} saving={saving} change={change} refresh={refresh} onEdit={()=>{setError('');setEditing({...vehicle});}} onEnquire={()=>{setPreferredVehicle(vehicle.id);window.location.hash='/enquiries';}}/>:<div className="empty"><h1>{loading?'Loading vehicle…':'Vehicle not found'}</h1><p>It may have been archived or removed from active stock.</p><a href="#/stock">Return to stock</a></div>)}
@@ -152,7 +154,7 @@ export default function App(){
       {(publicPage||!user)&&<footer className="public-footer"><span>Dealer Desk</span><PolicyLinks/><a href={user?'#/overview':'#/login'}>{user?'Staff workspace':'Staff sign in'}</a><button className="text-button" onClick={()=>setDemoChooser(true)}>Try demo</button><small>Reference images are illustrative</small></footer>}
       {demoChooser&&<section id="demo-choices" tabIndex={-1} className="panel demo-chooser" aria-label="Choose a demo"><h2>Try Dealer Desk</h2>{demoStarting&&<p role="status">Loading current vehicle listings…</p>}<p>Start or resume the shared saved demo on this browser. Use test details. Demo records never enter the dealership database.</p><button disabled={demoStarting} onClick={()=>openDemo('customer')}>Explore customer demo</button> <button className="secondary" disabled={demoStarting} onClick={()=>openDemo('dealer')}>Explore staff demo</button> <button className="secondary" onClick={()=>setDemoChooser(false)}>Close demo choices</button></section>}
       {editing&&<dialog ref={editDialog} className="upload-dialog" onCancel={event=>{if(saving)event.preventDefault();else setEditing(null);}} onClose={()=>setEditing(null)}><div className="section-heading"><h2>Edit vehicle</h2><button className="icon-button" disabled={saving} aria-label="Close vehicle editor" onClick={()=>setEditing(null)}>×</button></div>{error&&<p role="alert" className="error">{error}</p>}<VehicleForm vehicle={editing} saving={saving} onSave={saveVehicle} onCancel={()=>setEditing(null)}/></dialog>}
-      {demo&&['privacy','cookies','terms'].includes(route.page)&&<footer className="workspace-footer"><PolicyLinks/></footer>}
+      {demo&&['privacy','cookies','terms','promotions'].includes(route.page)&&<footer className="workspace-footer"><PolicyLinks/></footer>}
     </main><CookieChoices/>
   </>;
 }

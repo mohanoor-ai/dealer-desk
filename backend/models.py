@@ -30,6 +30,7 @@ class Enquiry(Record, Base):
     __tablename__ = 'enquiries_v2'
     vehicle_id: Mapped[int | None] = mapped_column(ForeignKey('vehicles_v2.id'), nullable=True, index=True)
     customer_account_id: Mapped[int | None] = mapped_column(ForeignKey('customer_accounts.id'),nullable=True,index=True)
+    promotions_opt_in: Mapped[bool] = mapped_column(Boolean,default=False,nullable=False)
     source: Mapped[str] = mapped_column(String(20), default='Other', nullable=False)
     request_type: Mapped[str] = mapped_column(String(30), default='Other', nullable=False)
     email: Mapped[str] = mapped_column(String(254), default='', nullable=False)
@@ -121,3 +122,11 @@ class EnquiryMessage(Base):
     author_role: Mapped[str] = mapped_column(String(12),nullable=False)
     body: Mapped[str] = mapped_column(String(2000),nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),default=now,nullable=False)
+
+class MarketingPreference(Base):
+    __tablename__='marketing_preferences'
+    email: Mapped[str] = mapped_column(String(254),primary_key=True)
+    opted_in: Mapped[bool] = mapped_column(Boolean,default=False,nullable=False)
+    consent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True),nullable=True)
+    withdrawn_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True),nullable=True)
+    history: Mapped[list] = mapped_column(JSON,default=list,nullable=False)

@@ -1,0 +1,22 @@
+import {useEffect,useState} from 'react';
+import {request} from './api';
+import type {Snapshot,Page} from './types';
+import {DemoEnquiryForm} from './DemoEnquiries';
+export type Lead={id:number;customer:string;email:string;phone:string;source:string;request_type:string;interest:string;status:string;vehicle_id:number|null;enquiry_count:number;promotions:boolean;consent_at:string|null;withdrawn_at:string|null;consent_history:Record<string,unknown>[]};
+export default function Leads({snapshot,canWrite,onSaved}:{snapshot:Snapshot;canWrite:boolean;onSaved:()=>Promise<void>}){
+ const [items,setItems]=useState<Lead[]>([]),[filter,setFilter]=useState('all'),[error,setError]=useState(''),[busy,setBusy]=useState(false);
+ async function load(){try{const all:Lead[]=[];let offset=0;while(true){const page=await request<Page<Lead>>(`/api/leads?offset=${offset}&limit=100`);all.push(...page.items);offset+=page.items.length;if(offset>=page.total||!page.items.length)break}setItems(all);setError('')}catch(e){setError(e instanceof Error?e.message:'Leads could not load.')}}
+ useEffect(()=>{load();const timer=setInterval(load,3000);return()=>clearInterval(timer)},[]);
+ const visible=items.filter(l=>filter==='all'||(filter==='opted-in'?l.promotions:!l.promotions));
+ return <><h1>Leads</h1><p>Enquiry contacts and interests. Marketing permission is separate from following up a request.</p>{error&&<p role="alert">{error}</p>}
+ <section className="panel"><p>{items.length} contacts · {items.filter(l=>l.status==='new').length} new · {items.filter(l=>l.promotions).length} opted in to email updates</p>
+ <label>Email preference<select value={filter} onChange={e=>setFilter(e.target.value)}><option value="all">All leads</option><option value="opted-in">Email opted in</option><option value="not-opted-in">No email permission</option></select></label>
+ <p>No marketing emails are sent by this app.</p>{!visible.length&&<p>No leads match this view.</p>}
+ {visible.map(l=><article className="enquiry-card" key={l.id}><div className="section-heading"><h2>{l.customer}</h2><span className="badge">{l.status}</span></div><p>{l.source} · {l.request_type} · {l.enquiry_count} {l.enquiry_count===1?'enquiry':'enquiries'}</p><p>{l.interest}</p><p>{[l.email,l.phone].filter(Boolean).join(' · ')||'No contact details recorded'}</p><p><strong>{l.promotions?'Email updates: opted in':'Email updates: not subscribed'}</strong>{l.consent_at&&` · Consent recorded ${new Date(l.consent_at).toLocaleString('en-GB')}`}{l.withdrawn_at&&` · Withdrawn ${new Date(l.withdrawn_at).toLocaleString('en-GB')}`}</p><a href={`#/enquiries?enquiry=${l.id}`}>Open latest enquiry →</a>{canWrite&&l.promotions&&<button className="secondary" disabled={busy} onClick={async()=>{setBusy(true);try{await request('/api/leads/unsubscribe','POST',{email:l.email});await load()}catch(e){setError(e instanceof Error?e.message:'Preference could not save')}finally{setBusy(false)}}}>Record withdrawal of email consent</button>}
+ {!!l.consent_history.length&&<details><summary>Consent record</summary><ol>{l.consent_history.map((h,i)=><li key={i}>{String(h.action)} · {String(h.at)} · {String(h.source)}{typeof h.text==='string'&&<p>{String(h.text)}</p>}</li>)}</ol></details>}</article>)}
+ </section>{canWrite&&<details className="panel"><summary>Capture a lead</summary><p>Record the contact's source, interest and any agreed next action. This does not subscribe them to promotions.</p><DemoEnquiryForm snapshot={snapshot} onSaved={async()=>{await onSaved();await load()}}/></details>}</>;
+}
+export function PromotionsPreferences(){
+ const [notice,setNotice]=useState(''),[error,setError]=useState(''),[busy,setBusy]=useState(false);
+ return <section className="public-copy panel"><h1>Email preferences</h1><p>Stop promotional emails without changing your enquiries or account. This local app records preferences; no marketing email service is connected.</p>{notice&&<p role="status">{notice}</p>}{error&&<p role="alert">{error}</p>}<form onSubmit={async e=>{e.preventDefault();setBusy(true);setError('');try{setNotice((await request<{message:string}>('/api/catalogue/promotions/unsubscribe','POST',{email:String(new FormData(e.currentTarget).get('email'))})).message)}catch(e){setError(e instanceof Error?e.message:'Please try again.')}finally{setBusy(false)}}}><label>Email address<input type="email" name="email" required maxLength={254}/></label><button disabled={busy}>{busy?'Saving…':'Unsubscribe from email promotions'}</button></form></section>;
+}

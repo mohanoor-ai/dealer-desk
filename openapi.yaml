@@ -2795,6 +2795,209 @@ paths:
                 $ref: '#/components/schemas/ApiError'
       security:
       - sessionCookie: []
+  /api/leads:
+    get:
+      summary: Leads
+      operationId: leads_api_leads_get
+      parameters:
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+          title: Offset
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          maximum: 100
+          minimum: 1
+          default: 25
+          title: Limit
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '401':
+          description: Sign-in required or invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: Permission or same-origin check failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Record not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '409':
+          description: Stale revision or workflow conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '503':
+          description: Storage unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      security:
+      - sessionCookie: []
+  /api/leads/unsubscribe:
+    post:
+      summary: Staff Unsubscribe
+      operationId: staff_unsubscribe_api_leads_unsubscribe_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Unsubscribe'
+        required: true
+      responses:
+        '204':
+          description: Successful Response
+        '422':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '401':
+          description: Sign-in required or invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: Permission or same-origin check failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Record not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '409':
+          description: Stale revision or workflow conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '503':
+          description: Storage unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      security:
+      - sessionCookie: []
+      parameters:
+      - name: X-Requested-With
+        in: header
+        required: true
+        schema:
+          type: string
+          const: DealerDesk
+        description: Same-origin mutation guard; cross-site requests are rejected.
+  /api/catalogue/promotions/unsubscribe:
+    post:
+      summary: Public Unsubscribe
+      operationId: public_unsubscribe_api_catalogue_promotions_unsubscribe_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Unsubscribe'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '401':
+          description: Sign-in required or invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: Permission or same-origin check failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: Record not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '409':
+          description: Stale revision or workflow conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '503':
+          description: Storage unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+      parameters:
+      - name: X-Requested-With
+        in: header
+        required: true
+        schema:
+          type: string
+          const: DealerDesk
+        description: Same-origin mutation guard; cross-site requests are rejected.
 components:
   schemas:
     ContactOutcome:
@@ -2900,6 +3103,10 @@ components:
             minimum: 1.0
           - type: 'null'
           title: Vehicle Id
+        promotions_opt_in:
+          type: boolean
+          title: Promotions Opt In
+          default: false
         source:
           type: string
           enum:
@@ -2980,6 +3187,10 @@ components:
             minimum: 1.0
           - type: 'null'
           title: Vehicle Id
+        promotions_opt_in:
+          type: boolean
+          title: Promotions Opt In
+          default: false
         source:
           type: string
           enum:
@@ -3337,6 +3548,10 @@ components:
             minimum: 1.0
           - type: 'null'
           title: Vehicle Id
+        promotions_opt_in:
+          type: boolean
+          title: Promotions Opt In
+          default: false
         source:
           type: string
           const: Website
@@ -3352,7 +3567,6 @@ components:
           - Request a callback
           - Other
           title: Request Type
-          default: Other
         email:
           type: string
           maxLength: 254
@@ -3383,6 +3597,7 @@ components:
       additionalProperties: false
       type: object
       required:
+      - request_type
       - email
       - customer
       - message
@@ -3579,6 +3794,16 @@ components:
       required:
       - token
       title: Token
+    Unsubscribe:
+      properties:
+        email:
+          type: string
+          title: Email
+      additionalProperties: false
+      type: object
+      required:
+      - email
+      title: Unsubscribe
     UserOutput:
       properties:
         id:

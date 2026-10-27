@@ -29,7 +29,7 @@ export function DemoEnquiryForm({snapshot,website=false,preferredVehicle=0,onSav
     event.preventDefault();if(busy||receipt)return;const form=event.currentTarget,data=new FormData(form);setBusy(true);setError('');
     try{
       const value=data.get('vehicle_id');
-      const fields={vehicle_id:value?Number(value):null,customer:String(data.get('customer')),email:String(data.get('email')),phone:String(data.get('phone')),request_type:category,message:String(data.get('message')),source:website?'Website':String(data.get('source'))};
+      const fields={vehicle_id:value?Number(value):null,customer:String(data.get('customer')),email:String(data.get('email')),phone:String(data.get('phone')),request_type:category,message:String(data.get('message')),source:website?'Website':String(data.get('source')),promotions_opt_in:website&&data.get('promotions_opt_in')==='on'};
       const row=await request<{id?:number;reference?:number}>(website?'/api/catalogue/enquiries':'/api/enquiries','POST',website?{...fields,submission_key:submissionKey.current}:{...fields,follow_up:followUpFrom(data)});
       const ref=row.reference||row.id||0;setReceipt(ref);if(website){try{sessionStorage.setItem(receiptKey,String(ref))}catch{}}await onSaved();
     }catch(e){setError(e instanceof Error?e.message:'Could not save the enquiry.');}finally{setBusy(false);}
@@ -38,15 +38,17 @@ export function DemoEnquiryForm({snapshot,website=false,preferredVehicle=0,onSav
 
   return <form onSubmit={submit} className="pipeline-form">
     {demoActive()&&<p>Saved demo. Use test contact details; records stay on this browser until reset.</p>}
+    <p className="hint">Fields marked * are required. Promotions are optional.</p>
     {error&&<p role="alert">{error}</p>}
     {website&&selected&&!different?<><p>Vehicle: <strong>{vehicleName(selected.make,selected.model)}</strong></p><input name="vehicle_id" type="hidden" value={selected.id}/></>:<label>Vehicle<select name="vehicle_id" defaultValue={preferredVehicle||''}><option value="">General enquiry</option>{snapshot.vehicles.map(v=><option key={v.id} value={v.id}>{vehicleName(v.make,v.model)}</option>)}</select></label>}
     {website&&selected&&<label className="check-label"><input type="checkbox" checked={different} onChange={e=>setDifferent(e.target.checked)}/> Enquire about a different vehicle or make a general enquiry</label>}
     {website?<p>Enquiry source: <strong>Website</strong></p>:<label>Enquiry source<select name="source" required defaultValue=""><option value="" disabled>Select source</option>{enquirySources.map(source=><option key={source}>{source}</option>)}</select></label>}
-    <label>Request type<select name="request_type" value={category} onChange={e=>setCategory(e.target.value)}>{requestTypes.map(type=><option key={type}>{type}</option>)}</select></label>
+    <label>Request type<select name="request_type" required value={category} onChange={e=>setCategory(e.target.value)}>{requestTypes.map(type=><option key={type}>{type}</option>)}</select></label>
     <label>Customer name<input name="customer" required maxLength={80}/></label>
     <label>Email address<input name="email" type="email" required={website} maxLength={254} placeholder="alex@example.com"/></label>
     <label>Phone number<input name="phone" type="tel" required={category==='Request a callback'} maxLength={40}/></label>
     <label>Message<textarea name="message" required maxLength={1000}/></label>
+    {website&&<fieldset className="promotions-choice"><legend>Vehicle updates and offers (optional)</legend><label className="check-label"><input type="checkbox" name="promotions_opt_in"/> Email me Dealer Desk vehicle updates and offers. Optional; unsubscribe at any time.</label><small>Your enquiry will be handled either way. <a href="#/promotions">Email preferences</a> · <a href="#/privacy">Privacy</a></small></fieldset>}
     {!website&&<FollowUpFields suggestion={suggestions[category]}/>}
     <button disabled={busy}>{busy?'Saving…':website?'Submit website enquiry':'Save enquiry'}</button>
   </form>;

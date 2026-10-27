@@ -8,13 +8,14 @@ let role:DemoRole='customer';
 let expires=0;
 let persistent=false;
 let initialSeed:DemoVehicleSeed[]=[];
+let promotions:Record<string,{opted_in:boolean;consent_at:string|null;withdrawn_at:string|null;history:Record<string,unknown>[]}>={};
 let messages:Record<string,{id:number;author_role:string;body:string;created_at:string}[]>={};
 const SHARED='dealer-desk-demo-v2',ACTIVE='dealer-desk-demo-active-v2';
 function savedDemo(){try{const raw=localStorage.getItem(SHARED);if(!raw||raw.length>2000000)return null;const value=JSON.parse(raw);if(value.version!==2||!Array.isArray(value.state?.vehicles)||!Array.isArray(value.state?.enquiries)||!Array.isArray(value.state?.tasks)||value.state.vehicles.length>100||value.state.enquiries.length>50||value.state.tasks.length>50||!Array.isArray(value.seed)||!Array.isArray(value.pictures))return null;return value}catch{return null}}
-export function persistDemo(){if(!persistent||!state)return;try{const payload=JSON.stringify({version:2,state,pictures:[...pictures],seed:initialSeed,messages});if(payload.length>2000000)throw new Error('limit');localStorage.setItem(SHARED,payload);try{sessionStorage.setItem(ACTIVE,JSON.stringify({role,expires}));}catch{}}catch{throw new DemoError('Browser storage is full or unavailable. Clear the saved demo or enable storage.')}}
-export function syncDemo(){if(!persistent)return;const saved=savedDemo();if(saved){state=saved.state;pictures=new Map(saved.pictures);messages=saved.messages||{};initialSeed=saved.seed;}}
+export function persistDemo(){if(!persistent||!state)return;try{const payload=JSON.stringify({version:2,state,pictures:[...pictures],seed:initialSeed,messages,promotions});if(payload.length>2000000)throw new Error('limit');localStorage.setItem(SHARED,payload);try{sessionStorage.setItem(ACTIVE,JSON.stringify({role,expires}));}catch{}}catch{throw new DemoError('Browser storage is full or unavailable. Clear the saved demo or enable storage.')}}
+export function syncDemo(){if(!persistent)return;const saved=savedDemo();if(saved){state=saved.state;pictures=new Map(saved.pictures);messages=saved.messages||{};promotions=saved.promotions||{};initialSeed=saved.seed;}}
 export function restoreDemo():{role:DemoRole;expires:number;seed:DemoVehicleSeed[]}|null{try{const active=JSON.parse(sessionStorage.getItem(ACTIVE)||'null');if(!active||!['customer','dealer'].includes(active.role)||active.expires<=Date.now())return null;const saved=savedDemo();if(!saved)return null;persistent=true;role=active.role;expires=active.expires;syncDemo();return {role,expires,seed:initialSeed}}catch{return null}}
-export function clearSavedDemo(){localStorage.removeItem(SHARED);sessionStorage.removeItem(ACTIVE);for(const key of Object.keys(sessionStorage))if(key.startsWith('dealer-receipt-demo-'))sessionStorage.removeItem(key);messages={};persistent=false;}
+export function clearSavedDemo(){localStorage.removeItem(SHARED);sessionStorage.removeItem(ACTIVE);for(const key of Object.keys(sessionStorage))if(key.startsWith('dealer-receipt-demo-'))sessionStorage.removeItem(key);messages={};promotions={};persistent=false;}
 
 export class DemoError extends Error {}
 export const enquirySources=['Website','Phone','Email','WhatsApp','SMS','Walk-in','Other'] as const;
@@ -42,7 +43,7 @@ export function endDemo(){state=null;expires=0;pictures.clear();persistent=false
 export function startDemo(next:DemoRole,seed:DemoVehicleSeed[],save=false){
   persistent=save;initialSeed=structuredClone(seed);
   if(save&&savedDemo()){role=next;expires=Date.now()+30*60*1000;syncDemo();try{persistDemo()}catch(e){endDemo();throw e}return expires;}
-  messages={};
+  messages={};promotions={};
   if(!seed.length)throw new DemoError('There are no public vehicles available for the demo. Please try again later.');
   role=next;expires=Date.now()+30*60*1000;
   const stamp=new Date().toISOString();
@@ -58,6 +59,22 @@ export function demoRequest(path:string,method:string,data?:unknown):unknown {
   if(!state)throw new DemoError('Start a new demo.');
   syncDemo();
   if(Date.now()>=expires)throw new DemoError('Your demo has expired. End it and start a new demo.');
+  if(path==='/api/leads/unsubscribe'||path==='/api/catalogue/promotions/unsubscribe'){
+    if(path==='/api/leads/unsubscribe'&&role!=='dealer')throw new DemoError('Staff access required.');
+    if(method!=='POST')throw new DemoError('Operation unavailable.');
+    const email=String((data as {email?:unknown}).email||'').trim().toLowerCase();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))throw new DemoError('Enter a valid email address.');
+    const pref=promotions[email];if(pref?.opted_in){pref.opted_in=false;pref.withdrawn_at=new Date().toISOString();pref.history.push({action:'withdraw',at:pref.withdrawn_at,source:path.startsWith('/api/leads')?'Staff recorded withdrawal':'Self-service withdrawal'});pref.history=pref.history.slice(-100)}
+    return {message:'Email promotions have been stopped for this address if it was subscribed.'};
+  }
+  if(path.split('?')[0]==='/api/leads'&&method==='GET'){
+    if(role!=='dealer')throw new DemoError('Staff access required.');
+    const contacts=new Map<string,import('./types').Enquiry[]>();
+    for(const e of [...state.enquiries].sort((a,b)=>b.id-a.id)){const key=e.email?.toLowerCase()||`enquiry-${e.id}`;contacts.set(key,[...(contacts.get(key)||[]),e]);}
+    const items=[...contacts.values()].map(rows=>{const e=rows[0],pref=promotions[e.email?.toLowerCase()||''];return {id:e.id,customer:e.customer,email:e.email||'',phone:e.phone||'',source:e.source||'Other',request_type:e.request_type||'Other',interest:e.message,status:e.status,vehicle_id:e.vehicle_id,enquiry_count:rows.length,promotions:!!pref?.opted_in,consent_at:pref?.consent_at||null,withdrawn_at:pref?.withdrawn_at||null,consent_history:pref?.history||[]}});
+    const query=new URLSearchParams(path.split('?')[1]),offset=Math.max(0,Number(query.get('offset'))||0),limit=Math.min(100,Math.max(1,Number(query.get('limit'))||25));
+    return {items:structuredClone(items.slice(offset,offset+limit)),total:items.length,offset,limit};
+  }
   if(path==='/api/customer/me'&&method==='GET'){
     if(role!=='customer')throw new DemoError('Switch to customer view.');const profile=state.enquiries.find(e=>e.source==='Website');return {name:profile?profile.customer+' (customer demo)':'Customer demo',email:profile?.email||'customer@example.com'};
   }
@@ -89,6 +106,8 @@ export function demoRequest(path:string,method:string,data?:unknown):unknown {
     const f=data as Record<string,unknown>;
     const text=(key:string,max:number)=>{const v=f[key];if(typeof v!=='string'||v.length>max)throw new DemoError('Check the enquiry details.');return v.trim();};
     const customer=text('customer',80),message=text('message',1000),email=text('email',254),phone=text('phone',40);
+    if(f.promotions_opt_in!==undefined&&typeof f.promotions_opt_in!=='boolean')throw new DemoError('Choose a valid promotions preference.');
+    if(f.promotions_opt_in&&!publicSubmission)throw new DemoError('Promotions consent must be given by the customer.');
     const source=publicSubmission||role==='customer'?'Website':text('source',20);
     const requestType=typeof f.request_type==='string'?f.request_type:'Other';
     if(!['Check availability','Arrange a viewing','Book a test drive','Vehicle details','Request a callback','Other'].includes(requestType))throw new DemoError('Choose a request type.');
@@ -100,8 +119,10 @@ export function demoRequest(path:string,method:string,data?:unknown):unknown {
     if(f.vehicle_id!==null&&!state.vehicles.some(v=>v.id===f.vehicle_id&&!v.archived))throw new DemoError('Choose an existing vehicle.');
     if(state.enquiries.length>=50)throw new DemoError('Demo limit reached. Reset the demo to continue.');
     const at=new Date().toISOString();
-    const row:PipelineEnquiry={id:Math.max(0,...state.enquiries.map(e=>e.id))+1,vehicle_id:f.vehicle_id===null?null:Number(f.vehicle_id),customer,message,email,phone,source,request_type:requestType,customer_linked:publicSubmission,status:'new',revision:1,created_at:at,updated_at:at,activity:[{kind:'Enquiry received',at,actor:role==='customer'?'Customer website':'Staff demo'}]};
-    state.enquiries.push(row);addPlannedTask(row.id,plan);return publicSubmission?{reference:row.id}:structuredClone(row);
+    const row:PipelineEnquiry={id:Math.max(0,...state.enquiries.map(e=>e.id))+1,vehicle_id:f.vehicle_id===null?null:Number(f.vehicle_id),customer,message,email,phone,source,promotions_opt_in:f.promotions_opt_in===true,request_type:requestType,customer_linked:publicSubmission,status:'new',revision:1,created_at:at,updated_at:at,activity:[{kind:'Enquiry received',at,actor:role==='customer'?'Customer website':'Staff demo'}]};
+    state.enquiries.push(row);
+    if(row.promotions_opt_in){const key=email.toLowerCase(),pref=promotions[key]||{opted_in:false,consent_at:null,withdrawn_at:null,history:[]};pref.opted_in=true;pref.consent_at=at;pref.withdrawn_at=null;pref.history=[...pref.history,{action:'opt_in',at,source:'Website enquiry',enquiry_id:row.id,version:'email-offers-v1',text:'Email me Dealer Desk vehicle updates and offers. Optional; unsubscribe at any time.'}].slice(-100);promotions[key]=pref}
+    addPlannedTask(row.id,plan);return publicSubmission?{reference:row.id}:structuredClone(row);
   }
   const action=/^\/api\/enquiries\/(\d+)\/(reply|close|contact)$/.exec(path);
   if(action&&method==='POST'){
