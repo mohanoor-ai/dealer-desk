@@ -144,3 +144,6 @@ Acceptance:
 - Pin an explicit prior application release for isolated rollback. Verify supported legacy workflows plus preservation of newer data, then restore current image and verify new API workflows. Never run older migration graphs against newer data or downgrade business data.
 - Retain global request budgets; document a bounded per-client/account fairness proposal and limitations, with a non-runtime model test where useful. No runtime limiter changes in this task.
 - Run required core/exact-source CI; publish only source/docs and authorized issue updates. Do not promote production, migrate hosted databases or change the course submission.
+
+## Branch-only CI verification — 27 October 2026
+Owner explicitly approves git.deploymentEnabled exclusion for audit-assessment-verification, the first branch push with that rule included, and a verification PR against main. Acceptance: no wildcard or other branch rule; both Vercel projects skip this exact branch; stop if either deploys; require PostgreSQL, clean Compose persistence, pinned prior rollback/forward and operations checks, inspecting real logs/artifacts tied to the source SHA. Fix only branch failures. Keep main 5d0b647, production-release c3bcfee, hosted databases and owner-confirmed submitted 5d0b647 unchanged. Never merge, promote or run hosted migrations.

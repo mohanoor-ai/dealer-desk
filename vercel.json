@@ -1,5 +1,10 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "git": {
+    "deploymentEnabled": {
+      "audit-assessment-verification": false
+    }
+  },
   "framework": "fastapi",
   "buildCommand": "python -m scripts.build_vercel",
   "headers": [
