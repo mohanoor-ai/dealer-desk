@@ -1,0 +1,10 @@
+Observed GitHub job-log excerpts; ANSI colour codes removed.
+Run: https://github.com/mohanoor-ai/dealer-desk/actions/runs/40549549060
+Job: 122349261805
+Source: 5d0b647f0e473eb5ee09d8f6ab8644f37aa3e6cb
+Scope: baseline release checks only, not subsequent local audit changes.
+
+2026-10-27T17:20:46.8663591Z ============================= 56 passed in 22.45s ==============================
+2026-10-27T17:20:55.0375660Z       Tests  43 passed (43)
+2026-10-27T17:20:57.3281387Z Core verification passed. PostgreSQL, browsers and containers need separate checks.
+2026-10-27T17:21:20.9662879Z ============================= 35 passed in 22.02s ==============================

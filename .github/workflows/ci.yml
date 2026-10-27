@@ -9,6 +9,8 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    env:
+      COMPOSE_FILE: docker-compose.yml:docker-compose.rehearsal.yml
     services:
       postgres:
         image: postgres:16-alpine
@@ -43,7 +45,7 @@ jobs:
           set -o pipefail
           uv run python -m scripts.verify 2>&1 | tee core-verification.txt
       - name: PostgreSQL integration regression
-        run: uv run python -m pytest tests/test_auth.py tests/test_journey.py tests/test_photos.py tests/test_customers.py tests/test_enquiry_workflow.py tests/test_leads.py tests/test_public_access.py
+        run: uv run python -m pytest tests/test_auth.py tests/test_journey.py tests/test_photos.py tests/test_customers.py tests/test_enquiry_workflow.py tests/test_leads.py tests/test_public_access.py tests/test_customer_staff_pipeline.py
         env:
           TEST_DATABASE_URL: postgresql+psycopg://dealer@127.0.0.1:5432/dealer_test
       - run: docker build -t dealer-desk:ci .
@@ -67,17 +69,19 @@ jobs:
           set -euo pipefail
           docker tag dealer-rehearsal-app:latest dealer-desk:rehearsal-current
           mkdir -p "$RUNNER_TEMP/previous-source"
-          git archive HEAD^ | tar -x -C "$RUNNER_TEMP/previous-source"
+          previous=0efadbc32abcd7e372f59f4f03f9a080f1068d1f
+          printf 'current=%s\nprevious=%s\nschema=20261027_public_writes\n' "$(git rev-parse HEAD)" "$previous" > rollback-revisions.txt
+          git archive "$previous" | tar -x -C "$RUNNER_TEMP/previous-source"
           docker build -t dealer-rehearsal-app:latest "$RUNNER_TEMP/previous-source"
-          # Roll back application code only: the older Alembic graph cannot resolve
-          # the newer revision. Keep the additive schema and start the old API directly.
+          # Roll back application code only. Keep the audited current schema;
+          # start the pinned prior API without running any migration command.
           printf '%s\n' 'services:' '  app:' '    command: ["python", "-m", "uvicorn", "backend.app:app", "--host", "0.0.0.0", "--port", "8090", "--no-access-log"]' > "$RUNNER_TEMP/rollback-compose.yml"
-          docker compose -f docker-compose.yml -f "$RUNNER_TEMP/rollback-compose.yml" -p dealer-rehearsal --env-file .env.rehearsal up -d --no-build --no-deps --force-recreate --wait app || { docker compose -p dealer-rehearsal --env-file .env.rehearsal logs --tail 80 app; exit 1; }
+          docker compose -f docker-compose.yml -f docker-compose.rehearsal.yml -f "$RUNNER_TEMP/rollback-compose.yml" -p dealer-rehearsal --env-file .env.rehearsal up -d --no-build --no-deps --force-recreate --wait app || { docker compose -p dealer-rehearsal --env-file .env.rehearsal logs --tail 80 app; exit 1; }
           container=$(docker compose -p dealer-rehearsal --env-file .env.rehearsal ps -q app)
           docker cp scripts/container_smoke.py "$container:/app/scripts/container_smoke.py"
           docker cp "$RUNNER_TEMP/dealer-ci-journey.json" "$container:/tmp/dealer-ci-journey.json"
           docker compose -p dealer-rehearsal --env-file .env.rehearsal exec -T -u root app chown dealer:dealer /tmp/dealer-ci-journey.json
-          docker compose -p dealer-rehearsal --env-file .env.rehearsal exec -T -e DEALER_CI_REHEARSAL=1 app python -m scripts.container_smoke verify | tee rollback-verification.txt
+          docker compose -p dealer-rehearsal --env-file .env.rehearsal exec -T -e DEALER_CI_REHEARSAL=1 app python -m scripts.container_smoke verify-legacy | tee rollback-verification.txt
           docker tag dealer-desk:rehearsal-current dealer-rehearsal-app:latest
           docker compose -p dealer-rehearsal --env-file .env.rehearsal up -d --no-build --no-deps --force-recreate --wait app
           container=$(docker compose -p dealer-rehearsal --env-file .env.rehearsal ps -q app)
@@ -103,6 +107,7 @@ jobs:
             core-verification.txt
             container-verification.txt
             rollback-verification.txt
+            rollback-revisions.txt
             docs/evidence/incident-rehearsal.json
             docs/evidence/backup-restore.json
       - name: Stop disposable Compose services

@@ -1,0 +1,14 @@
+Selected observed console output, 27 October 2026; not a full CI artifact.
+Command: python -m scripts.verify
+Source context: checkout base 5d0b647 plus local audit docs/tests/rehearsal changes.
+
+======================== 62 passed in 79.10s (0:01:19) ========================
+ Test Files  9 passed (9)
+      Tests  43 passed (43)
+TypeScript --noEmit and Vite production build completed successfully.
+Checked 240 source files and 59 reachable commits.
+0 findings. This limited scan does not prove absence of secrets.
+Core verification passed. PostgreSQL, browsers and containers need separate checks.
+
+Separate checks: Compose override config --quiet passed; document local file targets exist; git diff --check passed.
+Docker engine did not respond within eight seconds. No fresh Docker or PostgreSQL container run is claimed.

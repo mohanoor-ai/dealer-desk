@@ -54,3 +54,14 @@ Photographs visible in the captures are illustrative references, not actual deal
 ## Functionality diagram
 
 File: dealer-desk-functionality.svg. Editable vector diagram prepared 25 October 2026 from the implemented public catalogue, authenticated staff workflow, API boundaries and persistence described in architecture.md. It is a functionality diagram, not a screenshot or proof of a delivered customer enquiry. It explicitly distinguishes read-only public browsing from staff-entered enquiries. The owner approved displaying it at 560px wide in README; the full-size SVG and original screenshot collage remain linked. No external image assets or private records are used.
+
+## Current enquiry and Leads captures — 27 October 2026
+
+Actual browser captures of the normal API/database app on loopback port 8822, using a newly created disposable SQLite database and fictional Alex Morgan/review-sales accounts. Application code is c3bcfee; checkout base is 5d0b647 with audit-only docs/tests/rehearsal edits. No frontend/backend application changes or photo assets were introduced for these captures. They are not browser-demo images or hosted customer records. Earlier images remain dated above.
+
+- customer-enquiry-20261027.jpg: lower portion of the vehicle enquiry popup, required inputs and explicitly selected optional email preference. The form then saved enquiry #2.
+- customer-conversation-20261027.jpg: seeded enquiry #1's staff response and actual browser customer follow-up; internal diary note/task is absent.
+- staff-actions-20261027.jpg: enquiry #2, compact action selector and the account reply form before saving the reply. Only the selected action form is open.
+- leads-20261027.jpg: saved contact after enquiry #2 was closed, two grouped enquiries and the explicit opt-in history. No campaign was sent.
+
+Browser actions also exercised the full #2 reply/customer-reply/schedule/complete/close sequence. The API regression separately asserts ownership/viewer/internal-note denials. Screenshots do not establish cross-device sharing, automated browser CI or production test writes. Source/result details: ../evidence/review-checkpoint-20261027.json.

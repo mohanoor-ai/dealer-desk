@@ -19,10 +19,19 @@ This single command runs pytest, frontend tests, the TypeScript/production build
 - tests/test_operations.py and tests/test_mcp.py: real local signal collection/correlation, policy and read-only protocol checks.
 - Frontend Vitest tests: interface behaviour, enquiry/task lifecycle, direct links, scheduling context, editor markers, mobile menu opening/closing and navigation, and browser-demo isolation; these are not real-browser or live-database tests.
 
-For the optional local PostgreSQL regression, use a disposable database named dealer_test on localhost/127.0.0.1, set TEST_DATABASE_URL privately, then run `uv run python -m pytest tests/test_auth.py tests/test_journey.py tests/test_photos.py`. The fixture creates and removes a random test schema; never point it at business data. CI provisions its own isolated database.
+For the optional local PostgreSQL regression, use a disposable database named dealer_test on localhost/127.0.0.1, set TEST_DATABASE_URL privately, then run `uv run python -m pytest tests/test_auth.py tests/test_journey.py tests/test_photos.py tests/test_customers.py tests/test_enquiry_workflow.py tests/test_leads.py tests/test_public_access.py tests/test_customer_staff_pipeline.py`. The fixture creates and removes a random test schema; never point it at business data. CI provisions its own isolated database.
 
 Use `./start.ps1` on Windows or `sh start.sh` on Linux for Docker Compose. The initial manager password is interactive; it is not a shipped credential. See README for prerequisites. Never remove a database volume you need.
 
 ## Evidence limits
 
 Actual output and dates are in verification.md and docs/evidence. Existing browser screenshots are manual checks, not automated browser regression. A manual independent-session conflict/polling check and actual saved enquiry workflow have evidence. Automated cross-engine browser coverage and a fresh local interactive Docker setup are not claimed. Hosted CI verifies clean Compose HTTP startup, replacement and compatible rollback/forward recovery. API concurrency tests remain a separate layer.
+
+## Audit regression additions — 27 October 2026
+
+- tests/test_customer_staff_pipeline.py: one unverified-account/customer/staff journey through outcome closure, plus earlier guest claim denial, second-customer denial, viewer restrictions, internal-note/task privacy, consent and public-data boundaries.
+- tests/test_container_smoke.py: extended helper over loopback HTTP, real app replacement, private state/output checks and detection of altered consent data. Not a Docker test.
+- tests/test_release_compatibility.py: explicit pinned prior application source, current-schema SQLite process rollback and forward verification. Requires local Git history for 0efadbc; no hosted data.
+- tests/test_budget_fairness_proposal.py: illustrative bounded-client decision model only; the live global limiter is unchanged.
+
+Browser automation during this audit used the in-app browser against a disposable local database: sign in, vehicle enquiry submission, staff/account replies, customer follow-up, linked task scheduling/completion, outcome closure and Leads inspection. Registration/account provisioning and denial cases were exercised through isolated API tests. This is an observed operator-run browser check, not a committed cross-engine browser CI suite. Capture/result provenance is in evidence/review-checkpoint-20261027.json.
