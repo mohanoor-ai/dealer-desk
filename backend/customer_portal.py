@@ -46,6 +46,7 @@ class Reset(Token):
     model_config={'extra':'forbid','str_strip_whitespace':False}
 
 class Message(s.Input):
+    follow_up:s.FollowUpPlan|None=None
     body:str=Field(min_length=1,max_length=2000)
 
 def optional_customer(request,db):
@@ -173,6 +174,11 @@ def register_customers(app,database,signed_in,can_write):
         if db.scalar(select(func.count()).select_from(EnquiryMessage).where(EnquiryMessage.enquiry_id==ident))>=100:
             raise HTTPException(409,'Conversation limit reached.')
         if role=='staff' and e.customer_account_id is None:raise HTTPException(409,'Customer must verify and link this enquiry first.')
+        if body.follow_up is not None:
+            if role!='staff':raise HTTPException(403,'Only staff can schedule follow-ups.')
+            from backend.enquiry_workflow import plan_task
+            from backend.app import dealer_today
+            plan_task(db,e,body.follow_up,actor,dealer_today())
         db.add(EnquiryMessage(enquiry_id=ident,author_role=role,body=body.body))
         e.status='new' if role=='customer' else 'contacted';e.closure_reason='';e.revision+=1;e.updated_at=now()
         db.add(AuditEvent(entity='enquiry',entity_id=e.id,revision=e.revision,action='message_added',actor_id=actor.id if actor else None))

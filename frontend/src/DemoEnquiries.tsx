@@ -15,7 +15,7 @@ export function emailDraftUrl(email:string,subject:string,body:string){
 
 export function FollowUpFields({suggestion}:{suggestion:string}){
   const [checked,setChecked]=useState(false);
-  return <fieldset className="follow-up-fields"><label className="check-label"><input name="schedule_follow_up" type="checkbox" checked={checked} onChange={e=>setChecked(e.target.checked)}/> Schedule a follow-up</label>{checked&&<><label>Follow-up action<textarea key={suggestion} name="follow_up_note" required maxLength={300} defaultValue={suggestion}/></label><label>Follow-up due date<input name="follow_up_date" type="date" min={dealershipDate()} required/></label></>}</fieldset>;
+  return <fieldset className="follow-up-fields"><label className="check-label"><input name="schedule_follow_up" type="checkbox" checked={checked} onChange={e=>setChecked(e.target.checked)}/> Add follow-up</label>{checked&&<><label>Follow-up action<textarea key={suggestion} name="follow_up_note" required maxLength={300} defaultValue={suggestion}/></label><label>Follow-up due date<input name="follow_up_date" type="date" min={dealershipDate()} required/></label></>}</fieldset>;
 }
 function followUpFrom(form:FormData){return form.get('schedule_follow_up')?{note:String(form.get('follow_up_note')),due_date:String(form.get('follow_up_date'))}:null;}
 
@@ -61,35 +61,45 @@ export function EnquiryDialog({snapshot,vehicleId,onSaved=async()=>{}}:{snapshot
 }
 
 function ResponseActions({enquiry,onSaved,canWrite=true}:{enquiry:PipelineEnquiry;onSaved:()=>Promise<void>;canWrite?:boolean}){
+  const [action,setAction]=useState(''),[historyOpen,setHistoryOpen]=useState(false);
   const [subject,setSubject]=useState(`Your vehicle enquiry #${enquiry.id}`),[body,setBody]=useState('');
-  const [confirmed,setConfirmed]=useState(false),[opened,setOpened]=useState(false),[outcome,setOutcome]=useState(''),[contactOutcome,setContactOutcome]=useState('');
+  const [confirmed,setConfirmed]=useState(false),[opened,setOpened]=useState(false),[outcome,setOutcome]=useState('');
   const [busy,setBusy]=useState(false),[error,setError]=useState('');
-  const draft=emailDraftUrl(enquiry.email||'',subject,body);
-  async function save(action:'reply'|'close'|'contact',plan:ReturnType<typeof followUpFrom>=null){
-    if(busy)return;setBusy(true);setError('');
+  const draft=emailDraftUrl(enquiry.email||'',subject,body),suggestion=suggestions[enquiry.request_type||'Other']||suggestions.Other;
+  async function saved(){await onSaved();setAction('');setConfirmed(false);setOpened(false);setBody('');setOutcome('');}
+  async function submit(event:FormEvent<HTMLFormElement>){
+    event.preventDefault();if(busy)return;setBusy(true);setError('');const data=new FormData(event.currentTarget);
     try{
-      await request(`/api/enquiries/${enquiry.id}/${action}`,'POST',{revision:enquiry.revision,follow_up:plan,...(action==='reply'?{subject,body,confirmed}:{outcome:action==='contact'?contactOutcome:outcome})});
-      await onSaved();setConfirmed(false);setOpened(false);setBody('');setOutcome('');setContactOutcome('');
+      if(action==='schedule')await request('/api/tasks','POST',{enquiry_id:enquiry.id,note:String(data.get('note')),due_date:String(data.get('due_date'))});
+      else await request(`/api/enquiries/${enquiry.id}/${action==='email'?'reply':action}`,'POST',{revision:enquiry.revision,follow_up:action==='close'?null:followUpFrom(data),...(action==='email'?{subject,body,confirmed}:{outcome})});
+      await saved();
     }catch(e){setError(e instanceof Error?e.message:'Could not record the action.');}finally{setBusy(false);}
   }
-  return <section aria-label={`Response for enquiry ${enquiry.id}`}>
+  return <section className="compact-actions" aria-label={`Response for enquiry ${enquiry.id}`}>
+    {canWrite&&<label>Action for enquiry #{enquiry.id}<select value={action} disabled={busy} onChange={e=>{setAction(e.target.value);setError('');setOpened(false);setConfirmed(false)}}>
+      <option value="">Choose action…</option>
+      <option value="account" disabled={!enquiry.customer_linked}>Reply in account</option>
+      <option value="email" disabled={!enquiry.email||enquiry.status==='closed'}>Reply by email</option>
+      <option value="contact" disabled={enquiry.status==='closed'}>Record a call / conversation</option>
+      <option value="schedule" disabled={enquiry.status==='closed'}>Schedule follow-up</option>
+      <option value="close" disabled={enquiry.status==='closed'}>Close enquiry</option>
+    </select></label>}
     {error&&<p role="alert">{error}</p>}
-    {canWrite&&enquiry.status!=='closed'&&<>
-      <h4>Reply by email</h4>
-      {enquiry.email?<><p>To: {enquiry.email}</p>
-        <label>Reply subject<input value={subject} maxLength={160} onChange={e=>{setSubject(e.target.value);setOpened(false);setConfirmed(false);}}/></label>
-        <label>Reply message<textarea value={body} maxLength={2000} onChange={e=>{setBody(e.target.value);setOpened(false);setConfirmed(false);}}/></label>
-        {draft&&subject.trim()&&body.trim()?<a className="button-link secondary" href={draft} onClick={()=>setOpened(true)}>Open in email app</a>:<p>Enter a subject and reply to open your email app.</p>}
-        <p>The app cannot verify sending or delivery. Opening your email app does not change the enquiry.</p>
-        <label><input type="checkbox" checked={confirmed} disabled={!opened||busy} onChange={e=>setConfirmed(e.target.checked)}/> I sent this email</label>
-        <form onSubmit={e=>{e.preventDefault();save('reply',followUpFrom(new FormData(e.currentTarget)));}}><FollowUpFields suggestion={suggestions[enquiry.request_type||'Other']||suggestions.Other}/><button disabled={!opened||!confirmed||busy}>Record sent email</button></form>
-      </>:<p>No email address recorded. Contact the customer using the supplied details, then record the outcome.</p>}
-      <p><a className="button-link secondary" href={`#/follow-ups?enquiry=${enquiry.id}`}>Schedule follow-up</a></p><form onSubmit={e=>{e.preventDefault();save('contact',followUpFrom(new FormData(e.currentTarget)));}}><label>Contact outcome<textarea value={contactOutcome} required maxLength={300} onChange={e=>setContactOutcome(e.target.value)} placeholder="Record a call or conversation"/></label><FollowUpFields suggestion={suggestions[enquiry.request_type||'Other']||suggestions.Other}/><button disabled={busy||!contactOutcome.trim()}>Record contact</button></form>
-      <label>Closing outcome<textarea maxLength={300} value={outcome} onChange={e=>setOutcome(e.target.value)} placeholder="What happened and why is no further action needed?"/></label>
-      <button className="secondary" disabled={!outcome.trim()||busy} onClick={()=>save('close')}>Close enquiry</button>
-    </>}
-    <h4>Activity</h4>
-    <ol>{(enquiry.activity||[]).map((event,i)=><li key={i}><strong>{event.kind}</strong> · {event.actor} · <time dateTime={event.at}>{new Date(event.at).toLocaleString('en-GB')}</time>{event.subject&&<p>{event.subject}</p>}{event.body&&<p style={{whiteSpace:'pre-wrap'}}>{event.body}</p>}{event.outcome&&<p>{event.outcome}</p>}</li>)}</ol>
+    {action==='account'&&canWrite&&<Conversation id={enquiry.id} staff showHistory={false} onSaved={saved} followUpFields={<FollowUpFields suggestion={suggestion}/>}/>}
+    {action&&action!=='account'&&canWrite&&<form key={action} onSubmit={submit}>
+      {action==='email'&&<><p>To: {enquiry.email}</p><label>Reply subject<input value={subject} maxLength={160} required onChange={e=>{setSubject(e.target.value);setOpened(false);setConfirmed(false)}}/></label><label>Reply message<textarea value={body} maxLength={2000} required onChange={e=>{setBody(e.target.value);setOpened(false);setConfirmed(false)}}/></label>
+      {draft&&subject.trim()&&body.trim()&&<a className="button-link secondary" href={draft} onClick={()=>setOpened(true)}>Open in email app</a>}
+      <p className="hint">Opening your email app does not mark this as sent.</p><label className="check-label"><input type="checkbox" checked={confirmed} disabled={!opened||busy} onChange={e=>setConfirmed(e.target.checked)}/> I sent this email</label><FollowUpFields suggestion={suggestion}/></>}
+      {action==='contact'&&<><label>Contact outcome<textarea value={outcome} required maxLength={300} onChange={e=>setOutcome(e.target.value)}/></label><FollowUpFields suggestion={suggestion}/></>}
+      {action==='schedule'&&<><label>Follow-up action<textarea name="note" required maxLength={300} defaultValue={suggestion}/></label><label>Follow-up due date<input name="due_date" type="date" min={dealershipDate()} required/></label></>}
+      {action==='close'&&<label>Closing outcome<textarea value={outcome} required maxLength={300} onChange={e=>setOutcome(e.target.value)}/></label>}
+      <div className="dialog-actions"><button type="button" className="secondary" disabled={busy} onClick={()=>{setAction('');setError('')}}>Cancel</button><button disabled={busy||(action==='email'&&(!opened||!confirmed))}>{busy?'Saving…':action==='email'?'Record sent email':action==='contact'?'Record contact':action==='schedule'?'Save follow-up':'Close enquiry'}</button></div>
+    </form>}
+    <details onToggle={e=>setHistoryOpen(e.currentTarget.open)}><summary>View conversation / history</summary>{historyOpen&&<>
+      {(enquiry.email||enquiry.phone)&&<p>{[enquiry.email,enquiry.phone].filter(Boolean).join(' · ')}</p>}
+      {enquiry.customer_linked&&<Conversation id={enquiry.id} staff canWrite={false}/>}
+      <h4>Activity</h4><ol>{(enquiry.activity||[]).map((event,i)=><li key={i}><strong>{event.kind}</strong> · {event.actor} · <time dateTime={event.at}>{new Date(event.at).toLocaleString('en-GB')}</time>{event.subject&&<p>{event.subject}</p>}{event.body&&<p style={{whiteSpace:'pre-wrap'}}>{event.body}</p>}{event.outcome&&<p>{event.outcome}</p>}</li>)}</ol>
+    </>}</details>
   </section>;
 }
 
@@ -103,13 +113,11 @@ export default function DemoEnquiries({snapshot,selectedEnquiry=0,onSaved,canWri
       <label>Filter by source<select value={source} onChange={e=>setSource(e.target.value)}><option>All sources</option>{enquirySources.map(s=><option key={s}>{s}</option>)}</select></label>
       {!records.length&&<p>No enquiries match this view. Website enquiries appear here after submission; staff can also record a conversation.</p>}
       {records.map(e=><article className="enquiry-card" key={e.id}><div className="section-heading"><h3>Enquiry #{e.id} · {e.customer}</h3><span className={`badge ${e.status}`}>{e.status}</span></div>
-        <p><strong>Source: {e.source||'Not recorded'}</strong></p>
-        {e.vehicle_id?<a href={`#/vehicles/${e.vehicle_id}`}>{snapshot.vehicles.filter(v=>v.id===e.vehicle_id).map(v=>vehicleName(v.make,v.model))}</a>:<p>General enquiry</p>}<p>Request: <strong>{e.request_type||'Other'}</strong></p>{e.status!=='closed'&&<p>Suggested next action: {suggestions[e.request_type||'Other']||suggestions.Other}</p>}
-        <p>{e.message}</p>{e.email&&<p>Email: {e.email}</p>}{e.phone&&<p>Phone: {e.phone}</p>}
-        <h4>Next action</h4>
-        {snapshot.tasks.some(t=>t.enquiry_id===e.id&&!t.completed)?snapshot.tasks.filter(t=>t.enquiry_id===e.id&&!t.completed).map(t=><p key={t.id}>{t.note} · Due {t.due_date} · <a href={`#/follow-ups?enquiry=${e.id}`}>View follow-up</a></p>):<p>{e.status==='closed'?'Enquiry closed':'No next action scheduled'}</p>}
-        {e.customer_linked&&<Conversation id={e.id} staff canWrite={canWrite} onSaved={onSaved}/>}<ResponseActions enquiry={e} onSaved={onSaved} canWrite={canWrite}/>
+        <p className="enquiry-meta">{e.vehicle_id?<a href={`#/vehicles/${e.vehicle_id}`}>{snapshot.vehicles.filter(v=>v.id===e.vehicle_id).map(v=>vehicleName(v.make,v.model))}</a>:<span>General enquiry</span>} · Source: {e.source||'Not recorded'} · {e.request_type||'Other'}</p>
+        <p className="enquiry-request">{e.message}</p>
+        <p className="enquiry-next"><strong>Next action: </strong>{(()=>{const pending=snapshot.tasks.filter(t=>t.enquiry_id===e.id&&!t.completed).sort((a,b)=>a.due_date.localeCompare(b.due_date));const next=pending[0];return next?<><a href={`#/follow-ups?enquiry=${e.id}`}>{next.note||'Follow-up'} · Due {next.due_date}</a>{pending.length>1&&` (+${pending.length-1} more)`}</>:e.status==='closed'?'Enquiry closed':'None scheduled'})()}</p>
+        <ResponseActions enquiry={e} onSaved={onSaved} canWrite={canWrite}/>
       </article>)}
-    </section>{canWrite&&<section className="panel"><h2>Record enquiry</h2><DemoEnquiryForm snapshot={snapshot} preferredVehicle={preferredVehicle} onSaved={onSaved}/></section>}</div>
+    </section>{canWrite&&<details className="panel record-enquiry"><summary>Record enquiry</summary><DemoEnquiryForm snapshot={snapshot} preferredVehicle={preferredVehicle} onSaved={onSaved}/></details>}</div>
   </>;
 }

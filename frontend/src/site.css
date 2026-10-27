@@ -28,3 +28,5 @@
 .conversation{border:1px solid #d5ddd5;border-radius:10px;padding:1rem;margin:1rem 0}.conversation li{padding:.5rem 0;overflow-wrap:anywhere}
 .workspace-footer{flex-wrap:wrap}.workspace-footer nav{width:100%}.public-footer nav{display:inline-block}
 @media(max-width:760px){.cookie-choices{bottom:75px;max-height:65dvh;overflow:auto}}
+
+.compact-actions{margin-top:.75rem}.compact-actions>label{max-width:340px}.compact-actions details{margin-top:1rem}.compact-actions summary,.record-enquiry>summary{cursor:pointer;font-weight:600}.enquiry-meta{font-size:.9rem;color:#53625b}.enquiry-next{font-size:.9rem}.compact-actions form{margin-top:1rem}.record-enquiry[open]>summary{margin-bottom:1rem}

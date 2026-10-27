@@ -75,6 +75,9 @@ export function demoRequest(path:string,method:string,data?:unknown):unknown {
       const body=(data as {body?:unknown}).body;
       if(typeof body!=='string'||!body.trim()||body.length>2000)throw new DemoError('Enter a message of up to 2000 characters.');
       if(thread.length>=100)throw new DemoError('Conversation limit reached.');
+      const plan=validatePlan((data as {follow_up?:unknown}).follow_up);
+      if(customer&&plan)throw new DemoError('Only staff can schedule follow-ups.');
+      addPlannedTask(enquiry.id,plan);
       thread.push({id:thread.length+1,author_role:customer?'customer':'staff',body:body.trim(),created_at:new Date().toISOString()});messages[String(enquiry.id)]=thread;
       enquiry.status=customer?'new':'contacted';enquiry.closure_reason='';enquiry.revision++;enquiry.updated_at=new Date().toISOString();
     }else if(method!=='GET')throw new DemoError('Operation unavailable.');

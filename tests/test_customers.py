@@ -92,3 +92,20 @@ def test_customer_staff_boundaries_and_local_only_registration(client,monkeypatc
     monkeypatch.setenv('APP_ENV','production')
     assert client.post('/api/customer/register',json={'email':'new@example.com','name':'New','password':PASSWORD}).status_code==403
     assert client.post('/api/customer/recovery',json={'email':'alex@example.com'}).status_code==403
+
+
+def test_staff_account_reply_and_optional_follow_up_commit_together(client):
+    from backend.app import dealer_today
+    ident=guest(client);verify_login(client)
+    path=f'/api/customer/enquiries/{ident}/messages'
+    plan={'note':'Confirm viewing time','due_date':dealer_today().isoformat()}
+    assert client.post(path,json={'body':'Customer cannot schedule staff work','follow_up':plan}).status_code==403
+    sign_in(client,'sales')
+    staff=f'/api/enquiries/{ident}/messages'
+    bad={**plan,'due_date':(dealer_today()-timedelta(days=1)).isoformat()}
+    assert client.post(staff,json={'body':'Do not save a partial reply','follow_up':bad}).status_code==422
+    assert client.get(staff).json()['items']==[]
+    assert client.get('/api/tasks').json()['total']==0
+    assert client.post(staff,json={'body':'We will confirm a time.','follow_up':plan}).status_code==201
+    assert client.get('/api/tasks').json()['total']==1
+    assert client.get(staff).json()['items'][0]['body']=='We will confirm a time.'

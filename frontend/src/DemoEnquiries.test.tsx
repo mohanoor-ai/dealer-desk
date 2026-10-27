@@ -65,14 +65,16 @@ test('customer to staff UI keeps enquiry, and email opening alone leaves it New'
  fireEvent.click(screen.getByRole('button',{name:'Switch to staff view'}));
  expect(await screen.findByRole('heading',{name:'Dealership overview'})).toBeInTheDocument();
  fireEvent.click(screen.getByRole('link',{name:'Enquiries'}));
- expect(await screen.findByText('Source: Website')).toBeInTheDocument();
+ expect(await screen.findByText(/Source: Website/)).toBeInTheDocument();
  const response=within(screen.getByRole('region',{name:'Response for enquiry 1'}));
+ fireEvent.change(response.getByLabelText('Action for enquiry #1'),{target:{value:'email'}});
  fireEvent.change(response.getByLabelText('Reply message'),{target:{value:'I will check the viewing time.'}});
  const mailLink=response.getByRole('link',{name:'Open in email app'});
  // Prevent the external handler in the test; retain the real React click behaviour.
  mailLink.addEventListener('click',event=>event.preventDefault());fireEvent.click(mailLink);
  expect(await request('/api/enquiries/1')).toMatchObject({status:'new'});
  fireEvent.click(response.getByLabelText('I sent this email'));fireEvent.click(response.getByRole('button',{name:'Record sent email'}));
+ fireEvent.click(screen.getByText('View conversation / history'));
  expect(await screen.findByText('Email marked as sent')).toBeInTheDocument();
  expect(await request('/api/enquiries/1')).toMatchObject({status:'contacted'});
  expect(vi.mocked(fetch).mock.calls.every(([url])=>String(url).includes('/auth/me')||String(url)==='/api/catalogue')).toBe(true);
@@ -107,7 +109,7 @@ test('normal staff enquiry uses saved API with source and optional next action i
  fireEvent.change(screen.getByLabelText('Request type'),{target:{value:'Request a callback'}});
  fireEvent.change(screen.getByLabelText('Phone number'),{target:{value:'020 0000 0000'}});
  expect(screen.queryByLabelText('Follow-up due date')).not.toBeInTheDocument();
- fireEvent.click(screen.getByLabelText('Schedule a follow-up'));
+ fireEvent.click(screen.getByLabelText('Add follow-up'));
  expect(screen.getByLabelText('Follow-up action')).toHaveValue('Call the customer using the supplied number');
  fireEvent.change(screen.getByLabelText('Follow-up due date'),{target:{value:dealershipDate()}});
  fireEvent.click(screen.getByRole('button',{name:'Save enquiry'}));

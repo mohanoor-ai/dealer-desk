@@ -3128,6 +3128,10 @@ components:
       title: Login
     Message:
       properties:
+        follow_up:
+          anyOf:
+          - $ref: '#/components/schemas/FollowUpPlan'
+          - type: 'null'
         body:
           type: string
           maxLength: 2000

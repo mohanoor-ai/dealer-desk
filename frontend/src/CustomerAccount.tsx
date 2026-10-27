@@ -1,4 +1,5 @@
 import {useEffect,useState} from 'react';
+import type {ReactNode} from 'react';
 import {request,ApiError} from './api';
 import {demoActive,endDemo} from './demo';
 
@@ -6,15 +7,15 @@ type Account={name:string;email:string};
 type CustomerEnquiry={id:number;vehicle_id:number|null;message:string;status:string;request_type:string};
 export type ConversationMessage={id:number;author_role:string;body:string;created_at:string};
 
-export function Conversation({id,staff=false,canWrite=true,onSaved=async()=>{}}:{id:number;staff?:boolean;canWrite?:boolean;onSaved?:()=>Promise<void>}){
+export function Conversation({id,staff=false,canWrite=true,onSaved=async()=>{},showHistory=true,followUpFields}:{id:number;staff?:boolean;canWrite?:boolean;onSaved?:()=>Promise<void>;showHistory?:boolean;followUpFields?:ReactNode}){
  const [items,setItems]=useState<ConversationMessage[]>([]),[text,setText]=useState(''),[error,setError]=useState(''),[busy,setBusy]=useState(false);
  const path=staff?`/api/enquiries/${id}/messages`:`/api/customer/enquiries/${id}/messages`;
  async function load(){try{setItems((await request<{items:ConversationMessage[]}>(path)).items);}catch(e){setError(e instanceof Error?e.message:'Could not load messages.');}}
  useEffect(()=>{load();const timer=setInterval(load,3000);return()=>clearInterval(timer)},[path]);
- return <section className="conversation" aria-label={`Conversation for enquiry ${id}`}><h3>Customer conversation</h3>{error&&<p role="alert">{error}</p>}
- {items.length?<ol>{items.map(m=><li key={m.id}><strong>{m.author_role==='staff'?'Dealership':'Customer'}</strong> · <time>{new Date(m.created_at).toLocaleString('en-GB')}</time><p style={{whiteSpace:'pre-wrap'}}>{m.body}</p></li>)}</ol>:<p>No follow-up messages yet.</p>}
- {canWrite&&<form onSubmit={async e=>{e.preventDefault();if(busy)return;setBusy(true);setError('');try{await request(path,'POST',{body:text});setText('');await load();await onSaved();}catch(e){setError(e instanceof Error?e.message:'Message could not be saved.')}finally{setBusy(false)}}}>
- <label>{staff?'Reply in customer account':'Follow up this enquiry'}<textarea value={text} maxLength={2000} required onChange={e=>setText(e.target.value)}/></label><button disabled={busy||!text.trim()}>{busy?'Saving…':'Send message'}</button></form>}
+ return <section className="conversation" aria-label={`Conversation for enquiry ${id}`}><h3>{showHistory?'Customer conversation':'Reply in account'}</h3>{error&&<p role="alert">{error}</p>}
+ {showHistory&&(items.length?<ol>{items.map(m=><li key={m.id}><strong>{m.author_role==='staff'?'Dealership':'Customer'}</strong> · <time>{new Date(m.created_at).toLocaleString('en-GB')}</time><p style={{whiteSpace:'pre-wrap'}}>{m.body}</p></li>)}</ol>:<p>No follow-up messages yet.</p>)}
+ {canWrite&&<form onSubmit={async e=>{e.preventDefault();if(busy)return;setBusy(true);setError('');try{const form=new FormData(e.currentTarget);await request(path,'POST',{body:text,...(staff&&form.get('schedule_follow_up')?{follow_up:{note:String(form.get('follow_up_note')),due_date:String(form.get('follow_up_date'))}}:{})});setText('');await load();await onSaved();}catch(e){setError(e instanceof Error?e.message:'Message could not be saved.')}finally{setBusy(false)}}}>
+ <label>{staff?'Reply in customer account':'Follow up this enquiry'}<textarea value={text} maxLength={2000} required onChange={e=>setText(e.target.value)}/></label>{followUpFields}<button disabled={busy||!text.trim()}>{busy?'Saving…':'Send message'}</button></form>}
  </section>;
 }
 
