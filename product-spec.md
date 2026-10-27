@@ -109,3 +109,7 @@ The receipt returns to the vehicle and offers viewed/browse links without Start 
 ## Local lead capture update — 27 October 2026
 
 Required enquiry inputs are marked, and email updates/offers use a separate unticked optional choice. Consent wording/version/source/time/reference and later withdrawals are recorded separately from enquiry handling. Staff Leads groups contacts by email, shows the latest enquiry and current permission, supports manual enquiry-based capture and recording withdrawal, and excludes public/customer access. Staff cannot manufacture customer opt-in. Email preferences permits local self-service withdrawal without disclosing subscription status. No campaigns or marketing emails are sent; no production deployment is included. See docs/customer-continuity.md.
+
+## Registration without email verification
+
+The owner-approved optional CUSTOMER_REGISTRATION_UNVERIFIED=true setting enables customer signup and sign-in without claiming email ownership. New accounts retain verified=false. Only enquiries submitted while authenticated are attached to these accounts; matching email never grants earlier guest conversations. Hosted verification previews and password reset remain disabled. Registration and login use shared database request budgets. Configure this setting only on the intended hosted project after schema migration and exact-commit CI. This does not send email or enable email-based account recovery.

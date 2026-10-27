@@ -126,3 +126,6 @@ Owner requests publication of the current local work. Verify migrations against 
 Hosted release prerequisite: replace process-local public enquiry/unsubscribe budgets with bounded atomic database windows shared across serverless instances, retain an explicit PUBLIC_ENQUIRIES_ENABLED switch, cap public JSON before parsing and hide unavailable hosted registration/recovery rather than exposing local email previews. This prepares safe publication irrespective of the pending email-provider choice.
 
 Release rollback acceptance: run the unchanged previous application image against the additive schema without invoking its obsolete migration graph; preserve the current image normal migration startup for forward recovery. Verify saved records and sessions in both directions and retain failure logs.
+
+## Customer registration without verification — 27 October
+Owner requests registration without email verification and publication. Acceptance: explicit hosted capability; accounts stay email-unverified, may sign in and see only enquiries created in their authenticated session; never claim guest enquiries by matching email; no hosted recovery/verification preview; shared database registration/login limits; ownership regression tests.

@@ -15,3 +15,7 @@ The assistant can read source, edit authorised project files, run checks and pub
 ## Known limits
 
 The login limiter is process-local, not shared between serverless instances. Public write quotas, hosted database restore drills and independent PR security review remain outstanding. The isolated SQLite backup/restore lab passed. Runtime and development dependency audits found zero known advisories after the documented Certifi fix; these are time-bounded checks, not a security guarantee. Keep Vercel protection enabled. Opt-in local OpenTelemetry exports are collected and correlated in the operations UI. They are not a managed production telemetry service. Report gaps honestly rather than generating synthetic scan or incident results.
+
+## Registration without email verification
+
+The owner-approved optional CUSTOMER_REGISTRATION_UNVERIFIED=true setting enables customer signup and sign-in without claiming email ownership. New accounts retain verified=false. Only enquiries submitted while authenticated are attached to these accounts; matching email never grants earlier guest conversations. Hosted verification previews and password reset remain disabled. Registration and login use shared database request budgets. Configure this setting only on the intended hosted project after schema migration and exact-commit CI. This does not send email or enable email-based account recovery.

@@ -303,3 +303,7 @@ Hosted public-write prerequisite verified locally: explicit PUBLIC_ENQUIRIES_ENA
 ## Hosted release rollback startup correction — 27 October 2026
 
 The first final-release CI passed core checks, PostgreSQL regression and container replacement, but the previous image failed startup after the new additive revision. Its startup always invokes Alembic, whose older revision graph cannot resolve the newer revision. The rollback rehearsal now starts the unchanged old API directly through a temporary Compose command override, retaining the newer schema. Forward recovery retains normal current-image startup. Local core verification passed 55 backend tests, 43 frontend tests, production build and release audit. Full container rollback remains subject to the exact-commit CI run; no production promotion is claimed here.
+
+## Unverified customer signup — 27 October 2026
+
+Core checks passed: 56 backend tests, 43 frontend tests, production build and release audit (zero findings in its limited scan). New HTTPS regression verifies immediate signup/login while verified=false, no guest email-based claim, inaccessible older conversation, authenticated new enquiry ownership and follow-up, logout denial, and hosted verification/reset/recovery disabled. No email delivery or account recovery is claimed. PostgreSQL/container and hosted final revision checks remain separate release gates.

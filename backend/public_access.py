@@ -6,6 +6,9 @@ from sqlalchemy import case,or_
 from backend.config import hosted
 from backend.models import PublicWriteWindow
 
+def unverified_registration_enabled():
+    return os.environ.get('CUSTOMER_REGISTRATION_UNVERIFIED')=='true'
+
 def enquiries_enabled():
     return not hosted() or os.environ.get('PUBLIC_ENQUIRIES_ENABLED')=='true'
 

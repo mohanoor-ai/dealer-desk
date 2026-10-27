@@ -15,6 +15,8 @@ from backend import auth, schemas as s
 from backend.config import hosted, secure_cookies
 from backend.models import CustomerAccount,CustomerSession,CustomerToken,Enquiry,EnquiryMessage,AuditEvent,now
 
+from backend.public_access import unverified_registration_enabled, public_budget
+
 COOKIE='dealer_customer_session'
 
 class Email(s.Input):
@@ -54,9 +56,10 @@ def optional_customer(request,db):
     session=db.get(CustomerSession,auth.token_hash(token)) if token else None
     if not session or session.expires_at.replace(tzinfo=timezone.utc)<=now():return None
     customer=db.get(CustomerAccount,session.customer_id)
-    return customer if customer and customer.verified else None
+    return customer if customer and (customer.verified or unverified_registration_enabled()) else None
 
 def claim_enquiries(db,customer):
+    if not customer.verified:return
     db.execute(update(Enquiry).where(Enquiry.customer_account_id.is_(None),
         func.lower(Enquiry.email)==customer.email).values(customer_account_id=customer.id))
 
@@ -92,7 +95,9 @@ def register_customers(app,database,signed_in,can_write):
 
     @router.post('/api/customer/register',status_code=201)
     def register(body:Registration,request:Request,db=Depends(database)):
-        local_registration(request);limited()
+        if unverified_registration_enabled():public_budget(db,'customer_registration',20)
+        else:local_registration(request)
+        limited()
         row=db.scalar(select(CustomerAccount).where(CustomerAccount.email==body.email))
         if row:
             raise HTTPException(409,'Use sign in or password recovery for this email address.')
@@ -101,6 +106,9 @@ def register_customers(app,database,signed_in,can_write):
         try:db.flush()
         except IntegrityError:
             db.rollback();raise HTTPException(409,'Use sign in or password recovery.') from None
+        if unverified_registration_enabled():
+            db.commit()
+            return {'message':'Account created. Sign in to send and follow up new enquiries. Earlier guest enquiries are not linked to this account.'}
         return preview(db,row,'verify')
 
     @router.post('/api/customer/recovery')
@@ -120,12 +128,14 @@ def register_customers(app,database,signed_in,can_write):
 
     @router.post('/api/customer/verify')
     def verify(body:Token,db=Depends(database)):
+        if hosted():raise HTTPException(403,'Email verification is not configured.')
         if body.purpose!='verify':raise HTTPException(422,'Use a verification link.')
         row=consume(db,body.token,'verify');row.verified=True;claim_enquiries(db,row);db.commit()
         return {'message':'Account verified locally. You can now sign in.'}
 
     @router.post('/api/customer/reset')
     def reset(body:Reset,db=Depends(database)):
+        if hosted():raise HTTPException(403,'Password recovery is not configured.')
         row=consume(db,body.token,'reset');row.password_hash=auth.hash_password(body.password);row.verified=True;claim_enquiries(db,row)
         db.execute(delete(CustomerToken).where(CustomerToken.customer_id==row.id))
         db.execute(delete(CustomerSession).where(CustomerSession.customer_id==row.id));db.commit()
@@ -133,10 +143,11 @@ def register_customers(app,database,signed_in,can_write):
 
     @router.post('/api/customer/login')
     def login(body:Credentials,response:Response,db=Depends(database)):
+        public_budget(db,'customer_login',40)
         limited();row=db.scalar(select(CustomerAccount).where(CustomerAccount.email==body.email))
         valid=auth.verify_password(body.password,row.password_hash if row else dummy)
         if not row or not valid:raise HTTPException(401,'Email or password is incorrect.')
-        if not row.verified:raise HTTPException(403,'Verify your account before signing in; use account recovery if the link expired.')
+        if not row.verified and not unverified_registration_enabled():raise HTTPException(403,'Verify your account before signing in; use account recovery if the link expired.')
         raw=secrets.token_urlsafe(32)
         db.add(CustomerSession(token_hash=auth.token_hash(raw),customer_id=row.id,expires_at=now()+timedelta(hours=8)))
         claim_enquiries(db,row);db.commit()

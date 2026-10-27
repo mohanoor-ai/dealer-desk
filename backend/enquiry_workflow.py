@@ -6,7 +6,7 @@ from sqlalchemy import select, update
 from sqlalchemy.exc import IntegrityError
 
 from backend import schemas as s
-from backend.public_access import enquiries_enabled,public_budget
+from backend.public_access import enquiries_enabled,public_budget,unverified_registration_enabled
 from backend.models import Enquiry, Vehicle, Task, AuditEvent, now
 
 
@@ -58,7 +58,7 @@ def register_workflow(app, database, can_write, today, serialize):
     @router.get('/api/catalogue/capabilities')
     def capabilities():
         from backend.config import hosted
-        return {'enquiries':enquiries_enabled(),'customer_registration':not hosted()}
+        return {'enquiries':enquiries_enabled(),'customer_registration':not hosted() or unverified_registration_enabled()}
 
     @router.post('/api/catalogue/enquiries',status_code=201,response_model=s.EnquiryReceipt)
     def website_enquiry(body:s.PublicEnquiry,request:Request,db=Depends(database)):

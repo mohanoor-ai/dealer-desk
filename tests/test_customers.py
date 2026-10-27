@@ -109,3 +109,27 @@ def test_staff_account_reply_and_optional_follow_up_commit_together(client):
     assert client.post(staff,json={'body':'We will confirm a time.','follow_up':plan}).status_code==201
     assert client.get('/api/tasks').json()['total']==1
     assert client.get(staff).json()['items'][0]['body']=='We will confirm a time.'
+
+
+def test_unverified_registration_never_claims_guest_threads(client,app,monkeypatch):
+    client.base_url='https://testserver'
+    earlier=guest(client)
+    monkeypatch.setenv('CUSTOMER_REGISTRATION_UNVERIFIED','true')
+    monkeypatch.setenv('APP_ENV','production')
+    monkeypatch.setenv('PUBLIC_ENQUIRIES_ENABLED','true')
+    result=client.post('/api/customer/register',json={'name':'Alex','email':'alex@example.com','password':PASSWORD})
+    assert result.status_code==201
+    assert 'local_email_url' not in result.json()
+    assert client.post('/api/customer/login',json={'email':'alex@example.com','password':PASSWORD}).status_code==200
+    assert client.get('/api/customer/enquiries').json()['items']==[]
+    assert client.get(f'/api/customer/enquiries/{earlier}/messages').status_code==404
+    current=guest(client)
+    assert [e['id'] for e in client.get('/api/customer/enquiries').json()['items']]==[current]
+    assert client.post(f'/api/customer/enquiries/{current}/messages',json={'body':'Please confirm availability.'}).status_code==201
+    with app.state.sessions() as db:
+        assert not db.scalar(select(CustomerAccount)).verified
+    assert client.post('/api/customer/recovery',json={'email':'alex@example.com'}).status_code==403
+    assert client.post('/api/customer/verify',json={'token':'x'*40}).status_code==403
+    assert client.post('/api/customer/reset',json={'token':'x'*40,'password':PASSWORD}).status_code==403
+    client.post('/api/customer/logout')
+    assert client.get('/api/customer/enquiries').status_code==401
