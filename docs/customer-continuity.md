@@ -1,6 +1,8 @@
 # Customer continuity and the shared saved demo
 
-Local source update, 27 October 2026. Nothing in this change has been deployed to Vercel or applied to Neon. The submitted revision remains unchanged.
+Released 27 October 2026 in c3bcfee. Production uses Neon for real customer/staff records; the shared demo remains browser-local. The earlier local verification workflow below is a development-only test path. Submission revision is recorded separately by the operator.
+
+Production entry: https://dealer-desk-prod.vercel.app/#/login. The localhost addresses below run the same demo workflow with separate browser storage.
 
 ## Quick shared-demo test
 
@@ -15,7 +17,7 @@ Local source update, 27 October 2026. Nothing in this change has been deployed t
 
 Open http://127.0.0.1:8810/#/account outside demo. Registration, sign in, recovery and owned enquiry conversations use a separate customer account/session system in the local SQL database. Customer credentials do not grant staff access. Staff sessions do not become customer sessions.
 
-Registration is a local development flow: the page explicitly displays **Local email preview — no email was sent** and offers the verification/recovery link. The link expires after 30 minutes and is single use. The user must open and confirm it, then sign in. This simulates a verification email; it does not prove ownership of a real inbox. Do not use real customer data here. Hosted registration and recovery are blocked pending an actual email-delivery integration and release review.
+Registration is a local development flow: the page explicitly displays **Local email preview — no email was sent** and offers the verification/recovery link. The link expires after 30 minutes and is single use. The user must open and confirm it, then sign in. This simulates a verification email; it does not prove ownership of a real inbox. Do not use real customer data here. Production instead enables owner-approved registration without verification: a new account can sign in immediately but remains email-unverified and cannot claim earlier guest enquiries. Only enquiries submitted while signed in belong to it. Hosted verification previews and password recovery remain disabled; no email is sent.
 
 A verified local account links previously unclaimed enquiries with the same normalized email. Authenticated website submissions must use that account's email. The customer list includes only owned enquiries, and conversation endpoints check ownership on every request. The original enquiry, customer-visible messages and status are returned; internal activity, notes, tasks, contact records and token hashes are omitted. Staff replies appear as Dealership, not as an external email-delivery claim.
 

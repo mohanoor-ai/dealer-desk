@@ -307,3 +307,7 @@ The first final-release CI passed core checks, PostgreSQL regression and contain
 ## Unverified customer signup — 27 October 2026
 
 Core checks passed: 56 backend tests, 43 frontend tests, production build and release audit (zero findings in its limited scan). New HTTPS regression verifies immediate signup/login while verified=false, no guest email-based claim, inaccessible older conversation, authenticated new enquiry ownership and follow-up, logout denial, and hosted verification/reset/recovery disabled. No email delivery or account recovery is claimed. PostgreSQL/container and hosted final revision checks remain separate release gates.
+
+## Released workflow README reconciliation — 27 October 2026
+
+Updated README public/customer/staff behaviour, shared browser demo boundaries, current test/release reference, database contents and remaining limits against c3bcfee source and the production health/capability observations. Retained dated historical screenshots and clearly identified the newer workflow as text rather than pretending those images show it. Corrected the linked customer-continuity introduction and hosted registration status. No application behaviour changed. git diff --check passed; exact documentation-commit CI and submission save are recorded separately after completion.

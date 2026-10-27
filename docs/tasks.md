@@ -129,3 +129,6 @@ Release rollback acceptance: run the unchanged previous application image agains
 
 ## Customer registration without verification — 27 October
 Owner requests registration without email verification and publication. Acceptance: explicit hosted capability; accounts stay email-unverified, may sign in and see only enquiries created in their authenticated session; never claim guest enquiries by matching email; no hosted recovery/verification preview; shared database registration/login limits; ownership regression tests.
+
+## Released workflow README and submission revision — 27 October 2026
+Owner authorizes README reconciliation and updating the saved project submission while editing remains available. Describe current public enquiries, unverified customer accounts with session-owned threads, compact staff actions/leads, browser-persistent shared demo and remaining limits. Preserve dated screenshots and truthful verification boundaries. Commit/push, require exact-revision CI and update only submission commit while preserving author, hours and fourteen article links; verify saved state. No proposed pipeline/demo features are implemented by this documentation task.

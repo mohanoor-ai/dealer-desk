@@ -26,31 +26,36 @@ When vehicle stock, customer enquiries and follow-up tasks are kept in separate 
 
 ### System functionality
 
-**Customer website:** visitors browse reference listings, search and filter vehicles, switch thumbnail/list views and open vehicle details with credited photographs. Browsing does not require a staff account. Website enquiry delivery is not yet connected. On phones, top and bottom menu buttons open vertical navigation; the staff menu provides the workspace destinations.
+**Customer website:** visitors browse reference listings, search and filter vehicles, switch thumbnail/list views and open vehicle details with credited photographs. Browsing does not require an account. Customers send a vehicle-specific or general enquiry, choose the request type and receive a reference. They can register without email verification, sign in and follow up enquiries sent while signed in. Earlier guest enquiries are not linked by matching email. On phones, top and bottom menu buttons open vertical navigation; the staff menu provides the workspace destinations.
 
-**Staff/dealer workspace:** individual accounts provide access to stock management, photos, enquiries and follow-ups. Staff records a request against a vehicle, opens the enquiry directly, schedules the next action and completes or reopens the task. The overview identifies enquiries without a next action and shows scheduled work with its due date. Viewer accounts are read-only; sales staff can manage records; managers can also inspect audit history.
+**Staff/dealer workspace:** individual accounts provide access to stock management, photos, enquiries and follow-ups. Staff record the enquiry source, open the exact enquiry and select one action: reply in the customer account, prepare an email, record contact, schedule a follow-up or close with an outcome. Reply/contact actions can include a follow-up in the same save. Leads groups enquiry contacts and shows recorded promotions preferences. The overview identifies enquiries without a next action and shows scheduled work with its due date. Viewer accounts are read-only; sales staff can manage records; managers can also inspect audit history.
 
 ### Expected system behaviour
 
-- Saved staff records survive page reloads and application restarts.
+- Saved customer and staff records survive page reloads and application restarts.
+- Customer account messages are private to the owning account and staff. Internal notes and tasks are not included.
+- A staff account reply marks the enquiry Contacted; a customer reply returns it to New. Pending tasks must be resolved before closure.
+- Promotions consent is optional and unticked initially; an enquiry does not imply marketing consent.
 - The enquiry count opens the open-enquiry list; an enquiry number opens that exact record.
 - An open enquiry without an incomplete task is labelled No next action scheduled.
 - Scheduling from an enquiry selects the correct record. Completing a task does not close the enquiry or send a customer reply.
 - Backend validation and role checks reject invalid or unauthorized changes. A stale edit returns a conflict instead of overwriting newer data.
 - The public catalogue excludes customer records and internal notes. The saved browser demo shares test records between customer and staff views until reset, without writing to the staff database.
 
-Reference prices and photographs are illustrative, not offers for sale. Email, WhatsApp and SMS are not connected.
+Reference prices and photographs are illustrative, not offers for sale. Email, WhatsApp and SMS delivery/synchronisation are not connected. Preparing an email opens the staff member’s email application; opening it does not mark the message sent.
 
 ## Product specification
 
-The implemented scope is one dealership with a read-only customer catalogue and an authenticated staff workspace. Core technical acceptance criteria are:
+The implemented scope is one dealership with public vehicle browsing and enquiry capture, separate customer accounts and an authenticated staff workspace. Core technical acceptance criteria are:
 
 | Area | Expected result |
 |---|---|
-| Validation and access | Invalid input is rejected; private reads and writes require the appropriate staff access |
+| Validation and access | Invalid input is rejected; staff permissions and customer conversation ownership are enforced by the API |
 | Stock and persistence | Vehicle, enquiry and task relationships remain saved after reload/restart |
 | Concurrent edits | A stale revision returns HTTP 409 and preserves the newer record |
-| Enquiry workflow | Direct record links, correct scheduling context and explicit missing next actions |
+| Enquiry workflow | Public capture, source/request details, private account replies, explicit contact outcomes, linked follow-ups and closure checks |
+| Customer accounts | Immediate registration/sign-in without email verification; no automatic claim of earlier guest enquiries |
+| Demo | Customer/staff views share saved browser test data; no dealership business writes |
 | Photos | File/type/dimension limits, metadata removal, persistence, cover selection and attribution |
 | Delivery | Successful exact-revision CI before deployment; explicit production promotion and verified compatible recovery |
 | Operations | Collected/correlated request signals, a user-impact alert and a bounded response with recovery checks |
@@ -99,6 +104,22 @@ Alex asks whether the Ford Puma is available to view. Staff opens enquiry #2, sc
 
 Mobile navigation: [Top menu](docs/media/mobile-navigation.jpg) · [Bottom menu](docs/media/mobile-bottom-navigation.jpg). These local browser captures accompany manual checks at 320px and 390px widths. [Capture details](docs/media/README.md#mobile-navigation).
 
+### Current customer and staff journey
+
+1. A visitor opens a car and selects **Send an enquiry**. The popup keeps that vehicle selected unless they choose a different/general query.
+2. For account follow-up, the customer registers and signs in **before** submitting. A guest can submit without an account and receives a reference instead.
+3. Staff open the new enquiry from the dashboard, review its source/request and choose a reply, contact, follow-up or closure action.
+4. Account replies appear in **My enquiries**. A customer follow-up stays in the same conversation and returns it to staff attention.
+5. Staff complete scheduled tasks and close the enquiry with an outcome when no pending tasks remain. Completing a task alone does not close the enquiry.
+
+The screenshots above document the earlier dated staff workflow; they are not captures of every newly released feature. [Saved workflow details](docs/verification.md) · [Customer accounts and demo](docs/customer-continuity.md).
+
+### Try the shared demo
+
+Open [Staff sign in](https://dealer-desk-prod.vercel.app/#/login) and choose **Try staff demo**. Switch to customer view, send an enquiry with test details, then return to staff to reply and schedule the next action. Switch back to read and follow up the conversation.
+
+The demo starts from the public catalogue. Records are saved on that browser and website address, shared between its customer/staff demo views and retained after refresh or ending the session. Role sessions last 30 minutes; **Reset demo** clears the test dataset. It does not sync across devices, between localhost and production, or with dealership records. Customer demo view represents the shared Website enquiry dataset, not independent customer identities. Real accounts enforce ownership separately. Use test details only; demo photo uploads require a real staff account.
+
 ## Architecture
 
 ```mermaid
@@ -106,14 +127,18 @@ flowchart TB
     Visitor[Customer browser] --> Web[React frontend on Vercel]
     Staff[Staff browser] --> Web
     Web --> Catalogue[Read-only reference catalogue API]
+    Web --> Enquiry[Public enquiry capture and validation]
+    Web --> Customer[Customer session and conversation ownership]
     Web --> Auth[Staff session and role checks]
     Auth --> API[FastAPI stock, enquiry and task API]
     Catalogue --> DB[(Neon PostgreSQL over TLS)]
     API --> DB
+    Enquiry --> DB
+    Customer --> DB
     DB --- Media[Processed photos and credits]
 ```
 
-Business records and images use PostgreSQL in the hosted app; local development can use SQLite. Public catalogue responses exclude customer records, internal notes and staff audit data. Browser-memory demos are separate from this flow. [Architecture](docs/architecture.md) · [Page structure](docs/site-map.md) · [Editable diagrams](docs/diagrams.md).
+Business records and images use PostgreSQL in the hosted app; local development can use SQLite. Public catalogue responses exclude customer records, internal notes and staff audit data. The shared browser-storage demo is separate from this database flow. [Architecture](docs/architecture.md) · [Page structure](docs/site-map.md) · [Editable diagrams](docs/diagrams.md).
 
 ## Run locally
 
@@ -164,19 +189,19 @@ uv run python -m scripts.verify
 
 After dependency setup, this command runs backend tests, frontend tests, the production build and the limited source/history audit, stopping at the first failure. PostgreSQL, clean Compose, replacement/rollback and local operations labs run as additional CI stages.
 
-The verified application revision [bbf5a3f](https://github.com/mohanoor-ai/dealer-desk/commit/bbf5a3fbc7ace63f82fe5e4e792fb5221d9a2609) passed 38 backend and 16 frontend tests plus all additional stages in [CI run 40224933435](https://github.com/mohanoor-ai/dealer-desk/actions/runs/40224933435). Production health matched that revision. Documentation-only revisions can follow it; their own checks remain visible in Actions.
+The released application revision [c3bcfee](https://github.com/mohanoor-ai/dealer-desk/commit/c3bcfee79485ebea6b409d6c339b0388809b1710) passed 56 backend and 43 frontend tests, the frontend build, expanded PostgreSQL regression, Docker/Compose persistence, previous-image rollback/forward recovery and operations checks in [CI run 40433008005](https://github.com/mohanoor-ai/dealer-desk/actions/runs/40433008005). Production health matched that revision on 27 October 2026. Registration and ownership were tested in isolated databases; the live registration form and capabilities were checked without creating a production test account. Documentation-only revisions can follow it; their own checks remain visible in Actions.
 
 [Testing commands](docs/testing.md) explain each layer. [Verification](docs/verification.md) retains actual observations and limits. Browser captures/manual checks are not an automated cross-engine suite. The local Docker engine was unavailable during the final checks; hosted CI demonstrated the clean Compose journey and recovery.
 
 ## Deployment
 
-[Vercel](https://vercel.com/) serves the built frontend and FastAPI application. [Neon PostgreSQL](https://neon.com/) stores business records, staff sessions, audit events and processed images. Database connections stay server-side and use TLS.
+[Vercel](https://vercel.com/) serves the built frontend and FastAPI application. [Neon PostgreSQL](https://neon.com/) stores business records, customer accounts/conversations, staff and customer sessions, promotions preferences, audit events, shared public-request budgets and processed images. Database connections stay server-side and use TLS.
 
 Docker Compose reproduces the application locally. Versioned migrations, locked dependencies and the deployment steps support recreating the cloud setup with a separate database; they do not copy the existing hosted records. [Run locally](#run-locally) · [Recreate the cloud deployment](docs/deployment-vercel.md#recreate-the-cloud-deployment).
 
 | Environment | URL | Access |
 |---|---|---|
-| Production | https://dealer-desk-prod.vercel.app/ | Public vehicle browsing; individual app login for staff management |
+| Production | https://dealer-desk-prod.vercel.app/ | Public browsing/enquiries; separate customer registration/login and staff login |
 | Development | https://dealer-desk-dev.vercel.app/ | Vercel authorization followed by staff app login |
 | Local | Address printed by the startup command | Loopback access with a locally created staff account |
 
@@ -204,7 +229,7 @@ Status checked 25 October 2026. Open/closed is the tracker state; the scope colu
 |---|---|---|
 | [#1 — Deploy a protected Vercel development version with Neon](https://github.com/mohanoor-ai/dealer-desk/issues/1) | Closed | Completed and verified |
 | [#2 — Add Cloudflare R2 photo storage with verified access boundaries](https://github.com/mohanoor-ai/dealer-desk/issues/2) | Open | Deferred; photos remain database-backed |
-| [#3 — Connect public showroom and isolated demo access to dealer workflows](https://github.com/mohanoor-ai/dealer-desk/issues/3) | Open | Browsing/demo separation implemented; live enquiry delivery and remaining controls deferred |
+| [#3 — Connect public showroom and isolated demo access to dealer workflows](https://github.com/mohanoor-ai/dealer-desk/issues/3) | Open | Browsing, saved website enquiries, customer conversations and shared browser demo released; external messaging integrations deferred |
 | [#4 — Complete assessment delivery and operational evidence](https://github.com/mohanoor-ai/dealer-desk/issues/4) | Closed | Delivery and local operations demonstrated with documented limits |
 | [#5 — Make open enquiries actionable from the staff overview](https://github.com/mohanoor-ai/dealer-desk/issues/5) | Closed | Direct navigation, missing next actions and scheduling verified |
 
@@ -212,7 +237,9 @@ Status checked 25 October 2026. Open/closed is the tracker state; the scope colu
 
 ## Current limits and deferred work
 
-The hosted release does not accept website enquiries. The 26 October local source adds saved website enquiries, staff-confirmed reply/contact history and optional follow-ups; see the [local workflow and testing guide](docs/local-enquiry-demo.md) and [customer accounts, conversations and saved demo](docs/customer-continuity.md). Hosted release approval, shared public-write abuse controls, incoming reply synchronisation, staff assignment, bulk upload, R2 migration, messaging integrations, Grafana/LGTM, managed production monitoring and an in-app LLM remain future work. Archive/restore and manager audit endpoints exist, but dedicated interface controls remain incomplete. The login limiter is process-local; a public-write service requires a separate abuse-control review.
+Customer registration does not verify inbox ownership. These accounts can access only enquiries sent while signed in; earlier guest enquiries are not automatically attached. Hosted password recovery is unavailable until real email delivery is configured. Public registration, customer login, enquiry capture and unsubscribe use shared database request budgets; this is bounded abuse protection, not a full anti-bot service. Staff login retains its existing process-local limiter.
+
+External email/WhatsApp/SMS delivery and incoming reply synchronisation, staff assignment, bulk upload, R2 migration, Grafana/LGTM, managed production monitoring and an in-app LLM remain deferred. Promotions consent is recorded; no campaigns are sent. Archive/restore and manager audit endpoints exist, but dedicated interface controls remain incomplete. Guided demo scenarios, selected demo-customer identities and more detailed attention reasons are proposals, not implemented features.
 
 Only demonstration data is used here. Keep credentials, `.env`, databases, backups and exports outside Git. 
 ## Telemetry dashboard
