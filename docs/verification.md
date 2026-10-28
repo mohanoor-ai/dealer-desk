@@ -331,3 +331,9 @@ Remaining: local Docker engine timed out; the extended container and PostgreSQL 
 ## Branch-only deployment exclusion preflight — 27 October 2026
 
 The owner approved adding only git.deploymentEnabled["audit-assessment-verification"]=false before the first push. Both Vercel project root directories were observed empty (repository root); development's ignored-build behaviour is Automatic, production's is Only build production. These settings are not changed. Vercel's documented unspecified-branch default remains true; no wildcard or main/production-release rule is added. A JSON comparison confirms all prior configuration values are identical. Actual provider skip/PR CI outcomes are recorded separately after the authorized push; no preflight is claimed as a live provider result.
+
+## Verified audit integration authorization — 28 October 2026
+
+Owner requests integration and submission update after verification-only PR #6 passed. Head 0ddd9995d9154cac63c24fcecc3d1440677e4392 passed PR CI 40592693638 (62 backend, 43 frontend, 36 PostgreSQL tests, clean Compose/new-data persistence, pinned 0efadbc rollback, forward restoration, operations and backup checks). Downloaded artifact 12774982353 was inspected; ZIP SHA-256 f2257629c27e525b82bca3eafe04b4da0abfbfa51443dfbb945883e26f950293 matched metadata. The actual PR test merge 12129f60dec24ee0a5bd25c4cbe6c99a3392c798 had parents main 5d0b647 and audit head 0ddd999, with an identical tree to the audit head. No actual merge occurred during that verification pass. Both Vercel projects showed no audit-branch deployments after push/PR/CI.
+
+This follow-up updates documentation/provenance only before integration; the same complete checks must pass on its PR head and integrated main revision. Merge and course save outcomes are recorded separately after observation. Production-release remains c3bcfee; no hosted migration or production promotion is authorized.

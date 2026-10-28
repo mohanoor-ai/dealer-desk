@@ -17,6 +17,12 @@ Reviewed 25 October 2026 against the [official project rubric](https://github.co
 
 Quick review: [public app](https://dealer-desk-prod.vercel.app/), [startup](../README.md#run-locally), `uv run python -m scripts.verify`, then the criterion map below. Use fictional records and a disposable local database for customer/staff writes. Do not use the shared browser demo to establish SQL persistence.
 
+## Verified branch results and integration — 28 October 2026
+
+The verification-only branch advanced to [0ddd999](https://github.com/mohanoor-ai/dealer-desk/commit/0ddd9995d9154cac63c24fcecc3d1440677e4392). [PR CI 40592693638](https://github.com/mohanoor-ai/dealer-desk/actions/runs/40592693638) passed **62 backend, 43 frontend and 36 PostgreSQL tests**, clean Compose replacement with customer/messages/consent preservation, pinned prior application rollback/forward restoration, and operations/backup checks. [Artifact 12774982353](https://github.com/mohanoor-ai/dealer-desk/actions/runs/40592693638/artifacts/12774982353) was downloaded/inspected; SHA-256 `f2257629c27e525b82bca3eafe04b4da0abfbfa51443dfbb945883e26f950293` matched GitHub metadata. Its actual PR checkout `12129f60dec24ee0a5bd25c4cbe6c99a3392c798` has the same tree as the branch head. The earlier local-only/pending statements describe the preceding dated audit stage, not the final PR verification result.
+
+The owner now authorizes integration and an updated course commit after exact-main CI succeeds. [PR #6](https://github.com/mohanoor-ai/dealer-desk/pull/6) retains final source/check/artifact links. Submission save confirmation is recorded by the operator only after reloading the form; it is not inferred from this task record. Production remains on c3bcfee unless separately authorized. No production promotion or hosted migration is part of integration.
+
 ## Criterion map
 
 | Official criterion | Maximum | Implementation and direct evidence | Reproduction or inspection |
