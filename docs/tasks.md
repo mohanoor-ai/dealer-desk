@@ -132,3 +132,21 @@ Owner requests registration without email verification and publication. Acceptan
 
 ## Released workflow README and submission revision — 27 October 2026
 Owner authorizes README reconciliation and updating the saved project submission while editing remains available. Describe current public enquiries, unverified customer accounts with session-owned threads, compact staff actions/leads, browser-persistent shared demo and remaining limits. Preserve dated screenshots and truthful verification boundaries. Commit/push, require exact-revision CI and update only submission commit while preserving author, hours and fourteen article links; verify saved state. No proposed pipeline/demo features are implemented by this documentation task.
+
+## Assessment refresh and isolated pipeline/recovery verification — 27 October 2026
+Owner approved implementation after the read-only audit. Baseline source 5d0b647f0e473eb5ee09d8f6ab8644f37aa3e6cb; passing CI 40549549060; observed production c3bcfee79485ebea6b409d6c339b0388809b1710. Owner confirmed saved course commit 5d0b647 directly in chat.
+
+Acceptance:
+- Refresh assessment guide/current checkpoint with exact source/CI/runtime provenance and actual output-supported counts; preserve dated historical records. Keep owner-confirmed submitted revision distinct from subsequent source.
+- Append current release evidence to issues #3/#5 without rewriting acceptance/history or closing deferred scope.
+- Exercise complete authenticated customer/staff pipeline in disposable local data, including second-account denial, viewer denial, internal-note privacy and no guest email claim; capture actual current local screens and record browser checks separately from API tests.
+- Extend disposable container checks for customer ownership, conversations, consent and Leads across replacement. Private state files may hold random tokens; artifact output must contain only aggregate outcomes/IDs and no credentials/contact/message content.
+- Pin an explicit prior application release for isolated rollback. Verify supported legacy workflows plus preservation of newer data, then restore current image and verify new API workflows. Never run older migration graphs against newer data or downgrade business data.
+- Retain global request budgets; document a bounded per-client/account fairness proposal and limitations, with a non-runtime model test where useful. No runtime limiter changes in this task.
+- Run required core/exact-source CI; publish only source/docs and authorized issue updates. Do not promote production, migrate hosted databases or change the course submission.
+
+## Branch-only CI verification — 27 October 2026
+Owner explicitly approves git.deploymentEnabled exclusion for audit-assessment-verification, the first branch push with that rule included, and a verification PR against main. Acceptance: no wildcard or other branch rule; both Vercel projects skip this exact branch; stop if either deploys; require PostgreSQL, clean Compose persistence, pinned prior rollback/forward and operations checks, inspecting real logs/artifacts tied to the source SHA. Fix only branch failures. Keep main 5d0b647, production-release c3bcfee, hosted databases and owner-confirmed submitted 5d0b647 unchanged. Never merge, promote or run hosted migrations.
+
+## Integrate verified audit and update submission — 28 October 2026
+Owner explicitly authorizes integrating PR #6 and updating the course submission to the integrated revision. This supersedes the earlier no-merge/no-submission-change boundary for this task only. Acceptance: preserve audit implementation and branch-only Vercel exclusion, retain exact CI/artifact provenance, merge only the checked PR head, verify successful exact-main CI, then save the required seven-character commit in the course form and reload to confirm. Preserve author, 28 hours and fourteen article links. Normal main/development delivery is expected; do not advance production-release or migrate hosted data.

@@ -1,0 +1,61 @@
+{
+  "date": "2026-10-27",
+  "baseline_source": "5d0b647f0e473eb5ee09d8f6ab8644f37aa3e6cb",
+  "observed_runtime": "c3bcfee79485ebea6b409d6c339b0388809b1710",
+  "ci_run": 40549549060,
+  "ci_job": 122349261805,
+  "ci_result": "success",
+  "observed_log_counts": {
+    "backend": 56,
+    "frontend": 43,
+    "postgresql": 35
+  },
+  "ci_scope": "Baseline only; not the unpushed audit changes.",
+  "submission": {
+    "owner_confirmed": "5d0b647",
+    "method": "Direct owner reply in this chat",
+    "changed": false
+  },
+  "issue_updates": {
+    "3": "https://github.com/mohanoor-ai/dealer-desk/issues/3#issuecomment-6453921177",
+    "5": "https://github.com/mohanoor-ai/dealer-desk/issues/5#issuecomment-6453922066"
+  },
+  "browser": {
+    "environment": "Disposable loopback SQLite at port 8822; not browser demo or hosted data",
+    "application_code": "c3bcfee; checkout baseline 5d0b647 plus documentation/test/rehearsal-only audit edits",
+    "registration": "Fictional unverified account created through API fixture; browser sign-in exercised",
+    "journey": [
+      "signed-in customer submitted enquiry #2",
+      "staff opened exact dashboard link",
+      "staff replied in account",
+      "customer replied in same thread",
+      "staff observed New",
+      "staff scheduled linked follow-up",
+      "staff completed task",
+      "staff closed with outcome",
+      "Leads showed Closed contact, two enquiries and explicit opt-in history"
+    ],
+    "privacy": "Cross-account/viewer/internal-note/no-guest-claim denials tested by isolated API regression, not claimed as browser assertions",
+    "screenshots": [
+      "customer-enquiry-20261027.jpg",
+      "customer-conversation-20261027.jpg",
+      "staff-actions-20261027.jpg",
+      "leads-20261027.jpg"
+    ]
+  },
+  "docker": "Engine timed out within eight seconds; no new Docker result claimed",
+  "deployment": "No promotion, hosted migration, submission edit or source push performed by this audit",
+  "local_results": {
+    "command": "python -m scripts.verify",
+    "backend": 62,
+    "frontend": 43,
+    "frontend_build": "passed",
+    "limited_source_audit": "240 source files, 59 reachable commits, zero findings under its rules",
+    "compose_override_syntax": "docker compose config --quiet passed",
+    "pinned_process_rehearsal": "passed against disposable SQLite; prior 0efadbc, restored current application",
+    "new_container_and_postgresql_run": "pending, not executed",
+    "fairness_tests": "proposal model only, live limiter unchanged",
+    "document_file_links": "checked; targets exist",
+    "diff_check": "passed"
+  }
+}

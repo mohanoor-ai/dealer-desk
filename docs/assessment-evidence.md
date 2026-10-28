@@ -2,6 +2,27 @@
 
 Reviewed 25 October 2026 against the [official project rubric](https://github.com/DataTalksClub/ai-dev-tools-zoomcamp/blob/526d9c12506c159e7a8f3cef30e5de1eeaec287b/project/README.md#criteria), the latest change to that file at review time. There are twelve criteria and 24 available points. The maxima below describe the rubric, not awarded marks. Mohammed Sheikh-Noor is the project author.
 
+## Current checkpoint — 27 October 2026
+
+| Record | Exact reference and scope |
+|---|---|
+| Reviewed source | [5d0b647f0e473eb5ee09d8f6ab8644f37aa3e6cb](https://github.com/mohanoor-ai/dealer-desk/commit/5d0b647f0e473eb5ee09d8f6ab8644f37aa3e6cb) |
+| Successful exact-source CI | [40549549060](https://github.com/mohanoor-ai/dealer-desk/actions/runs/40549549060), job 122349261805: 56 backend, 43 frontend and 35 PostgreSQL tests, build/audit, Compose replacement, rollback/forward and operations stages |
+| Observed production | `/health` returned healthy revision `c3bcfee79485ebea6b409d6c339b0388809b1710` during the read-only audit on 27 October |
+| Source/runtime difference | 5d0b647 changes only README, customer-continuity, tasks and verification documentation from c3bcfee |
+| Saved course commit | Owner directly confirmed **5d0b647** in chat on 27 October. This audit does not change the form |
+| This local audit | Documentation, tests, captures and rehearsal changes are not covered by the baseline CI. No source push or deployment is authorized for this pass |
+
+[Machine-readable checkpoint](evidence/review-checkpoint-20261027.json) and [actual baseline CI count excerpts](evidence/assessment-current-ci-excerpt.txt) record provenance and limits. New local checks passed 62 backend tests, 43 frontend tests, build and limited audit; these are separate from baseline CI. New tests and captures are described in [local audit results](verification.md#assessment-audit-local-results--27-october-2026). The older evidence below remains historical rather than being relabelled as current.
+
+Quick review: [public app](https://dealer-desk-prod.vercel.app/), [startup](../README.md#run-locally), `uv run python -m scripts.verify`, then the criterion map below. Use fictional records and a disposable local database for customer/staff writes. Do not use the shared browser demo to establish SQL persistence.
+
+## Verified branch results and integration — 28 October 2026
+
+The verification-only branch advanced to [0ddd999](https://github.com/mohanoor-ai/dealer-desk/commit/0ddd9995d9154cac63c24fcecc3d1440677e4392). [PR CI 40592693638](https://github.com/mohanoor-ai/dealer-desk/actions/runs/40592693638) passed **62 backend, 43 frontend and 36 PostgreSQL tests**, clean Compose replacement with customer/messages/consent preservation, pinned prior application rollback/forward restoration, and operations/backup checks. [Artifact 12774982353](https://github.com/mohanoor-ai/dealer-desk/actions/runs/40592693638/artifacts/12774982353) was downloaded/inspected; SHA-256 `f2257629c27e525b82bca3eafe04b4da0abfbfa51443dfbb945883e26f950293` matched GitHub metadata. Its actual PR checkout `12129f60dec24ee0a5bd25c4cbe6c99a3392c798` has the same tree as the branch head. The earlier local-only/pending statements describe the preceding dated audit stage, not the final PR verification result.
+
+The owner now authorizes integration and an updated course commit after exact-main CI succeeds. [PR #6](https://github.com/mohanoor-ai/dealer-desk/pull/6) retains final source/check/artifact links. Submission save confirmation is recorded by the operator only after reloading the form; it is not inferred from this task record. Production remains on c3bcfee unless separately authorized. No production promotion or hosted migration is part of integration.
+
 ## Criterion map
 
 | Official criterion | Maximum | Implementation and direct evidence | Reproduction or inspection |
@@ -10,8 +31,8 @@ Reviewed 25 October 2026 against the [official project rubric](https://github.co
 | Product Specification | 2 | [Specification](../product-spec.md), [public task tracker](https://github.com/mohanoor-ai/dealer-desk/issues), [acceptance/task record](tasks.md), [worked issue #5](issue-traceability.md) | Follow the report, acceptance, assistant execution, code/checks and issue disposition |
 | Agent Team Specification | 2 | [Existing participants, agent responsibilities and input/output boundaries](team.md), [task and release process](process.md) | Coding assistant works from acceptance through checks; the runtime monitor invokes the on-call policy agent. No independent coding review is claimed |
 | Context Management | 2 | [AGENTS.md](../AGENTS.md) links modular specification, architecture, team, process, testing, security and AI-use documents | Read the instructions and follow those links |
-| Application | 2 | [Connected frontend/API/database architecture](architecture.md), [saved enquiry workflow](../README.md#workflow-in-practice), [API/database integration tests](../tests/test_journey.py) | Run the single OS setup command below, save vehicle/enquiry/task records, reload and inspect persistence |
-| Testing | 2 | [Core verification command](../scripts/verify.py), [unit/API/database tests](testing.md), [38 backend and 16 frontend checks](evidence/assessment-core-checks.txt), [successful CI](https://github.com/mohanoor-ai/dealer-desk/actions/runs/40225569002) | `uv run python -m scripts.verify` runs the required local layers in one command; CI separately adds PostgreSQL and containers |
+| Application | 2 | [Connected frontend/API/database architecture](architecture.md), [saved enquiry workflow](../README.md#workflow-in-practice), [API/database integration tests](../tests/test_journey.py), [complete customer/staff regression](../tests/test_customer_staff_pipeline.py) | Run the single OS setup command below, save vehicle/enquiry/task records, reload and inspect persistence |
+| Testing | 2 | [Core verification command](../scripts/verify.py), [unit/API/database tests](testing.md), [current checkpoint](#current-checkpoint--27-october-2026), [successful exact-source CI](https://github.com/mohanoor-ai/dealer-desk/actions/runs/40549549060) | `uv run python -m scripts.verify` runs the required local layers in one command; CI separately adds PostgreSQL and containers |
 | Containerization | 2 | [Dockerfile](../Dockerfile), [Compose](../docker-compose.yml), [startup scripts](../README.md#docker-compose), [actual clean-container journey](evidence/assessment-ci-container.txt) | `./start.ps1` on Windows or `sh start.sh` on Linux builds/starts app and PostgreSQL and prompts for the first account |
 | Deployment | 2 | [Public production website](https://dealer-desk-prod.vercel.app/), [deployment runbook](deployment-vercel.md), [read-only review result](evidence/assessment-review.json) | Browse publicly; `/health` reports the running source revision; staff API calls without login return 401 |
 | CI/CD | 3 | [Workflow](../.github/workflows/ci.yml), [exact-revision gate and manual production promotion](release-recovery.md), [container rollback/forward output](evidence/assessment-ci-rollback.txt), [observed cloud recovery](evidence/cloud-recovery.json) | Inspect successful core/PostgreSQL/Compose/recovery stages and separate dev/main versus production-release delivery. Do not promote merely to review |
@@ -29,7 +50,7 @@ Prerequisites and account setup are in the [README](../README.md#run-locally). U
 sh start.sh
 ```
 
-The startup command includes first-manager creation through an interactive prompt; no shared password is shipped. The private staff journey is separate from the optional browser-memory demonstration. Completing a demo is not evidence of database persistence.
+The startup command includes first-manager creation through an interactive prompt; no shared password is shipped. The saved API/database journey is separate from the optional browser-storage demonstration. Completing a demo is not evidence of database persistence.
 
 After installing Python/Node dependencies as documented:
 
@@ -37,7 +58,7 @@ After installing Python/Node dependencies as documented:
 uv run python -m scripts.verify
 ```
 
-This includes unit, API/database integration and frontend interaction tests, build and the limited source audit. CI adds 18 PostgreSQL integration checks, clean Compose HTTP creation, app replacement, previous-image rollback, forward restoration and the operations rehearsal. See [CI run 40225569002](https://github.com/mohanoor-ai/dealer-desk/actions/runs/40225569002) and its implemented-api artifact.
+This includes unit, API/database integration and frontend interaction tests, build and the limited source audit. The baseline CI adds 35 PostgreSQL integration checks, clean Compose HTTP creation, app replacement, previous-image rollback, forward restoration and the operations rehearsal. See [CI run 40549549060](https://github.com/mohanoor-ai/dealer-desk/actions/runs/40549549060). Historical artifact files linked below belong to their original runs. The local audit extends customer/conversation/consent checks but has no new Docker/CI result yet.
 
 For observability/alert/repair, use a fresh checkout with no existing rehearsal database. In one terminal:
 
@@ -60,7 +81,7 @@ The on-call criterion specifies automatic alert response and issue repair; it do
 
 The team criterion concerns defined roles and their process. [The team specification](team.md) names the actual owner, coding assistant, monitor automation and runtime policy agent, and records their responsibilities and interactions. One coding assistant performing implementation and checking is not an independent multi-agent review. No such review is needed to claim the documented process, and none is invented here. Reviewers retain the final scoring decision.
 
-## Verification checkpoint and provenance
+## Historical checkpoint and provenance — 25 October 2026
 
 The incident/container/rollback/backup files linked above were copied without content changes from artifact 12610588755 of successful CI 40225569002 at clean source `389bd146394bb740e33e26657629561215599c22`. [Artifact provenance](evidence/assessment-review.json) records its verified SHA-256. The incident report contains source revision, three 503 trace IDs, repair decision, 200 recovery and record preservation. Historical local reports remain separately dated.
 
@@ -68,6 +89,12 @@ A read-only production check during this review found healthy revision `bbf5a3fb
 
 ## Limits and submission
 
-No confirmed missing implementation was found against the published criteria. Final marks remain a peer-review decision. Local Docker Desktop was unavailable during prior local checks; hosted CI provides the actual clean Compose and recovery results. Managed production telemetry, Grafana/LGTM, LLM diagnosis, independent coding-agent review and automated cross-engine browser coverage are not claimed and are not explicit requirements of this rubric.
+The 25 October review found no confirmed missing implementation against the published criteria. The 27 October audit identifies verification/documentation gaps for newer workflows; local results and pending container checks are distinguished above. Final marks remain a peer-review decision. Local Docker Desktop was unavailable during prior local checks; hosted CI provides the actual clean Compose and recovery results. Managed production telemetry, Grafana/LGTM, LLM diagnosis, independent coding-agent review and automated cross-engine browser coverage are not claimed and are not explicit requirements of this rubric.
 
-The course form already saved source `389bd14` on 25 October at 19:28 Europe/London. This documentation review creates a later repository revision; it does not silently change the saved submission or production. Three assigned peer reviews remain compulsory. Optional article work is separate from the twelve scored criteria and is not a reason to add unrelated features to this review.
+Historical observation: the course form saved source `389bd14` on 25 October at 19:28 Europe/London. This was superseded by later owner-authorized updates; the owner directly confirmed saved source `5d0b647` for this audit. No submission or production change is part of this pass. Three assigned peer reviews remain compulsory. Optional article work is separate from the twelve scored criteria and is not a reason to add unrelated features to this review.
+
+## Current local captures and review limits
+
+[Customer enquiry popup](media/customer-enquiry-20261027.jpg) · [private conversation](media/customer-conversation-20261027.jpg) · [compact staff action](media/staff-actions-20261027.jpg) · [Leads and consent](media/leads-20261027.jpg). [Capture details](media/README.md#current-enquiry-and-leads-captures--27-october-2026) identify the fictional local data, code base and screenshot stages. Historical captures above are retained.
+
+[Container/rollback assumptions](release-recovery.md#pinned-isolated-rehearsal--27-october-2026) and the [request-budget fairness proposal](request-budget-fairness.md) explain what is implemented, tested locally or still pending. The fairness model does not change the production limiter. No independent review, managed production telemetry or guaranteed marks are claimed.
